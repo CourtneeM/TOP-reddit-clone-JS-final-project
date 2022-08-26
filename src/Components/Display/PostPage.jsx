@@ -1,3 +1,4 @@
+import Navbar from './Navbar';
 import Comment from './Comment';
 import styled from "styled-components";
 
@@ -55,37 +56,44 @@ const CommentsContainer = styled.div`
   }
 `;
 
-function PostPage() {
+function PostPage({ sub, post }) {
+  post.addComment('as98d2h2', 'xdemonslayerx', 'look a comment');
+
   return (
-    <Wrapper>
-      <Header>
-        <p>SubName</p>
-        <p>Posted by u/userName</p>
-        <p>DateTime</p>
-      </Header>
-      <Body>
-        <div>
-          <h2>Title</h2>
-          <p>Post Text / Media</p>
-        </div>
-      </Body>
-      <CommentSection>
-        <CompositionContainer>
-          <p>Comment as u/username</p>
-          <form action="#">
-            <textarea name="comment-text" id="comment-text" cols="30" rows="10"></textarea>
-            <button>Submit</button>
-          </form>
-        </CompositionContainer>
-        <CommentsContainer>
-          <p>Sort Options: Highest Rating | Lowest Rating | Oldest | Newest</p>
-          <Comment />
-          <Comment />
-          <Comment />
-          <Comment />
-        </CommentsContainer>
-      </CommentSection>
-    </Wrapper>
+    <div>
+      <Navbar />
+
+      <Wrapper>
+        <Header>
+          <p>/r/{sub.name}</p>
+          <p>Posted by u/{post.owner}</p>
+          <p>{post.creationDateTime.date.month}/{post.creationDateTime.date.day}/{post.creationDateTime.date.year}</p>
+        </Header>
+        <Body>
+          <div>
+            <h2>{post.title}</h2>
+            <p>{post.content}</p>
+          </div>
+        </Body>
+        <CommentSection>
+          <CompositionContainer>
+            <p>Comment as u/username</p>
+            <form action="#">
+              <textarea name="comment-text" id="comment-text" cols="30" rows="10"></textarea>
+              <button>Submit</button>
+            </form>
+          </CompositionContainer>
+          <CommentsContainer>
+            <p>Sort Options: Highest Rating | Lowest Rating | Oldest | Newest</p>
+            {
+              Object.values(post.comments).map((comment) => {
+                return <Comment comment={comment} />
+              })
+            }
+          </CommentsContainer>
+        </CommentSection>
+      </Wrapper>
+    </div>
   );
 };
 

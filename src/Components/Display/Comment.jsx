@@ -39,21 +39,21 @@ const CommentActions = styled.div`
   }
 `;
 
-function Comment({ username, creationDateTime, commentText }) {
+function Comment({ comment }) {
   return (
     <Wrapper>
       <CommentHeader>
         {/* <img src="" alt="user" /> */}
-        <p>{username} username</p>
-        <p>{creationDateTime} creation date time</p>
+        <p>u/{comment.owner}</p>
+        <p>{comment.creationDateTime.date.month}/{comment.creationDateTime.date.day}/{comment.creationDateTime.date.year}</p>
       </CommentHeader>
 
-      <CommentText>{commentText} Comment text</CommentText>
+      <CommentText>{comment.text}</CommentText>
 
       <CommentActions>
         <div>
           <p className="upvote-icon">^</p>
-          <p>numVotes</p>
+          <p>{comment.votes}</p>
           <p className="downvote-icon">v</p>
           <p>Reply</p>
         </div>

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -24,16 +25,28 @@ const Wrapper = styled.div`
 `;
 
 function Navbar() {
+
+
   return (
     <Wrapper>
       <p>Readdit</p>
 
       <ul>
-        <li>Home</li>
-        <li>All</li>
-        <li>Art</li>
-        <li>Games</li>
+        <Link to="/">
+          <li>Home</li>
+        </Link>
+        <Link to="/r/all">
+          <li>All</li>
+        </Link>
+        <Link to="/r/digital_art">
+          <li>Digital Art</li>
+        </Link>
+        <Link to="/r/games">
+          <li>Games</li>
+        </Link>
       </ul>
+
+      {/* <button>Create Sub</button> */}
     </Wrapper>
   );
 };

@@ -36,7 +36,9 @@ const PostsContainer = styled.div`
 
 `;
 
-function Home() {
+function Home({ subList }) {
+  const topPosts = [].concat.apply([], Object.keys(subList).map((key) => subList[key].getTopPosts()));
+
   return (
     <div>
       <Navbar />
@@ -51,11 +53,13 @@ function Home() {
           </SortOptions>
 
           <PostsContainer>
-            <PostPreview />
+            {
+              topPosts.map((post) => <PostPreview post={Object.values(post)[0]} />)
+            }
           </PostsContainer>
         </PostsSection>
 
-        <AboutSection />
+        {/* <AboutSection /> */}
       </Wrapper>
     </div>
   );

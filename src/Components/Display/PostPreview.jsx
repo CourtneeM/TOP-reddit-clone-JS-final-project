@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styled from "styled-components";
 
 const Wrapper = styled.div`
@@ -50,25 +51,27 @@ const VoteStatus = styled.div`
   }
 `;
 
-function PostPreview() {
+function PostPreview({ post }) {
   return (
     <Wrapper>
-      <Header>
-        <p>Posted by <span>u/username</span></p>
-        <p>Creation Date</p>
-      </Header>
-      <Body>
-        <h4>Title</h4>
-        <p>Text preview / Image preview</p>
-      </Body>
+      {/* <Link to={`/post/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`} > */}
+        <Header>
+          <p>Posted by <span>u/{post.owner}</span></p>
+          <p>{`${post.creationDateTime.date.month}/${post.creationDateTime.date.day}/${post.creationDateTime.date.year}`}</p>
+        </Header>
+        <Body>
+          <h4>{post.title}</h4>
+          <p>{post.content}</p>
+        </Body>
+      {/* </Link> */}
       <Options>
-        <p># comments</p>
+        <p>{Object.values(post.comments)[0] || 0} comments</p>
         <p>Favorite</p>
         <p>Share</p>
       </Options>
       <VoteStatus>
         <p>^</p>
-        <p>#</p>
+        <p>{post.votes}</p>
         <p>v</p>
       </VoteStatus>
     </Wrapper>

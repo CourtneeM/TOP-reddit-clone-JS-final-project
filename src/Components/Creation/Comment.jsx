@@ -1,13 +1,21 @@
 class Comment {
-  constructor(uid, text, owner) {
+  constructor(uid, owner, text) {
     this.uid = uid;
-    this.text = text;
     this.owner = owner;
-    this.creationDateTime = '';
+    this.text = text;
+    this.creationDateTime = this.getDateTime();
     this.votes = 0;
     this.editStatus = { edited: false, editDateTime: null };
     this.deleteStatus = { deleted: false, deleteDateTime: null };
     this.child = {};
+  }
+
+  getDateTime() {
+    const newDate = new Date();
+    return {
+      time: { seconds: newDate.getSeconds(), minutes: newDate.getMinutes(), hours: newDate.getHours() },
+      date: { day: newDate.getDate(), month: newDate.getMonth() + 1, year: newDate.getFullYear() }
+    }
   }
 
   adjustVotes(num) {
