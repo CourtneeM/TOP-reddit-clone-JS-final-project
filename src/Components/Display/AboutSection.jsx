@@ -21,7 +21,6 @@ const About = styled.div`
 `;
 
 function AboutSection({ sub }) {
-  console.log(sub);
   return (
     <About>
       <h3>About</h3>

@@ -1,10 +1,11 @@
-import { Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 
 import PostPreview from "./PostPreview";
 import AboutSection from "./AboutSection";
 import Navbar from "./Navbar";
 
 import styled from "styled-components";
+import { useEffect, useState } from 'react';
 
 
 const Wrapper = styled.div`
@@ -56,48 +57,70 @@ const PostsContainer = styled.div`
 `;
 
 
-function Sub({ sub }) {
-  console.log(sub);
+function Sub({ subList }) {
+  const params = useParams();
+
+  const [sub, setSub] = useState({});
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    setSub(Object.values(subList).filter((sub) => {
+      return sub.name.split(' ').join('_').toLowerCase() === params.subName;
+    })[0]);
+  }, [params.subName, subList]);
+
+  useEffect(() => {
+    setLoaded(true);
+  }, [sub]);
 
   return (
     <div>
       <Navbar />
 
       <Wrapper>
-        <Header>
-          <div>
-            {/* <img src="" alt="sub pic" /> */}
-            <p>{sub.subTitle}</p>
-            <p>r/{sub.name}</p>
-          </div>
-          <div>
-            <button>Follow</button>
-          </div>
-        </Header>
+        {
+          loaded ?
+          <>
+            <Header>
+              <div>
+                {/* <img src="" alt="sub pic" /> */}
+                <p>{sub.subTitle}</p>
+                <p>r/{sub.name}</p>
+              </div>
+              <div>
+                <button>Follow</button>
+              </div>
+            </Header>
 
-        <PostsSection>
-          <SortOptions>
-            <ul>
-              <li>Hot</li>
-              <li>New</li>
-              <li>Top</li>
-            </ul>
-          </SortOptions>
+            <PostsSection>
+              <SortOptions>
+                <ul>
+                  <li>Hot</li>
+                  <li>New</li>
+                  <li>Top</li>
+                </ul>
+              </SortOptions>
 
-          <PostsContainer>
-              {
-                Object.values(sub.posts).map((post) => {
-                  return (
-                    <Link to={`/r/${sub.name.split(' ').join('_').toLowerCase()}/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`}>
-                      <PostPreview post={post} />
-                    </Link>
-                  )
-                })
-              }
-          </PostsContainer>
-        </PostsSection>
+              <PostsContainer>
+                  {
+                    Object.values(sub.posts).map((post) => {
+                      console.log(post);
+                      return (
+                        // <Link to={`/r/${sub.name.split(' ').join('_').toLowerCase()}/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`}>
+                        <Link to={`${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`}>
+                          <PostPreview post={post} />
+                        </Link>
+                      )
+                    })
+                  }
+              </PostsContainer>
+            </PostsSection>
 
-        <AboutSection sub={sub} />
+            <AboutSection sub={sub} /> 
+          </> :
+          <p>Loading...</p>
+        }
+
       </Wrapper>
     </div>
   );

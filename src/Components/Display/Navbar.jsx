@@ -29,7 +29,9 @@ function Navbar() {
 
   return (
     <Wrapper>
-      <p>Readdit</p>
+      <Link to="/">
+        <p>Readdit</p>
+      </Link>
 
       <ul>
         <Link to="/">

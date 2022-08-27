@@ -3,6 +3,7 @@ import PostPreview from "./PostPreview";
 
 import styled from "styled-components";
 import AboutSection from "./AboutSection";
+import { useEffect, useState } from "react";
 
 const Wrapper = styled.div`
   display: flex;
@@ -36,8 +37,18 @@ const PostsContainer = styled.div`
 
 `;
 
-function Home({ subList }) {
-  const topPosts = [].concat.apply([], Object.keys(subList).map((key) => subList[key].getTopPosts()));
+function Home({ topPosts }) {
+  const [postsLoaded, setPostsLoaded] = useState(false);
+  
+  useEffect(() => {
+    if (Object.values(topPosts).length !== 0) setPostsLoaded(true);
+  }, [topPosts])
+
+  const getPostPreview = () => {
+    return Object.values(topPosts).map((post) => {
+      return <PostPreview key={Object.values(post)[0].uid} post={Object.values(post)[0]} />
+    });
+  }
 
   return (
     <div>
@@ -54,7 +65,9 @@ function Home({ subList }) {
 
           <PostsContainer>
             {
-              topPosts.map((post) => <PostPreview post={Object.values(post)[0]} />)
+              postsLoaded ?
+              getPostPreview() :
+              <p>Loading...</p>
             }
           </PostsContainer>
         </PostsSection>
