@@ -54,9 +54,18 @@ const CompositionContainer = styled.div`
 const CommentsContainer = styled.div`
   padding: 0 40px;
 
-  > p {
+  > div:first-child {
+    display: flex;
+    gap: 10px;
     margin-bottom: 20px;
     font-size: 0.9rem;
+
+    ul {
+      display: flex;
+      gap: 15px;
+
+      li { cursor: pointer; }
+    }
   }
 `;
 
@@ -65,6 +74,7 @@ function PostPage({ loggedIn, subList }) {
 
   const [subName, setSubName] = useState(null);
   const [post, setPost] = useState({});
+  const [comments, setComments] = useState([]);
   const [commentInput, setCommentInput] = useState('');
   const [loaded, setLoaded] = useState(false);
 
@@ -75,10 +85,14 @@ function PostPage({ loggedIn, subList }) {
 
     const post = (Object.values(sub.posts).filter((post) => post.uid === params.postUid)[0]);
 
-    post.addComment(uniqid(), 'xdemonslayerx', 'look a comment');
+    post.addComment(uniqid(), 'xdemonslayerx', 'look a comment', 2);
+    post.addComment(uniqid(), 'xdemonslayerx', 'look a comment', 5);
+    post.addComment(uniqid(), 'xdemonslayerx', 'look a comment', 10);
+    post.addComment(uniqid(), 'xdemonslayerx', 'look a comment', 1);
     
     setSubName(sub.name);
     setPost(post);
+    setComments(Object.values(post.comments));
   }, []);
 
   useEffect(() => {
@@ -95,8 +109,34 @@ function PostPage({ loggedIn, subList }) {
 
     const post = (Object.values(sub.posts).filter((post) => post.uid === params.postUid)[0]);
 
-    post.addComment(uniqid(), 'userName', commentInput);
+    post.addComment(uniqid(), 'userName', commentInput, 11);
     setCommentInput(null);
+  }
+
+  const sortComments = (e) => {
+    const commentsCopy = [...comments];
+    if (e.target.textContent === 'Highest Rating') {
+      commentsCopy.sort((a, b) => b.votes - a.votes);
+    }
+    if (e.target.textContent === 'Lowest Rating') {
+      commentsCopy.sort((a, b) => a.votes - b.votes);
+    }
+    if (e.target.textContent === 'Oldest') {
+      commentsCopy.sort((a, b) => b.creationDateTime.fullDateTime - a.creationDateTime.fullDateTime);
+      
+    }
+    if (e.target.textContent === 'Newest') {
+      commentsCopy.sort((a, b) => a.creationDateTime.fullDateTime - b.creationDateTime.fullDateTime);
+
+    }
+
+    setComments(commentsCopy);
+  }
+
+  const getComments = () => {
+    return Object.values(comments).map((comment) => {
+      return <Comment loggedIn={loggedIn} comment={comment} />
+    });
   }
 
   return (
@@ -132,11 +172,17 @@ function PostPage({ loggedIn, subList }) {
                 </CompositionContainer>
               }
               <CommentsContainer>
-                <p>Sort Options: Highest Rating | Lowest Rating | Oldest | Newest</p>
+                <div>
+                  <p>Sort:</p>
+                  <ul>
+                    <li onClick={(e) => sortComments(e)}>Highest Rating</li>
+                    <li onClick={(e) => sortComments(e)}>Lowest Rating</li>
+                    <li onClick={(e) => sortComments(e)}>Oldest</li>
+                    <li onClick={(e) => sortComments(e)}>Newest</li>
+                  </ul>
+                </div>
                 {
-                  Object.values(post.comments).map((comment) => {
-                    return <Comment comment={comment} />
-                  })
+                  getComments()
                 }
               </CommentsContainer>
             </CommentSection>

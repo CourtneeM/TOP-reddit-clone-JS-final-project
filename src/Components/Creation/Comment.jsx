@@ -1,10 +1,10 @@
 class Comment {
-  constructor(uid, owner, text) {
+  constructor(uid, owner, text, votes) {
     this.uid = uid;
     this.owner = owner;
     this.text = text;
     this.creationDateTime = this.getDateTime();
-    this.votes = 0;
+    this.votes = votes;
     this.editStatus = { edited: false, editDateTime: null };
     this.deleteStatus = { deleted: false, deleteDateTime: null };
     this.child = {};

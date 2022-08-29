@@ -89,7 +89,7 @@ function SubPage({ loggedIn, subList }) {
     return Object.values(posts).map((post) => {
       return (
         <Link to={`${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`}>
-          <PostPreview post={post} />
+          <PostPreview loggedIn={loggedIn} post={post} />
         </Link>
       )
     });

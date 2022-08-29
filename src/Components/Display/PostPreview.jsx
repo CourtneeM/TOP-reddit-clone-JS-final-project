@@ -51,7 +51,7 @@ const VoteStatus = styled.div`
   }
 `;
 
-function PostPreview({ post }) {
+function PostPreview({ loggedIn, post }) {
   return (
     <Wrapper>
       {/* <Link to={`/post/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`} > */}
@@ -70,9 +70,9 @@ function PostPreview({ post }) {
         <p>Share</p>
       </Options>
       <VoteStatus>
-        <p>^</p>
+        { loggedIn && <p>^</p> }
         <p>{post.votes}</p>
-        <p>v</p>
+        { loggedIn && <p>v</p> }
       </VoteStatus>
     </Wrapper>
   );

@@ -24,7 +24,7 @@ const auth = getAuth(app);
 function RouteSwitch() {
   const [subList, setSubList] = useState({});
   const [topPosts, setTopPosts] = useState([]);
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(true);
 
   useEffect(() => {
     const games = new Sub(uniqid(), 'Games', 'Best Place to Discuss Games', 'Kevin')

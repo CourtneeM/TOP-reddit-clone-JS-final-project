@@ -39,7 +39,7 @@ const CommentActions = styled.div`
   }
 `;
 
-function Comment({ comment }) {
+function Comment({ loggedIn, comment }) {
   return (
     <Wrapper>
       <CommentHeader>
@@ -52,9 +52,9 @@ function Comment({ comment }) {
 
       <CommentActions>
         <div>
-          <p className="upvote-icon">^</p>
+          { loggedIn && <p className="upvote-icon">^</p> }
           <p>{comment.votes}</p>
-          <p className="downvote-icon">v</p>
+          { loggedIn && <p className="downvote-icon">v</p> }
           <p>Reply</p>
         </div>
         <div>
