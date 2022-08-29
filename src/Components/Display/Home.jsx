@@ -69,7 +69,7 @@ function Home({ loggedIn, topPosts }) {
 
       return (
         <Link to={`/r/${postDetails.subName.split(' ').join('_').toLowerCase()}/${postDetails.uid}/${postDetails.title.split(' ').join('_').toLowerCase()}`}>
-          <PostPreview key={postDetails.uid} post={postDetails} />
+          <PostPreview key={postDetails.uid} loggedIn={loggedIn} post={postDetails} />
         </Link>
       )
     });

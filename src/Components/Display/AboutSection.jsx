@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 import styled from "styled-components";
 
 const About = styled.div`
@@ -29,7 +31,11 @@ function AboutSection({ loggedIn, sub }) {
         vero nemo non provident!`}</p>
       <p>{sub.followers.length ? sub.followers.length : 0} Followers</p>
       <p>Created {sub.creationDateTime.date.month}/{sub.creationDateTime.date.day}/{sub.creationDateTime.date.year}</p>
-      { loggedIn && <button>Create Post</button> }
+      { loggedIn &&
+        <Link to="new_post">
+          <button>Create Post</button>
+        </Link>
+      }
     </About>
   )
 }

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 const Wrapper = styled.div`
@@ -40,6 +41,16 @@ const CommentActions = styled.div`
 `;
 
 function Comment({ loggedIn, comment }) {
+  const [currentComment, setCurrentComment] = useState(null);
+  
+  useEffect(() => {
+    setCurrentComment(comment);
+  }, [comment]);
+
+  const adjustVotes = (e) => {
+    e.target.className === 'upvote-icon' ? comment.adjustVotes(1) : comment.adjustVotes(-1);
+  }
+
   return (
     <Wrapper>
       <CommentHeader>
@@ -52,9 +63,9 @@ function Comment({ loggedIn, comment }) {
 
       <CommentActions>
         <div>
-          { loggedIn && <p className="upvote-icon">^</p> }
+          { loggedIn && <p className="upvote-icon" onClick={(e) => adjustVotes(e)}>^</p> }
           <p>{comment.votes}</p>
-          { loggedIn && <p className="downvote-icon">v</p> }
+          { loggedIn && <p className="downvote-icon" onClick={(e) => adjustVotes(e)}>v</p> }
           <p>Reply</p>
         </div>
         <div>

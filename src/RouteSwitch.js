@@ -13,6 +13,7 @@ import Home from "./Components/Display/Home";
 import All from './Components/Display/All';
 import SubPage from './Components/Display/SubPage';
 import PostPage from './Components/Display/PostPage';
+import CreatePostPage from "./Components/Display/CreatePostPage";
 
 import uniqid from 'uniqid';
 
@@ -53,20 +54,23 @@ function RouteSwitch() {
     if (user) setLoggedIn(true);
   });
 
+  const submitPost = (subName, postTitle, postContent, postType) => {
+    const subListCopy = {...subList};
+    const subUid = Object.values(subListCopy).filter((sub) => sub.name === subName)[0].uid;
+    subListCopy[subUid].addPost(uniqid(), postTitle, 'ownerName', postType, postContent, subName, 2)
+  }
+
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home loggedIn={loggedIn} topPosts={topPosts} />} />
         <Route path="/r/all" element={<All loggedIn={loggedIn} subList={subList} />} />
         {
-          Object.values(subList).map((sub) => {
-            return (
-              <Route path={`/r/:subName`}>
-                <Route index element={<SubPage loggedIn={loggedIn} subList={subList} />} />
-                  <Route key={uniqid()} path=":postUid/:postTitle" element={<PostPage loggedIn={loggedIn} subList={subList} />} />
-              </Route>
-            ) 
-          })
+          <Route path={`/r/:subName`}>
+            <Route index element={<SubPage loggedIn={loggedIn} subList={subList} />} />
+              <Route key={uniqid()} path="new_post" element={<CreatePostPage loggedIn={loggedIn} submitPost={submitPost} />} />
+              <Route key={uniqid()} path=":postUid/:postTitle" element={<PostPage loggedIn={loggedIn} subList={subList} />} />
+          </Route>
         }
       </Routes>
     </BrowserRouter>
