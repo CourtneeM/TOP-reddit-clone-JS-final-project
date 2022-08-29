@@ -56,22 +56,44 @@ const PostsContainer = styled.div`
 
 `;
 
-
-function Sub({ subList }) {
+function SubPage({ loggedIn, subList }) {
   const params = useParams();
 
   const [sub, setSub] = useState({});
-  const [loaded, setLoaded] = useState(false);
+  const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    setSub(Object.values(subList).filter((sub) => {
+    const currentSub = Object.values(subList).filter((sub) => {
       return sub.name.split(' ').join('_').toLowerCase() === params.subName;
-    })[0]);
-  }, [params.subName, subList]);
+    })[0];
 
-  useEffect(() => {
-    setLoaded(true);
-  }, [sub]);
+    setSub(currentSub);
+    setPosts(Object.values(currentSub.posts));
+  }, [params.subName, subList, sub.posts]);
+
+  const sortPosts = (e) => {
+    const postsCopy = [...posts];
+
+    if (e.target.textContent === 'Top') {
+      postsCopy.sort((a, b) => b.votes - a.votes);
+    }
+
+    if (e.target.textContent === 'New') {
+      postsCopy.sort((a, b) => b.creationDateTime.fullDateTime - a.creationDateTime.fullDateTime);
+    }
+
+    setPosts(postsCopy);
+  }
+
+  const getPostPreview = () => {
+    return Object.values(posts).map((post) => {
+      return (
+        <Link to={`${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`}>
+          <PostPreview post={post} />
+        </Link>
+      )
+    });
+  }
 
   return (
     <div>
@@ -79,7 +101,7 @@ function Sub({ subList }) {
 
       <Wrapper>
         {
-          loaded ?
+          Object.values(sub).length > 0 ?
           <>
             <Header>
               <div>
@@ -87,36 +109,30 @@ function Sub({ subList }) {
                 <p>{sub.subTitle}</p>
                 <p>r/{sub.name}</p>
               </div>
-              <div>
-                <button>Follow</button>
-              </div>
+              {
+                loggedIn &&
+                <div>
+                  <button>Follow</button>
+                </div>
+              }
             </Header>
 
             <PostsSection>
               <SortOptions>
                 <ul>
-                  <li>Hot</li>
-                  <li>New</li>
-                  <li>Top</li>
+                  <li onClick={(e) => sortPosts(e)}>Top</li>
+                  <li onClick={(e) => sortPosts(e)}>New</li>
                 </ul>
               </SortOptions>
 
               <PostsContainer>
                   {
-                    Object.values(sub.posts).map((post) => {
-                      console.log(post);
-                      return (
-                        // <Link to={`/r/${sub.name.split(' ').join('_').toLowerCase()}/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`}>
-                        <Link to={`${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`}>
-                          <PostPreview post={post} />
-                        </Link>
-                      )
-                    })
+                    getPostPreview()
                   }
               </PostsContainer>
             </PostsSection>
 
-            <AboutSection sub={sub} /> 
+            <AboutSection loggedIn={loggedIn} sub={sub} /> 
           </> :
           <p>Loading...</p>
         }
@@ -126,4 +142,4 @@ function Sub({ subList }) {
   );
 };
 
-export default Sub;
+export default SubPage;

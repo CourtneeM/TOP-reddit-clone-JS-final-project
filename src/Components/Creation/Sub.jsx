@@ -41,8 +41,8 @@ class Sub {
     delete this.managers[userUid];
   }
 
-  addPost(postUid, title, owner, type, content) {
-    this.posts[postUid] = new Post(postUid, title, owner, type, content);
+  addPost(postUid, title, owner, type, content, subName, votes) {
+    this.posts[postUid] = new Post(postUid, title, owner, type, content, subName, votes);
   }
 
   getTopPosts() {

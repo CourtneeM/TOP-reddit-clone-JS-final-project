@@ -60,12 +60,12 @@ const CommentsContainer = styled.div`
   }
 `;
 
-function PostPage({ subList }) {
+function PostPage({ loggedIn, subList }) {
   const params = useParams();
 
   const [subName, setSubName] = useState(null);
   const [post, setPost] = useState({});
-  const [commentInput, setCommentInput] = useState(null);
+  const [commentInput, setCommentInput] = useState('');
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -121,13 +121,16 @@ function PostPage({ subList }) {
               </div>
             </Body>
             <CommentSection>
-              <CompositionContainer>
-                <p>Comment as u/username</p>
-                <form action="#">
-                  <textarea name="comment-text" id="comment-text" cols="30" rows="10" value={commentInput} onChange={(e) => setCommentInput(e.target.value)}></textarea>
-                  <button onClick={(e) => addComment(e)}>Submit</button>
-                </form>
-              </CompositionContainer>
+              {
+                loggedIn &&
+                <CompositionContainer>
+                  <p>Comment as u/username</p>
+                  <form action="#">
+                    <textarea name="comment-text" id="comment-text" cols="30" rows="10" value={commentInput} onChange={(e) => setCommentInput(e.target.value)}></textarea>
+                    <button onClick={(e) => addComment(e)}>Submit</button>
+                  </form>
+                </CompositionContainer>
+              }
               <CommentsContainer>
                 <p>Sort Options: Highest Rating | Lowest Rating | Oldest | Newest</p>
                 {

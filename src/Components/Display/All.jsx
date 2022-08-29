@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 
-import Navbar from "./Navbar";
 import PostPreview from "./PostPreview";
 import AboutSection from "./AboutSection";
+import Navbar from "./Navbar";
 
 import styled from "styled-components";
+import { useEffect, useState } from 'react';
+
 
 const Wrapper = styled.div`
   display: flex;
@@ -13,9 +14,25 @@ const Wrapper = styled.div`
   max-width: 1200px;
   width: 60%;
   min-width: 800px;
-  margin: 40px auto 80px;
+  margin: 0 auto 80px;
   padding: 40px;
   background-color: #ccc;
+`;
+const Header = styled.div`
+  flex: 1 1 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 60px;
+
+  p:first-child {
+    font-size: 1.4rem;
+    font-weight: bold;
+  }
+
+  p:last-child {
+    cursor: pointer;
+  }
 `;
 const PostsSection = styled.div`
   flex: 75%
@@ -39,25 +56,23 @@ const PostsContainer = styled.div`
 
 `;
 
-function Home({ loggedIn, topPosts }) {
+function All({ loggedIn, subList }) {
   const [posts, setPosts] = useState([]);
   
   useEffect(() => {
-    if (Object.values(topPosts).length !== 0) {
-      setPosts(topPosts);
-      console.log('Set Posts');
-    }
-  }, [topPosts]);
+    setPosts([].concat.apply([], Object.values(subList).map((sub) => Object.values(sub.posts))));
+  }, []);
 
   const sortPosts = (e) => {
     const postsCopy = [...posts];
+    console.log(postsCopy);
 
     if (e.target.textContent === 'Top') {
-      postsCopy.sort((a, b) => Object.values(b)[0].votes - Object.values(a)[0].votes);
+      postsCopy.sort((a, b) => b.votes - a.votes);
     }
     
     if (e.target.textContent === 'New') {
-      postsCopy.sort((a, b) => Object.values(b)[0].creationDateTime.fullDateTime - Object.values(a)[0].creationDateTime.fullDateTime);
+      postsCopy.sort((a, b) => b.creationDateTime.fullDateTime - a.creationDateTime.fullDateTime);
     }
 
     setPosts(postsCopy);
@@ -65,11 +80,9 @@ function Home({ loggedIn, topPosts }) {
 
   const getPostPreview = () => {
     return Object.values(posts).map((post) => {
-      const postDetails = Object.values(post)[0];
-
       return (
-        <Link to={`/r/${postDetails.subName.split(' ').join('_').toLowerCase()}/${postDetails.uid}/${postDetails.title.split(' ').join('_').toLowerCase()}`}>
-          <PostPreview key={postDetails.uid} post={postDetails} />
+        <Link to={`/r/${post.subName.split(' ').join('_').toLowerCase()}/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`}>
+          <PostPreview key={post.uid} post={post} />
         </Link>
       )
     });
@@ -100,6 +113,6 @@ function Home({ loggedIn, topPosts }) {
       </Wrapper>
     </div>
   );
-}
+};
 
-export default Home;
+export default All;

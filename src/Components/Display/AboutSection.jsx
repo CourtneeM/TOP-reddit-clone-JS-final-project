@@ -20,7 +20,7 @@ const About = styled.div`
   }
 `;
 
-function AboutSection({ sub }) {
+function AboutSection({ loggedIn, sub }) {
   return (
     <About>
       <h3>About</h3>
@@ -29,7 +29,7 @@ function AboutSection({ sub }) {
         vero nemo non provident!`}</p>
       <p>{sub.followers.length ? sub.followers.length : 0} Followers</p>
       <p>Created {sub.creationDateTime.date.month}/{sub.creationDateTime.date.day}/{sub.creationDateTime.date.year}</p>
-      <button>Create Post</button>
+      { loggedIn && <button>Create Post</button> }
     </About>
   )
 }
