@@ -69,7 +69,7 @@ const CommentsContainer = styled.div`
   }
 `;
 
-function PostPage({ loggedIn, subList }) {
+function PostPage({ loggedIn, subList, adjustPostVotes, adjustCommentVotes }) {
   const params = useParams();
 
   const [subName, setSubName] = useState(null);
@@ -133,9 +133,17 @@ function PostPage({ loggedIn, subList }) {
     setComments(commentsCopy);
   }
 
+  const adjustPostVotesHandler = () => {
+
+  }
+
+  const adjustCommentVotesHandler = (num, commentUid) => {
+    adjustCommentVotes(num, commentUid, post.uid, subName);
+  }
+
   const getComments = () => {
     return Object.values(comments).map((comment) => {
-      return <Comment loggedIn={loggedIn} comment={comment} />
+      return <Comment loggedIn={loggedIn} comment={comment} adjustCommentVotes={adjustCommentVotesHandler} />
     });
   }
 

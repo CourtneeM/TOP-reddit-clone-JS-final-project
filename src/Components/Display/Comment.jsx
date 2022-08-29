@@ -40,15 +40,15 @@ const CommentActions = styled.div`
   }
 `;
 
-function Comment({ loggedIn, comment }) {
+function Comment({ loggedIn, comment, adjustCommentVotes }) {
   const [currentComment, setCurrentComment] = useState(null);
   
   useEffect(() => {
     setCurrentComment(comment);
   }, [comment]);
 
-  const adjustVotes = (e) => {
-    e.target.className === 'upvote-icon' ? comment.adjustVotes(1) : comment.adjustVotes(-1);
+  const adjustVotesHandler = (e) => {
+    adjustCommentVotes(e.target.className === 'upvote-icon' ? 1 : -1, comment.uid);
   }
 
   return (
@@ -63,9 +63,9 @@ function Comment({ loggedIn, comment }) {
 
       <CommentActions>
         <div>
-          { loggedIn && <p className="upvote-icon" onClick={(e) => adjustVotes(e)}>^</p> }
+          { loggedIn && <p className="upvote-icon" onClick={(e) => adjustVotesHandler(e)}>^</p> }
           <p>{comment.votes}</p>
-          { loggedIn && <p className="downvote-icon" onClick={(e) => adjustVotes(e)}>v</p> }
+          { loggedIn && <p className="downvote-icon" onClick={(e) => adjustVotesHandler(e)}>v</p> }
           <p>Reply</p>
         </div>
         <div>

@@ -58,6 +58,20 @@ function RouteSwitch() {
     const subListCopy = {...subList};
     const subUid = Object.values(subListCopy).filter((sub) => sub.name === subName)[0].uid;
     subListCopy[subUid].addPost(uniqid(), postTitle, 'ownerName', postType, postContent, subName, 2)
+
+    setSubList(subListCopy);
+  }
+
+  const adjustPostVotes = (num) => {
+
+  }
+
+  const adjustCommentVotes = (num, commentUid, postUid, subName) => {
+    const subListCopy = {...subList};
+    const subUid = Object.values(subListCopy).filter((sub) => sub.name === subName)[0].uid;
+    
+    subListCopy[subUid].posts[postUid].comments[commentUid].adjustVotes(num);
+    setSubList(subListCopy);
   }
 
   return (
@@ -69,7 +83,14 @@ function RouteSwitch() {
           <Route path={`/r/:subName`}>
             <Route index element={<SubPage loggedIn={loggedIn} subList={subList} />} />
               <Route key={uniqid()} path="new_post" element={<CreatePostPage loggedIn={loggedIn} submitPost={submitPost} />} />
-              <Route key={uniqid()} path=":postUid/:postTitle" element={<PostPage loggedIn={loggedIn} subList={subList} />} />
+              <Route key={uniqid()} path=":postUid/:postTitle"
+                element={<PostPage
+                  loggedIn={loggedIn}
+                  subList={subList}
+                  adjustPostVotes={adjustPostVotes}
+                  adjustCommentVotes={adjustCommentVotes}
+                />}
+              />
           </Route>
         }
       </Routes>
