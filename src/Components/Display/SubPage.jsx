@@ -56,7 +56,7 @@ const PostsContainer = styled.div`
 
 `;
 
-function SubPage({ loggedIn, subList }) {
+function SubPage({ loggedIn, subList, adjustPostVotes }) {
   const params = useParams();
 
   const [sub, setSub] = useState({});
@@ -89,7 +89,7 @@ function SubPage({ loggedIn, subList }) {
     return Object.values(posts).map((post) => {
       return (
         <Link to={`${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`}>
-          <PostPreview loggedIn={loggedIn} post={post} />
+          <PostPreview loggedIn={loggedIn} post={post} adjustPostVotes={adjustPostVotes} />
         </Link>
       )
     });

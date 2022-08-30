@@ -51,7 +51,11 @@ const VoteStatus = styled.div`
   }
 `;
 
-function PostPreview({ loggedIn, post }) {
+function PostPreview({ loggedIn, post, adjustPostVotes }) {
+  const adjustPostVotesHandler = (e) => {
+    adjustPostVotes(e.target.className === "upvote-icon" ? 1 : -1, post.uid, post.subName);
+  }
+
   return (
     <Wrapper>
       {/* <Link to={`/post/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`} > */}
@@ -70,9 +74,9 @@ function PostPreview({ loggedIn, post }) {
         <p>Share</p>
       </Options>
       <VoteStatus>
-        { loggedIn && <p>^</p> }
+        { loggedIn && <p className="upvote-icon" onClick={(e) => adjustPostVotesHandler(e)}>^</p> }
         <p>{post.votes}</p>
-        { loggedIn && <p>v</p> }
+        { loggedIn && <p className="downvote-icon" onClick={(e) => adjustPostVotesHandler(e)}>v</p> }
       </VoteStatus>
     </Wrapper>
   );

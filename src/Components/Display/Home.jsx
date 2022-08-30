@@ -39,7 +39,7 @@ const PostsContainer = styled.div`
 
 `;
 
-function Home({ loggedIn, topPosts }) {
+function Home({ loggedIn, topPosts, adjustPostVotes }) {
   const [posts, setPosts] = useState([]);
   
   useEffect(() => {
@@ -69,7 +69,7 @@ function Home({ loggedIn, topPosts }) {
 
       return (
         <Link to={`/r/${postDetails.subName.split(' ').join('_').toLowerCase()}/${postDetails.uid}/${postDetails.title.split(' ').join('_').toLowerCase()}`}>
-          <PostPreview key={postDetails.uid} loggedIn={loggedIn} post={postDetails} />
+          <PostPreview key={postDetails.uid} loggedIn={loggedIn} post={postDetails} adjustPostVotes={adjustPostVotes} />
         </Link>
       )
     });
