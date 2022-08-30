@@ -78,6 +78,14 @@ function RouteSwitch() {
     setSubList(subListCopy);
   }
 
+  const addComment = (commentText, postUid, subName) => {
+    const subListCopy = {...subList};
+    const subUid = Object.values(subListCopy).filter((sub) => sub.name === subName)[0].uid;
+
+    subListCopy[subUid].posts[postUid].addComment(uniqid(), 'ownerName', commentText, 1);
+    setSubList(subListCopy);
+  }
+
   return (
     <BrowserRouter>
       <Routes>
@@ -93,6 +101,7 @@ function RouteSwitch() {
                   subList={subList}
                   adjustPostVotes={adjustPostVotes}
                   adjustCommentVotes={adjustCommentVotes}
+                  addComment={addComment}
                 />}
               />
           </Route>

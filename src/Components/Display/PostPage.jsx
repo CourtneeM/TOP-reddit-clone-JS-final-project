@@ -79,7 +79,7 @@ const CommentsContainer = styled.div`
   }
 `;
 
-function PostPage({ loggedIn, subList, adjustPostVotes, adjustCommentVotes }) {
+function PostPage({ loggedIn, subList, adjustPostVotes, adjustCommentVotes, addComment }) {
   const params = useParams();
 
   const [subName, setSubName] = useState(null);
@@ -95,22 +95,17 @@ function PostPage({ loggedIn, subList, adjustPostVotes, adjustCommentVotes }) {
 
     const post = (Object.values(sub.posts).filter((post) => post.uid === params.postUid)[0]);
 
-    post.addComment(uniqid(), 'xdemonslayerx', 'look a comment', 2);
-    post.addComment(uniqid(), 'xdemonslayerx', 'look a comment', 5);
-    post.addComment(uniqid(), 'xdemonslayerx', 'look a comment', 10);
-    post.addComment(uniqid(), 'xdemonslayerx', 'look a comment', 1);
-    
     setSubName(sub.name);
     setPost(post);
     setComments(Object.values(post.comments));
-  }, []);
+  }, [subList]);
 
   useEffect(() => {
 
     setLoaded(true);
   }, [post])
 
-  const addComment = (e) => {
+  const addCommentHandler = (e) => {
     e.preventDefault();
 
     const sub = Object.values(subList).filter((sub) => {
@@ -119,8 +114,8 @@ function PostPage({ loggedIn, subList, adjustPostVotes, adjustCommentVotes }) {
 
     const post = (Object.values(sub.posts).filter((post) => post.uid === params.postUid)[0]);
 
-    post.addComment(uniqid(), 'userName', commentInput, 11);
-    setCommentInput(null);
+    addComment(commentInput, post.uid, sub.name);
+    setCommentInput('');
   }
 
   const sortComments = (e) => {
@@ -191,7 +186,7 @@ function PostPage({ loggedIn, subList, adjustPostVotes, adjustCommentVotes }) {
                   <p>Comment as u/username</p>
                   <form action="#">
                     <textarea name="comment-text" id="comment-text" cols="30" rows="10" value={commentInput} onChange={(e) => setCommentInput(e.target.value)}></textarea>
-                    <button onClick={(e) => addComment(e)}>Submit</button>
+                    <button onClick={(e) => addCommentHandler(e)}>Submit</button>
                   </form>
                 </CompositionContainer>
               }

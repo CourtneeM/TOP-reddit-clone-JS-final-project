@@ -94,40 +94,45 @@ function CreatePostPage({ loggedIn, submitPost }) {
       <Navbar />
 
       <Wrapper>
-        <Header>
-          <p>Create a Post</p>
-          <p>/r/{params.subName}</p>
-        </Header>
+        { loggedIn ?
+          <>
+            <Header>
+              <p>Create a Post</p>
+              <p>/r/{params.subName}</p>
+            </Header>
 
-        <PostTypes id='new-post-types'>
-          <p id='selected-post-type' onClick={(e) => changePostType(e)}>Text</p>
-          <p onClick={(e) => changePostType(e)}>Images/Videos</p>
-          <p onClick={(e) => changePostType(e)}>Link</p>
-        </PostTypes>
+            <PostTypes id='new-post-types'>
+              <p id='selected-post-type' onClick={(e) => changePostType(e)}>Text</p>
+              <p onClick={(e) => changePostType(e)}>Images/Videos</p>
+              <p onClick={(e) => changePostType(e)}>Link</p>
+            </PostTypes>
 
-        <PostContent>
-          <div>
-            <input type="text" placeholder="Title" value={postTitle} onChange={(e) => setPostTitle(e.target.value)} />
-            {
-              postType === 'text' ? 
-              <textarea name="post-content" id="post-content" cols="30" rows="10" placeholder="Text (optional)"
-                value={postContent}
-                onChange={(e) => setPostContent(e.target.value)}>
-              </textarea> :
-              postType === 'images/videos' ?
-              <input type="file" name="post-content" id="post-content" /> :
-              <input type="url" name="post-content" id="post-content" placeholder="URL"
-                value={postContent}
-                onChange={(e) => setPostContent(e.target.value)}
-              />
-            }
-          </div>
+            <PostContent>
+              <div>
+                <input type="text" placeholder="Title" value={postTitle} onChange={(e) => setPostTitle(e.target.value)} />
+                {
+                  postType === 'text' ? 
+                  <textarea name="post-content" id="post-content" cols="30" rows="10" placeholder="Text (optional)"
+                    value={postContent}
+                    onChange={(e) => setPostContent(e.target.value)}>
+                  </textarea> :
+                  postType === 'images/videos' ?
+                  <input type="file" name="post-content" id="post-content" /> :
+                  <input type="url" name="post-content" id="post-content" placeholder="URL"
+                    value={postContent}
+                    onChange={(e) => setPostContent(e.target.value)}
+                  />
+                }
+              </div>
 
-        </PostContent>
+            </PostContent>
 
-        <SubmitPost>
-          <button onClick={(e) => submitPostHandler(e)}>Post</button>
-        </SubmitPost>
+            <SubmitPost>
+              <button onClick={(e) => submitPostHandler(e)}>Post</button>
+            </SubmitPost>
+          </> :
+          <p>You must be logged in to create a new post.</p>
+        }
           
       </Wrapper>
     </div>
