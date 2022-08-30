@@ -107,16 +107,14 @@ function PostPage({ loggedIn, subList, adjustPostVotes, adjustCommentVotes, addC
 
   useEffect(() => {
     const sub = Object.values(subList).filter((sub) => {
-      return sub.name.split(' ').join('_').toLowerCase() === params.subName;
+      return sub.name === params.subName;
     })[0];
 
-    const post = (Object.values(sub.posts).filter((post) => post.uid === params.postUid)[0]);
-
-    post.addComment(uniqid(), 'ownerName', 'some comment text', 5);
+    const currentPost = (Object.values(sub.posts).filter((post) => post.uid === params.postUid)[0]);
 
     setSubName(sub.name);
-    setPost(post);
-    setComments(Object.values(post.comments));
+    setPost(currentPost);
+    setComments(Object.values(currentPost.comments));
   }, [subList]);
 
   useEffect(() => {
@@ -128,10 +126,8 @@ function PostPage({ loggedIn, subList, adjustPostVotes, adjustCommentVotes, addC
     e.preventDefault();
 
     const sub = Object.values(subList).filter((sub) => {
-      return sub.name.split(' ').join('_').toLowerCase() === params.subName;
+      return sub.name === params.subName;
     })[0];
-
-    const post = (Object.values(sub.posts).filter((post) => post.uid === params.postUid)[0]);
 
     addComment(commentInput, post.uid, sub.name);
     setCommentInput('');
@@ -173,7 +169,7 @@ function PostPage({ loggedIn, subList, adjustPostVotes, adjustCommentVotes, addC
 
   return (
     <div>
-      <Navbar />
+      <Navbar subList={subList} />
 
       <Wrapper>
         {

@@ -39,7 +39,7 @@ const PostsContainer = styled.div`
 
 `;
 
-function Home({ loggedIn, topPosts, adjustPostVotes }) {
+function Home({ loggedIn, subList, topPosts, adjustPostVotes }) {
   const [posts, setPosts] = useState([]);
   
   useEffect(() => {
@@ -66,7 +66,7 @@ function Home({ loggedIn, topPosts, adjustPostVotes }) {
   const getPostPreview = () => {
     return Object.values(posts).map((post) => {
       const postDetails = Object.values(post)[0];
-      const path = `/r/${postDetails.subName.split(' ').join('_').toLowerCase()}/${postDetails.uid}/${postDetails.title.split(' ').join('_').toLowerCase()}`;
+      const path = `/r/${postDetails.subName}/${postDetails.uid}/${postDetails.title.split(' ').join('_').toLowerCase()}`;
 
       return (
         <Link to={path} key={postDetails.uid}>
@@ -78,7 +78,7 @@ function Home({ loggedIn, topPosts, adjustPostVotes }) {
 
   return (
     <div>
-      <Navbar />
+      <Navbar subList={subList} />
       <Wrapper>
         <PostsSection>
           <SortOptions>

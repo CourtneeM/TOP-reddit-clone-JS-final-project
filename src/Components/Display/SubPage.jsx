@@ -64,7 +64,7 @@ function SubPage({ loggedIn, subList, adjustPostVotes }) {
 
   useEffect(() => {
     const currentSub = Object.values(subList).filter((sub) => {
-      return sub.name.split(' ').join('_').toLowerCase() === params.subName;
+      return sub.name === params.subName;
     })[0];
 
     setSub(currentSub);
@@ -98,7 +98,7 @@ function SubPage({ loggedIn, subList, adjustPostVotes }) {
 
   return (
     <div>
-      <Navbar />
+      <Navbar subList={subList} />
 
       <Wrapper>
         {

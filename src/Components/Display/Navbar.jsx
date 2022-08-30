@@ -25,6 +25,16 @@ const Wrapper = styled.div`
 `;
 
 function Navbar({ subList }) {
+  const getSubNames = () => {
+    return Object.values(subList).map((sub) => {
+      return (
+        <Link to={`/r/${sub.name}`} key={sub.uid} >
+          <li>{sub.name}</li>
+        </Link>
+      );
+    });
+  }
+
   return (
     <Wrapper>
       <Link to="/">
@@ -38,18 +48,13 @@ function Navbar({ subList }) {
         <Link to="/r/all">
           <li>All</li>
         </Link>
-        <Link to="/r/digital_art">
-          <li>Digital Art</li>
-        </Link>
-        <Link to="/r/games">
-          <li>Games</li>
-        </Link>
+        {
+          getSubNames()
+        }
         <Link to="/r/new_sub">
           <li>Create Sub</li>
         </Link>
       </ul>
-
-      {/* <button>Create Sub</button> */}
     </Wrapper>
   );
 };

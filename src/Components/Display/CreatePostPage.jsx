@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import Navbar from "./Navbar";
 
@@ -62,12 +62,13 @@ const SubmitPost = styled.div`
   }
 `;
 
-function CreatePostPage({ loggedIn, submitPost }) {
+function CreatePostPage({ loggedIn, subList, submitPost }) {
   const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
   const [postType, setPostType] = useState('text');
 
   const params = useParams();
+  const navigate = useNavigate();
 
   const changePostType = (e) => {
     setPostType(e.target.textContent.toLowerCase());
@@ -82,16 +83,16 @@ function CreatePostPage({ loggedIn, submitPost }) {
   const submitPostHandler = (e) => {
     e.preventDefault();
 
-    const subName = params.subName.split('_').map((string) => {
-      return string[0].toUpperCase() + string.slice(1, string.length);
-    }).join(' ');
-
-    submitPost(subName, postTitle, postContent, postType);
+    submitPost(params.subName, postTitle, postContent, postType);
+    navigate(`/r/${params.subName}`);
+    
+    setPostTitle('');
+    setPostContent('');
   }
 
   return (
     <div>
-      <Navbar />
+      <Navbar subList={subList} />
 
       <Wrapper>
         { loggedIn ?

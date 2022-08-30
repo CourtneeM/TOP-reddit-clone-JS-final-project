@@ -50,7 +50,7 @@ const SubmitPost = styled.div`
   }
 `;
 
-function CreateSubPage({ loggedIn, createSub }) {
+function CreateSubPage({ loggedIn, subList, createSub }) {
   const [subName, setSubName] = useState('');
 
   const navigate = useNavigate();
@@ -59,14 +59,14 @@ function CreateSubPage({ loggedIn, createSub }) {
     e.preventDefault();
 
     createSub(subName);
+    navigate(`/r/${subName}`);
+    
     setSubName('');
-
-    navigate('/');
   }
 
   return (
     <div>
-      <Navbar />
+      <Navbar subList={subList} />
 
       <Wrapper>
         { loggedIn ?

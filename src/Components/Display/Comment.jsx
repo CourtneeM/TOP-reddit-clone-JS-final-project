@@ -41,12 +41,6 @@ const CommentActions = styled.div`
 `;
 
 function Comment({ loggedIn, comment, adjustCommentVotes }) {
-  const [currentComment, setCurrentComment] = useState(null);
-  
-  useEffect(() => {
-    setCurrentComment(comment);
-  }, [comment]);
-
   const adjustVotesHandler = (e) => {
     adjustCommentVotes(e.target.className === 'upvote-icon' ? 1 : -1, comment.uid);
   }
