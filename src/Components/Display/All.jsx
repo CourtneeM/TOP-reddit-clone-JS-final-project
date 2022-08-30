@@ -1,11 +1,12 @@
-import { useParams, Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import PostPreview from "./PostPreview";
 import AboutSection from "./AboutSection";
 import Navbar from "./Navbar";
 
+import uniqid from 'uniqid';
 import styled from "styled-components";
-import { useEffect, useState } from 'react';
 
 
 const Wrapper = styled.div`
@@ -80,9 +81,10 @@ function All({ loggedIn, subList }) {
 
   const getPostPreview = () => {
     return Object.values(posts).map((post) => {
+      const path = `/r/${post.subName.split(' ').join('_').toLowerCase()}/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`
       return (
-        <Link to={`/r/${post.subName.split(' ').join('_').toLowerCase()}/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`}>
-          <PostPreview key={post.uid} post={post} />
+        <Link to={path} key={post.uid}>
+          <PostPreview  loggedIn={loggedIn} post={post} />
         </Link>
       )
     });

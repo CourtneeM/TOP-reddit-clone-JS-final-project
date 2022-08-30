@@ -16,6 +16,7 @@ import PostPage from './Components/Display/PostPage';
 import CreatePostPage from "./Components/Display/CreatePostPage";
 
 import uniqid from 'uniqid';
+import CreateSubPage from "./Components/Display/CreateSubPage";
 
 const app = initializeApp(getFirebaseConfig());
 const db = getFirestore(app);
@@ -28,8 +29,8 @@ function RouteSwitch() {
   const [loggedIn, setLoggedIn] = useState(true);
 
   useEffect(() => {
-    const games = new Sub(uniqid(), 'Games', 'Best Place to Discuss Games', 'Kevin')
-    const digitalArt = new Sub(uniqid(), 'Digital Art', 'Check out amazing digital art', 'Brenden')
+    const games = new Sub(uniqid(), 'Games', 'Best Place to Discuss Games', 'Kevin');
+    const digitalArt = new Sub(uniqid(), 'Digital Art', 'Check out amazing digital art', 'Brenden');
     const newSubList = {[games.uid]: games, [digitalArt.uid]: digitalArt};
 
     Object.keys(newSubList).forEach((key) => {
@@ -51,8 +52,17 @@ function RouteSwitch() {
   }, [subList]);
 
   onAuthStateChanged(auth, (user) => {
-    if (user) setLoggedIn(true);
+    // user ? setLoggedIn(true) : setLoggedIn(false);
   });
+
+  const createSub = (subName) => {
+    const subListCopy = {...subList};
+    const newSub = new Sub(uniqid(), subName, 'Kevin');
+
+    subListCopy[newSub.uid] = newSub;
+    
+    setSubList(subListCopy);
+  }
 
   const submitPost = (subName, postTitle, postContent, postType) => {
     const subListCopy = {...subList};
@@ -91,6 +101,7 @@ function RouteSwitch() {
       <Routes>
         <Route path="/" element={<Home loggedIn={loggedIn} topPosts={topPosts} adjustPostVotes={adjustPostVotes} />} />
         <Route path="/r/all" element={<All loggedIn={loggedIn} subList={subList} />} />
+        <Route path="/r/new_sub" element={<CreateSubPage loggedIn={loggedIn} createSub={createSub} />} />
         {
           <Route path={`/r/:subName`}>
             <Route index element={<SubPage loggedIn={loggedIn} subList={subList} adjustPostVotes={adjustPostVotes} />} />

@@ -1,10 +1,10 @@
 import Post from './Post';
 
 class Sub {
-  constructor(uid, name, subTitle, owner) {
+  constructor(uid, name, owner) {
     this.uid = uid;
     this.name = name;
-    this.subTitle = subTitle;
+    this.subTitle = '';
     this.owner = owner;
     this.managers = {};
     this.followers = [];

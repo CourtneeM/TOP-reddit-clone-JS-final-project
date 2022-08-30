@@ -24,9 +24,7 @@ const Wrapper = styled.div`
   }
 `;
 
-function Navbar() {
-
-
+function Navbar({ subList }) {
   return (
     <Wrapper>
       <Link to="/">
@@ -45,6 +43,9 @@ function Navbar() {
         </Link>
         <Link to="/r/games">
           <li>Games</li>
+        </Link>
+        <Link to="/r/new_sub">
+          <li>Create Sub</li>
         </Link>
       </ul>
 

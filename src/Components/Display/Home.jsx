@@ -66,9 +66,10 @@ function Home({ loggedIn, topPosts, adjustPostVotes }) {
   const getPostPreview = () => {
     return Object.values(posts).map((post) => {
       const postDetails = Object.values(post)[0];
+      const path = `/r/${postDetails.subName.split(' ').join('_').toLowerCase()}/${postDetails.uid}/${postDetails.title.split(' ').join('_').toLowerCase()}`;
 
       return (
-        <Link to={`/r/${postDetails.subName.split(' ').join('_').toLowerCase()}/${postDetails.uid}/${postDetails.title.split(' ').join('_').toLowerCase()}`}>
+        <Link to={path} key={postDetails.uid}>
           <PostPreview key={postDetails.uid} loggedIn={loggedIn} post={postDetails} adjustPostVotes={adjustPostVotes} />
         </Link>
       )

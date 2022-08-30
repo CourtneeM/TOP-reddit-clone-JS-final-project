@@ -33,16 +33,33 @@ const VoteStatus = styled.div`
   }
 `;
 const Body = styled.div`
-  padding: 40px 60px 100px;
+  padding: 40px 80px 0;
   background-color: #ccc;
 
   h2 {
     margin-bottom: 40px;
-    font-size: 2.8rem;
+    font-size: 2.4rem;
   }
 
-  p {
-    margin-bottom: 20px;
+  > div p {
+    margin-bottom: 80px;
+  }
+`;
+const PostActions = styled.div`
+  display: flex;
+  justify-content: space-between;
+
+  div {
+    display: flex;
+    gap: 20px;
+
+    p {
+      margin-bottom: 40px;
+    }
+
+    &:nth-child(2) p {
+      cursor: pointer;
+    }
   }
 `;
 const CommentSection = styled.div`
@@ -94,6 +111,8 @@ function PostPage({ loggedIn, subList, adjustPostVotes, adjustCommentVotes, addC
     })[0];
 
     const post = (Object.values(sub.posts).filter((post) => post.uid === params.postUid)[0]);
+
+    post.addComment(uniqid(), 'ownerName', 'some comment text', 5);
 
     setSubName(sub.name);
     setPost(post);
@@ -178,6 +197,16 @@ function PostPage({ loggedIn, subList, adjustPostVotes, adjustCommentVotes, addC
                 <h2>{post.title}</h2>
                 <p>{post.content}</p>
               </div>
+
+              <PostActions>
+                <div>
+                  <p>{Object.values(post.comments).length} comments</p>
+                </div>
+                <div>
+                  <p>Favorite</p>
+                  <p>Share</p>
+                </div>
+              </PostActions>
             </Body>
             <CommentSection>
               {

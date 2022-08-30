@@ -87,8 +87,9 @@ function SubPage({ loggedIn, subList, adjustPostVotes }) {
 
   const getPostPreview = () => {
     return Object.values(posts).map((post) => {
+      const path = `${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`;
       return (
-        <Link to={`${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`}>
+        <Link to={path} key={post.uid}>
           <PostPreview loggedIn={loggedIn} post={post} adjustPostVotes={adjustPostVotes} />
         </Link>
       )

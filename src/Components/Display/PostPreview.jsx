@@ -58,7 +58,6 @@ function PostPreview({ loggedIn, post, adjustPostVotes }) {
 
   return (
     <Wrapper>
-      {/* <Link to={`/post/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`} > */}
       <Header>
         <p>Posted by <span>u/{post.owner}</span></p>
         <p>{`${post.creationDateTime.date.month}/${post.creationDateTime.date.day}/${post.creationDateTime.date.year}`}</p>
@@ -67,9 +66,8 @@ function PostPreview({ loggedIn, post, adjustPostVotes }) {
         <h4>{post.title}</h4>
         <p>{post.content}</p>
       </Body>
-      {/* </Link> */}
       <Options>
-        {/* <p>{Object.values(post.comments)[0] || 0} comments</p> */}
+        <p>{Object.values(post.comments).length} comments</p>
         <p>Favorite</p>
         <p>Share</p>
       </Options>
