@@ -16,14 +16,24 @@ const Wrapper = styled.div`
 const Header = styled.div`
   display: flex;
   gap: 40px;
+  position: relative;
   padding: 20px 0;
 
   p:nth-child(-n+2) {
     cursor: pointer;
   }
 `;
+const VoteStatus = styled.div`
+  position: absolute;
+  top: 100px;
+  left: 25px;
+
+  p:nth-child(2n+1) {
+    cursor: pointer;
+  }
+`;
 const Body = styled.div`
-  padding: 40px 40px 100px;
+  padding: 40px 60px 100px;
   background-color: #ccc;
 
   h2 {
@@ -133,8 +143,8 @@ function PostPage({ loggedIn, subList, adjustPostVotes, adjustCommentVotes }) {
     setComments(commentsCopy);
   }
 
-  const adjustPostVotesHandler = () => {
-
+  const adjustPostVotesHandler = (e) => {
+    adjustPostVotes(e.target.className === "upvote-icon" ? 1 : -1 , post.uid, post.subName);
   }
 
   const adjustCommentVotesHandler = (num, commentUid) => {
@@ -161,6 +171,12 @@ function PostPage({ loggedIn, subList, adjustPostVotes, adjustCommentVotes }) {
               </Link>
               <p>Posted by u/{post.owner}</p>
               <p>{post.creationDateTime.date.month}/{post.creationDateTime.date.day}/{post.creationDateTime.date.year}</p>
+
+              <VoteStatus>
+                { loggedIn && <p className="upvote-icon" onClick={(e) => adjustPostVotesHandler(e)}>^</p> }
+                <p>{post.votes}</p>
+                { loggedIn && <p className="downvote-icon" onClick={(e) => adjustPostVotesHandler(e)}>v</p> }
+              </VoteStatus>
             </Header>
             <Body>
               <div>
