@@ -1,7 +1,7 @@
 import Comment from './Comment';
 
 class Post {
-  constructor(uid, title, owner, type, content, subName, votes) {
+  constructor(uid, title, owner, type, content, subName) {
     this.uid =  uid;
     this.title = title;
     this.owner = owner;
@@ -9,7 +9,7 @@ class Post {
     this.content = content; // either text or an image/video link
     this.creationDateTime = this.getDateTime();
     this.subName = subName;
-    this.votes = votes;
+    this.votes = 0;
     this.comments = {};
   }
 
@@ -30,8 +30,8 @@ class Post {
     delete postList.uid
   }
 
-  addComment(commentUid, owner, text, votes) {
-    this.comments[commentUid] = new Comment(commentUid, owner, text, votes);
+  addComment(commentUid, owner, text) {
+    this.comments[commentUid] = new Comment(commentUid, owner, text);
   }
 }
 

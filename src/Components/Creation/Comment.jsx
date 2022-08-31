@@ -1,10 +1,10 @@
 class Comment {
-  constructor(uid, owner, text, votes) {
+  constructor(uid, owner, text) {
     this.uid = uid;
     this.owner = owner;
     this.text = text;
     this.creationDateTime = this.getDateTime();
-    this.votes = votes;
+    this.votes = 0;
     this.editStatus = { edited: false, editDateTime: null };
     this.deleteStatus = { deleted: false, deleteDateTime: null };
     this.child = {};
@@ -43,8 +43,9 @@ class Comment {
     this.deleteStatus.deleteDateTime = 'current date/time';
   }
 
-  addChild(uid) {
-    this.child = uid;
+  addChild(commentUid, owner, text) {
+    this.child = { [commentUid]: new Comment(commentUid, owner, text) };
+    // this.child = { [comment.uid]: comment };
   }
 }
 

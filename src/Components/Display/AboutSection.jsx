@@ -22,7 +22,7 @@ const About = styled.div`
   }
 `;
 
-function AboutSection({ loggedIn, sub }) {
+function AboutSection({ loggedIn, sub, deleteSub }) {
   return (
     <About>
       <h3>About</h3>
@@ -35,6 +35,9 @@ function AboutSection({ loggedIn, sub }) {
         <Link to="new_post">
           <button>Create Post</button>
         </Link>
+      }
+      {
+        loggedIn && 'owner' && <button onClick={() => deleteSub(sub.owner.uid)}>Delete Sub</button>
       }
     </About>
   )

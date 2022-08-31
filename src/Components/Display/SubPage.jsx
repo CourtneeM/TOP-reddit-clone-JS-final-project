@@ -56,7 +56,7 @@ const PostsContainer = styled.div`
 
 `;
 
-function SubPage({ loggedIn, subList, adjustPostVotes }) {
+function SubPage({ loggedIn, subList, deleteSub, adjustPostVotes }) {
   const params = useParams();
 
   const [sub, setSub] = useState({});
@@ -133,7 +133,7 @@ function SubPage({ loggedIn, subList, adjustPostVotes }) {
               </PostsContainer>
             </PostsSection>
 
-            <AboutSection loggedIn={loggedIn} sub={sub} /> 
+            <AboutSection loggedIn={loggedIn} sub={sub} deleteSub={deleteSub} /> 
           </> :
           <p>Loading...</p>
         }

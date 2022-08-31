@@ -1,5 +1,4 @@
 import { useParams, Link } from 'react-router-dom';
-import uniqid from 'uniqid';
 
 import Navbar from './Navbar';
 import Comment from './Comment';
@@ -75,6 +74,7 @@ const CompositionContainer = styled.div`
 
   textarea {
     width: 100%;
+    padding: 10px;
   }
 
 `;
@@ -96,7 +96,7 @@ const CommentsContainer = styled.div`
   }
 `;
 
-function PostPage({ loggedIn, subList, adjustPostVotes, adjustCommentVotes, addComment }) {
+function PostPage({ loggedIn, subList, addComment, deletePost, deleteComment, adjustPostVotes, adjustCommentVotes }) {
   const params = useParams();
 
   const [subName, setSubName] = useState(null);
@@ -125,12 +125,12 @@ function PostPage({ loggedIn, subList, adjustPostVotes, adjustCommentVotes, addC
   const addCommentHandler = (e) => {
     e.preventDefault();
 
-    const sub = Object.values(subList).filter((sub) => {
-      return sub.name === params.subName;
-    })[0];
-
-    addComment(commentInput, post.uid, sub.name);
+    addComment(commentInput, post.uid, subName);
     setCommentInput('');
+  }
+
+  const commentReplyHandler = (replyText, parentComment) => {
+    addComment(replyText, post.uid, subName, parentComment);
   }
 
   const sortComments = (e) => {
@@ -163,8 +163,18 @@ function PostPage({ loggedIn, subList, adjustPostVotes, adjustCommentVotes, addC
 
   const getComments = () => {
     return Object.values(comments).map((comment) => {
-      return <Comment loggedIn={loggedIn} comment={comment} adjustCommentVotes={adjustCommentVotesHandler} />
-    });
+      return (
+        !comment.parentUid ?
+        <Comment
+          loggedIn={loggedIn}
+          comment={comment}
+          commentReply={commentReplyHandler}
+          deleteComment={deleteComment}
+          adjustCommentVotes={adjustCommentVotesHandler}
+        /> :
+        null
+      )
+    }).filter((comment) => comment);
   }
 
   return (
@@ -201,6 +211,7 @@ function PostPage({ loggedIn, subList, adjustPostVotes, adjustCommentVotes, addC
                 <div>
                   <p>Favorite</p>
                   <p>Share</p>
+                  { loggedIn && 'owner' && <p onClick={(e) => deletePost(post.owner.uid)}>Delete</p> }
                 </div>
               </PostActions>
             </Body>

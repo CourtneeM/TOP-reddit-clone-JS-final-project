@@ -29,18 +29,18 @@ function RouteSwitch() {
   const [loggedIn, setLoggedIn] = useState(true);
 
   useEffect(() => {
-    const games = new Sub(uniqid(), 'Games', 'Best Place to Discuss Games', 'Kevin');
-    const digitalArt = new Sub(uniqid(), 'DigitalArt', 'Check out amazing digital art', 'Brenden');
+    const games = new Sub(uniqid(), 'Games', 'Kevin');
+    const digitalArt = new Sub(uniqid(), 'DigitalArt', 'Brenden');
     const newSubList = {[games.uid]: games, [digitalArt.uid]: digitalArt};
 
     Object.keys(newSubList).forEach((key) => {
       if (newSubList[key].name === 'Games') {
-        newSubList[key].addPost(uniqid(), 'New Games Coming Soon', 'Mike', 'text', 'Look at these cool games coming out later this year!', 'Games', 1);
-        newSubList[key].addPost(uniqid(), 'New Games Coming Next Year', 'Lenard', 'text', 'Look at these cool games coming out later this year!', 'Games', 2);
+        newSubList[key].addPost(uniqid(), 'New Games Coming Soon', 'Mike', 'text', 'Look at these cool games coming out later this year!', 'Games');
+        newSubList[key].addPost(uniqid(), 'New Games Coming Next Year', 'Lenard', 'text', 'Look at these cool games coming out later this year!', 'Games');
       }
       if (newSubList[key].name === 'DigitalArt') {
-        newSubList[key].addPost(uniqid(), 'Some cool art to look at', 'Ricky', 'text', 'Some cool art I found while browsing!', 'DigitalArt', 2);
-        newSubList[key].addPost(uniqid(), 'More art to check out', 'Stan', 'text', 'Some cool art I found while browsing!', 'DigitalArt', 5);
+        newSubList[key].addPost(uniqid(), 'Some cool art to look at', 'Ricky', 'text', 'Some cool art I found while browsing!', 'DigitalArt');
+        newSubList[key].addPost(uniqid(), 'More art to check out', 'Stan', 'text', 'Some cool art I found while browsing!', 'DigitalArt');
       }
     });
 
@@ -72,6 +72,37 @@ function RouteSwitch() {
     setSubList(subListCopy);
   }
 
+  const addComment = (commentText, postUid, subName, parentComment) => {
+    let subListCopy = {...subList};
+    const subUid = Object.values(subListCopy).filter((sub) => sub.name === subName)[0].uid;
+
+    const commentUid = uniqid();
+
+    if (parentComment) {
+      parentComment.addChild(commentUid, 'ownerName', commentText);
+      subListCopy = {...subList};
+    } else {
+      subListCopy[subUid].posts[postUid].addComment(commentUid, 'ownerName', commentText);
+    }
+
+    setSubList(subListCopy);
+  }
+
+  const deleteSub = (subOwnerUid) => {
+    // if subOwnerUid matches current user uid, then delete
+    console.log('delete sub');
+  }
+
+  const deletePost = (postOwnerUid) => {
+    // if postOwnerUid matches current user uid, then delete
+    console.log('delete post');
+  }
+  
+  const deleteComment = (commentOwnerUid) => {
+    // if commentOwnerUid matches current user uid, then delete
+    console.log('delete comment');
+  }
+
   const adjustPostVotes = (num, postUid, subName) => {
     const subListCopy = {...subList};
     const subUid = Object.values(subListCopy).filter((sub) => sub.name === subName)[0].uid;
@@ -88,14 +119,6 @@ function RouteSwitch() {
     setSubList(subListCopy);
   }
 
-  const addComment = (commentText, postUid, subName) => {
-    const subListCopy = {...subList};
-    const subUid = Object.values(subListCopy).filter((sub) => sub.name === subName)[0].uid;
-
-    subListCopy[subUid].posts[postUid].addComment(uniqid(), 'ownerName', commentText, 1);
-    setSubList(subListCopy);
-  }
-
   return (
     <BrowserRouter>
       <Routes>
@@ -104,15 +127,17 @@ function RouteSwitch() {
         <Route path="/r/new_sub" element={<CreateSubPage loggedIn={loggedIn} subList={subList} createSub={createSub} />} />
         {
           <Route path={`/r/:subName`}>
-            <Route index element={<SubPage loggedIn={loggedIn} subList={subList} adjustPostVotes={adjustPostVotes} />} />
+            <Route index element={<SubPage loggedIn={loggedIn} subList={subList} adjustPostVotes={adjustPostVotes} deleteSub={deleteSub} />} />
               <Route key={uniqid()} path="new_post" element={<CreatePostPage loggedIn={loggedIn} subList={subList} submitPost={submitPost} />} />
               <Route key={uniqid()} path=":postUid/:postTitle"
                 element={<PostPage
                   loggedIn={loggedIn}
                   subList={subList}
+                  addComment={addComment}
+                  deletePost={deletePost}
+                  deleteComment={deleteComment}
                   adjustPostVotes={adjustPostVotes}
                   adjustCommentVotes={adjustCommentVotes}
-                  addComment={addComment}
                 />}
               />
           </Route>
