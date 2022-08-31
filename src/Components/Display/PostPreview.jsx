@@ -56,6 +56,23 @@ function PostPreview({ loggedIn, post, adjustPostVotes }) {
     adjustPostVotes(e.target.className === "upvote-icon" ? 1 : -1, post.uid, post.subName);
   }
 
+  const getNumComments = () => {
+    let numComments = 0;
+
+    const getComment = (comment) => {
+      if (comment && comment.child) {
+        numComments += 1;
+        getComment(Object.values(comment.child)[0]);
+      }
+    }
+
+    Object.values(post.comments).forEach((parentComment) => {
+      getComment(parentComment);
+    });
+
+    return numComments;
+  }
+
   return (
     <Wrapper>
       <Header>
@@ -67,7 +84,7 @@ function PostPreview({ loggedIn, post, adjustPostVotes }) {
         <p>{post.content}</p>
       </Body>
       <Options>
-        <p>{Object.values(post.comments).length} comments</p>
+        <p>{getNumComments() === 1 ? getNumComments() + ' comment' : getNumComments() + ' comments'}</p>
         <p>Favorite</p>
         <p>Share</p>
       </Options>

@@ -177,6 +177,23 @@ function PostPage({ loggedIn, subList, addComment, deletePost, deleteComment, ad
     }).filter((comment) => comment);
   }
 
+  const getNumComments = () => {
+    let numComments = 0;
+
+    const getComment = (comment) => {
+      if (comment && comment.child) {
+        numComments += 1;
+        getComment(Object.values(comment.child)[0]);
+      }
+    }
+
+    Object.values(post.comments).forEach((parentComment) => {
+      getComment(parentComment);
+    });
+
+    return numComments;
+  }
+
   return (
     <div>
       <Navbar subList={subList} />
@@ -206,7 +223,7 @@ function PostPage({ loggedIn, subList, addComment, deletePost, deleteComment, ad
 
               <PostActions>
                 <div>
-                  <p>{Object.values(post.comments).length} comments</p>
+                  <p>{getNumComments() === 1 ? getNumComments() + ' comment' : getNumComments() + ' comments'}</p>
                 </div>
                 <div>
                   <p>Favorite</p>
