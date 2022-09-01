@@ -76,7 +76,7 @@ function PostPreview({ loggedIn, currentUser, post, favoritePost, unfavoritePost
   return (
     <Wrapper>
       <Header>
-        <p>Posted by <span>u/{post.owner}</span></p>
+        <p>Posted by <span>u/{post.owner.name}</span></p>
         <p>{`${post.creationDateTime.date.month}/${post.creationDateTime.date.day}/${post.creationDateTime.date.year}`}</p>
       </Header>
       <Body>

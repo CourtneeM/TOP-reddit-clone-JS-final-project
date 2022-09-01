@@ -42,12 +42,14 @@ function RouteSwitch() {
 
     Object.keys(newSubList).forEach((key) => {
       if (key === 'Games') {
-        newSubList[key].addPost(uniqid(), 'New Games Coming Soon', 'Mike', 'text', 'Look at these cool games coming out later this year!', 'Games');
-        newSubList[key].addPost(uniqid(), 'New Games Coming Next Year', 'Lenard', 'text', 'Look at these cool games coming out later this year!', 'Games');
+        const owner = {uid: uniqid(), name: 'Mike'};
+        newSubList[key].addPost(uniqid(), 'New Games Coming Soon', owner, 'text', 'Look at these cool games coming out later this year!', 'Games');
+        newSubList[key].addPost(uniqid(), 'New Games Coming Next Year', owner, 'text', 'Look at these cool games coming out later this year!', 'Games');
       }
       if (key === 'DigitalArt') {
-        newSubList[key].addPost(uniqid(), 'Some cool art to look at', 'Ricky', 'text', 'Some cool art I found while browsing!', 'DigitalArt');
-        newSubList[key].addPost(uniqid(), 'More art to check out', 'Stan', 'text', 'Some cool art I found while browsing!', 'DigitalArt');
+        const owner = {uid: uniqid(), name: 'Ricky'};
+        newSubList[key].addPost(uniqid(), 'Some cool art to look at', owner, 'text', 'Some cool art I found while browsing!', 'DigitalArt');
+        newSubList[key].addPost(uniqid(), 'More art to check out', owner, 'text', 'Some cool art I found while browsing!', 'DigitalArt');
       }
     });
 
@@ -72,9 +74,9 @@ function RouteSwitch() {
   }
 
   const submitPost = (subName, postTitle, postContent, postType) => {
+    const owner = {uid: currentUser.uid, name: currentUser.name};
     const subListCopy = {...subList};
-    const subUid = Object.values(subListCopy).filter((sub) => sub.name === subName)[0].uid;
-    subListCopy[subUid].addPost(uniqid(), postTitle, 'ownerName', postType, postContent, subName, 2)
+    subListCopy[subName].addPost(uniqid(), postTitle, owner, postType, postContent, subName);
 
     setSubList(subListCopy);
   }
@@ -132,15 +134,16 @@ function RouteSwitch() {
   }
 
   const addComment = (commentText, postUid, subName, parentComment) => {
+    const owner = {uid: currentUser.uid, name: currentUser.name};
     let subListCopy = {...subList};
 
     const commentUid = uniqid();
 
     if (parentComment) {
-      parentComment.addChild(commentUid, postUid, subName, 'ownerName', commentText);
+      parentComment.addChild(commentUid, postUid, subName, owner, commentText);
       subListCopy = {...subList};
     } else {
-      subListCopy[subName].posts[postUid].addComment(commentUid, postUid, subName, 'ownerName', commentText);
+      subListCopy[subName].posts[postUid].addComment(commentUid, postUid, subName, owner, commentText);
     }
 
     setSubList(subListCopy);
@@ -151,13 +154,16 @@ function RouteSwitch() {
     console.log('delete sub');
   }
 
-  const deletePost = (postOwnerUid) => {
-    // if postOwnerUid matches current user uid, then delete
-    console.log('delete post');
+  const deletePost = (subName, postUid) => {
+    const subListCopy = {...subList};
+    
+    delete subListCopy[subName].posts[postUid];
+    
+    setSubList(subListCopy);
   }
   
   const deleteComment = (commentOwnerUid) => {
-    // if commentOwnerUid matches current user uid, then delete
+    // if (commentOwnerUid === currentUser.uid)
     console.log('delete comment');
   }
 
@@ -168,7 +174,6 @@ function RouteSwitch() {
     subListCopy[subUid].posts[postUid].adjustVotes(num);
     setSubList(subListCopy);
   }
-
   const adjustCommentVotes = (num, commentUid, postUid, subName) => {
     const subListCopy = {...subList};
     const subUid = Object.values(subListCopy).filter((sub) => sub.name === subName)[0].uid;

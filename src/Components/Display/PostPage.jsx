@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 
 import Navbar from './Navbar';
 import Comment from './Comment';
@@ -98,6 +98,7 @@ const CommentsContainer = styled.div`
 
 function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost, deletePost, addComment, favoriteComment, unfavoriteComment, deleteComment, adjustPostVotes, adjustCommentVotes }) {
   const params = useParams();
+  const navigate = useNavigate();
 
   const [subName, setSubName] = useState(null);
   const [post, setPost] = useState({});
@@ -155,7 +156,8 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
 
   const deletePostHandler = () => {
     // display popup confirmation
-    // if positive: deletePost();
+    if (post.owner.uid === currentUser.uid) deletePost(subName, post.uid);
+    navigate(`/r/${subName}`);
   }
 
   const adjustPostVotesHandler = (e) => {
@@ -212,10 +214,10 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
           loaded ?
           <>
             <Header>
-              <Link to={`/r/${subName.split(' ').join('_').toLowerCase()}`}>
+              <Link to={`/r/${subName}`}>
                 <p>/r/{subName}</p>
               </Link>
-              <p>Posted by u/{post.owner}</p>
+              <p>Posted by u/{post.owner.name}</p>
               <p>{post.creationDateTime.date.month}/{post.creationDateTime.date.day}/{post.creationDateTime.date.year}</p>
 
               <VoteStatus>
@@ -242,7 +244,7 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
                     null
                   }
                   <p>Share</p>
-                  { loggedIn && 'owner.uid matches post.owner.uid' && <p onClick={deletePostHandler}>Delete</p> }
+                  { loggedIn && post.owner.uid === currentUser.uid && <p onClick={deletePostHandler}>Delete</p> }
                 </div>
               </PostActions>
             </Body>
@@ -250,7 +252,7 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
               {
                 loggedIn &&
                 <CompositionContainer>
-                  <p>Comment as u/username</p>
+                  <p>Comment as u/{currentUser.name}</p>
                   <form action="#">
                     <textarea name="comment-text" id="comment-text" cols="30" rows="10" value={commentInput} onChange={(e) => setCommentInput(e.target.value)}></textarea>
                     <button onClick={(e) => addCommentHandler(e)}>Submit</button>

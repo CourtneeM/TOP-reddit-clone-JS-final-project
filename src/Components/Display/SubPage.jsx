@@ -73,7 +73,7 @@ function SubPage({ loggedIn, currentUser, subList, followSub, unfollowSub, delet
 
   const deleteSubHandler = () => {
     // display popup confirmation
-    // if positive: deleteSub();
+    if (sub.owner.uid === currentUser.uid) deleteSub(sub.name);
   }
 
   const sortPosts = (e) => {

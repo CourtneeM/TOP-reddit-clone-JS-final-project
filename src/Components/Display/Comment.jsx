@@ -104,7 +104,7 @@ function Comment({ loggedIn, currentUser, comment, commentReply, favoriteComment
     <Wrapper>
       <CommentHeader>
         {/* <img src="" alt="user" /> */}
-        <p>u/{comment.owner}</p>
+        <p>u/{comment.owner.name}</p>
         <p>{comment.creationDateTime.date.month}/{comment.creationDateTime.date.day}/{comment.creationDateTime.date.year}</p>
       </CommentHeader>
 
@@ -126,7 +126,7 @@ function Comment({ loggedIn, currentUser, comment, commentReply, favoriteComment
             null
           }
           <p>Share</p>
-          { loggedIn && 'owner.uid matches comment.owner.uid' && <p onClick={deleteCommentHandler}>Delete</p> }
+          { loggedIn && comment.owner.uid === currentUser.uid && <p onClick={deleteCommentHandler}>Delete</p> }
         </div>
       </CommentActions>
       <CommentReply className={`comment-reply-container-${comment.uid} hidden`}>
