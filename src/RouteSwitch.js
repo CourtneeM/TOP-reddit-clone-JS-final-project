@@ -105,14 +105,30 @@ function RouteSwitch() {
     const index = userListCopy[currentUser.uid].favorite.posts[subName].indexOf(postUid);
     userListCopy[currentUser.uid].favorite.posts[subName].splice(index, 1);
 
+    if (userListCopy[currentUser.uid].favorite.posts[subName].length === 0) delete userListCopy[currentUser.uid].favorite.posts[subName];
+
+
     setUserList(userListCopy);
   }
 
-  const favoriteComment = () => {
+  const favoriteComment = (subName, postUid, commentUid) => {
+    const userListCopy = {...userList};
+    if (!userListCopy[currentUser.uid].favorite.comments[subName]) userListCopy[currentUser.uid].favorite.comments[subName] = {};
+    if (!userListCopy[currentUser.uid].favorite.comments[subName][postUid]) userListCopy[currentUser.uid].favorite.comments[subName][postUid] = [];
+    userListCopy[currentUser.uid].favorite.comments[subName][postUid].push(commentUid);
+    
+    console.log(userListCopy);
 
+    setUserList(userListCopy);
   }
-  const unfavoriteComment = () => {
+  const unfavoriteComment = (subName, postUid, commentUid) => {
+    const userListCopy = {...userList};
+    const index = userListCopy[currentUser.uid].favorite.comments[subName][postUid].indexOf(commentUid);
+    userListCopy[currentUser.uid].favorite.comments[subName][postUid].splice(index, 1);
 
+    if (userListCopy[currentUser.uid].favorite.comments[subName][postUid].length === 0) delete userListCopy[currentUser.uid].favorite.comments[subName];
+
+    setUserList(userListCopy);
   }
 
   const addComment = (commentText, postUid, subName, parentComment) => {
@@ -192,6 +208,8 @@ function RouteSwitch() {
                   unfavoritePost={unfavoritePost}
                   deletePost={deletePost}
                   addComment={addComment}
+                  favoriteComment={favoriteComment}
+                  unfavoriteComment={unfavoriteComment}
                   deleteComment={deleteComment}
                   adjustPostVotes={adjustPostVotes}
                   adjustCommentVotes={adjustCommentVotes}

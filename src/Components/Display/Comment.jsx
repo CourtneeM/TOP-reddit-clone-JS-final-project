@@ -68,7 +68,7 @@ const Replies = styled.div`
   border-left: 1px solid #888;
 `;
 
-function Comment({ loggedIn, comment, commentReply, deleteComment, adjustCommentVotes }) {
+function Comment({ loggedIn, currentUser, comment, commentReply, favoriteComment, unfavoriteComment, deleteComment, adjustCommentVotes }) {
   const [replyText, setReplyText] = useState('');
 
   const deleteCommentHandler = () => {
@@ -118,7 +118,13 @@ function Comment({ loggedIn, comment, commentReply, deleteComment, adjustComment
           <p onClick={displayReplyContainer}>Reply</p>
         </div>
         <div>
-          <p>Favorite</p>
+          {
+            loggedIn ?
+            currentUser.favorite.comments[comment.subName] && currentUser.favorite.comments[comment.subName][comment.postUid].includes(comment.uid) ?
+            <p onClick={() => unfavoriteComment(comment.subName, comment.postUid, comment.uid)}>Unfavorite</p> :
+            <p onClick={() => favoriteComment(comment.subName, comment.postUid, comment.uid)}>Favorite</p> :
+            null
+          }
           <p>Share</p>
           { loggedIn && 'owner.uid matches comment.owner.uid' && <p onClick={deleteCommentHandler}>Delete</p> }
         </div>
@@ -140,8 +146,11 @@ function Comment({ loggedIn, comment, commentReply, deleteComment, adjustComment
           <Comment
             key={Object.values(comment.child)[0].uid}
             loggedIn={loggedIn}
+            currentUser={currentUser}
             comment={Object.values(comment.child)[0]}
             commentReply={commentReply}
+            favoriteComment={favoriteComment}
+            unfavoriteComment={unfavoriteComment}
             deleteComment={deleteComment}
             adjustCommentVotes={adjustCommentVotes}
           />

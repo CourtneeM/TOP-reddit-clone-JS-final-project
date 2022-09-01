@@ -96,7 +96,7 @@ const CommentsContainer = styled.div`
   }
 `;
 
-function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost, deletePost, addComment, deleteComment, adjustPostVotes, adjustCommentVotes }) {
+function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost, deletePost, addComment, favoriteComment, unfavoriteComment, deleteComment, adjustPostVotes, adjustCommentVotes }) {
   const params = useParams();
 
   const [subName, setSubName] = useState(null);
@@ -173,8 +173,11 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
         <Comment
           key={comment.uid}
           loggedIn={loggedIn}
+          currentUser={currentUser}
           comment={comment}
           commentReply={commentReplyHandler}
+          favoriteComment={favoriteComment}
+          unfavoriteComment={unfavoriteComment}
           deleteComment={deleteComment}
           adjustCommentVotes={adjustCommentVotesHandler}
         /> :
