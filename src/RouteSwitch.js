@@ -65,10 +65,11 @@ function RouteSwitch() {
   });
 
   const createSub = (subName) => {
+    const owner = {uid: currentUser.uid, name: currentUser.name};
     const subListCopy = {...subList};
-    const newSub = new Sub(uniqid(), subName, 'ownerName');
+    const newSub = new Sub(subName, owner);
 
-    subListCopy[newSub.uid] = newSub;
+    subListCopy[newSub.name] = newSub;
 
     setSubList(subListCopy);
   }
