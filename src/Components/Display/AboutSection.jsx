@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 import styled from "styled-components";
 
@@ -22,7 +22,15 @@ const About = styled.div`
   }
 `;
 
-function AboutSection({ loggedIn, sub, deleteSub }) {
+function AboutSection({ loggedIn, currentUser, sub, deleteSub }) {
+  const navigate = useNavigate();
+
+  const deleteSubHandler = () =>{
+    if (sub.owner.uid === currentUser.uid) deleteSub(sub.name);
+
+    navigate('/');
+  }
+
   return (
     <About>
       <h3>About</h3>
@@ -37,7 +45,7 @@ function AboutSection({ loggedIn, sub, deleteSub }) {
         </Link>
       }
       {
-        loggedIn && 'owner.uid matches sub.owner.uid' && <button onClick={deleteSub}>Delete Sub</button>
+        loggedIn && sub.owner.uid === currentUser.uid && <button onClick={deleteSubHandler}>Delete Sub</button>
       }
     </About>
   );

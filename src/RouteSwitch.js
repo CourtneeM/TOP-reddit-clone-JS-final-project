@@ -150,9 +150,12 @@ function RouteSwitch() {
     setSubList(subListCopy);
   }
 
-  const deleteSub = (subOwnerUid) => {
-    // if subOwnerUid matches current user uid, then delete
-    console.log('delete sub');
+  const deleteSub = (subName) => {
+    const subListCopy = {...subList};
+    
+    delete subListCopy[subName];
+
+    setSubList(subListCopy);
   }
 
   const deletePost = (subName, postUid) => {

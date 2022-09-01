@@ -142,7 +142,7 @@ function SubPage({ loggedIn, currentUser, subList, followSub, unfollowSub, delet
               </PostsContainer>
             </PostsSection>
 
-            <AboutSection loggedIn={loggedIn} sub={sub} deleteSub={deleteSubHandler} /> 
+            <AboutSection loggedIn={loggedIn} currentUser={currentUser} sub={sub} deleteSub={deleteSubHandler} /> 
           </> :
           <p>Loading...</p>
         }
