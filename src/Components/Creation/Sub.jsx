@@ -1,8 +1,7 @@
 import Post from './Post';
 
 class Sub {
-  constructor(uid, name, owner) {
-    this.uid = uid;
+  constructor(name, owner) {
     this.name = name;
     this.subTitle = '';
     this.owner = owner;

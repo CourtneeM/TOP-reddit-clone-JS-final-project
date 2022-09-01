@@ -56,7 +56,7 @@ const PostsContainer = styled.div`
 
 `;
 
-function SubPage({ loggedIn, subList, deleteSub, adjustPostVotes }) {
+function SubPage({ loggedIn, currentUser, subList, followSub, unfollowSub, deleteSub, favoritePost, unfavoritePost, adjustPostVotes }) {
   const params = useParams();
 
   const [sub, setSub] = useState({});
@@ -70,6 +70,11 @@ function SubPage({ loggedIn, subList, deleteSub, adjustPostVotes }) {
     setSub(currentSub);
     setPosts(Object.values(currentSub.posts));
   }, [params.subName, subList, sub.posts]);
+
+  const deleteSubHandler = () => {
+    // display popup confirmation
+    // if positive: deleteSub();
+  }
 
   const sortPosts = (e) => {
     const postsCopy = [...posts];
@@ -90,7 +95,7 @@ function SubPage({ loggedIn, subList, deleteSub, adjustPostVotes }) {
       const path = `${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`;
       return (
         <Link to={path} key={post.uid}>
-          <PostPreview loggedIn={loggedIn} post={post} adjustPostVotes={adjustPostVotes} />
+          <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} />
         </Link>
       )
     });
@@ -113,7 +118,11 @@ function SubPage({ loggedIn, subList, deleteSub, adjustPostVotes }) {
               {
                 loggedIn &&
                 <div>
-                  <button>Follow</button>
+                  {
+                    currentUser.followedSubs.includes(sub.name) ?
+                    <button onClick={() => unfollowSub(sub.name)}>Unfollow</button> :
+                    <button onClick={() => followSub(sub.name)}>Follow</button>
+                  }
                 </div>
               }
             </Header>
@@ -133,7 +142,7 @@ function SubPage({ loggedIn, subList, deleteSub, adjustPostVotes }) {
               </PostsContainer>
             </PostsSection>
 
-            <AboutSection loggedIn={loggedIn} sub={sub} deleteSub={deleteSub} /> 
+            <AboutSection loggedIn={loggedIn} sub={sub} deleteSub={deleteSubHandler} /> 
           </> :
           <p>Loading...</p>
         }

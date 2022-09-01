@@ -7,16 +7,17 @@ import { getStorage } from 'firebase/storage';
 import { getFirebaseConfig } from './firebase-config';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
+import User from './Components/Creation/User';
 import Sub from './Components/Creation/Sub';
 
 import Home from "./Components/Display/Home";
 import All from './Components/Display/All';
 import SubPage from './Components/Display/SubPage';
 import PostPage from './Components/Display/PostPage';
+import CreateSubPage from "./Components/Display/CreateSubPage";
 import CreatePostPage from "./Components/Display/CreatePostPage";
 
 import uniqid from 'uniqid';
-import CreateSubPage from "./Components/Display/CreateSubPage";
 
 const app = initializeApp(getFirebaseConfig());
 const db = getFirestore(app);
@@ -24,21 +25,27 @@ const storage = getStorage(app);
 const auth = getAuth(app);
 
 function RouteSwitch() {
+  const [userList, setUserList] = useState({});
+  const [currentUser, setCurrentUser] = useState({});
   const [subList, setSubList] = useState({});
   const [topPosts, setTopPosts] = useState([]);
   const [loggedIn, setLoggedIn] = useState(true);
 
   useEffect(() => {
-    const games = new Sub(uniqid(), 'Games', 'Kevin');
-    const digitalArt = new Sub(uniqid(), 'DigitalArt', 'Brenden');
-    const newSubList = {[games.uid]: games, [digitalArt.uid]: digitalArt};
+    const user1 = new User(uniqid(), 'Bob', 'bobjones@hotmail.com');
+    setUserList({ [user1.uid]: user1 });
+    setCurrentUser(user1);
+
+    const games = new Sub('Games', 'Kevin');
+    const digitalArt = new Sub('DigitalArt', 'Brenden');
+    const newSubList = {[games.name]: games, [digitalArt.name]: digitalArt};
 
     Object.keys(newSubList).forEach((key) => {
-      if (newSubList[key].name === 'Games') {
+      if (key === 'Games') {
         newSubList[key].addPost(uniqid(), 'New Games Coming Soon', 'Mike', 'text', 'Look at these cool games coming out later this year!', 'Games');
         newSubList[key].addPost(uniqid(), 'New Games Coming Next Year', 'Lenard', 'text', 'Look at these cool games coming out later this year!', 'Games');
       }
-      if (newSubList[key].name === 'DigitalArt') {
+      if (key === 'DigitalArt') {
         newSubList[key].addPost(uniqid(), 'Some cool art to look at', 'Ricky', 'text', 'Some cool art I found while browsing!', 'DigitalArt');
         newSubList[key].addPost(uniqid(), 'More art to check out', 'Stan', 'text', 'Some cool art I found while browsing!', 'DigitalArt');
       }
@@ -72,17 +79,52 @@ function RouteSwitch() {
     setSubList(subListCopy);
   }
 
+  const followSub = (subName) => {
+    const userListCopy = {...userList};
+    userListCopy[currentUser.uid].followedSubs.push(subName);
+
+    setUserList(userListCopy);
+  }
+  const unfollowSub = (subName) => {
+    const userListCopy = {...userList};
+    const index = userListCopy[currentUser.uid].followedSubs.indexOf(subName);
+    userListCopy[currentUser.uid].followedSubs.splice(index, 1);
+
+    setUserList(userListCopy);
+  }
+
+  const favoritePost = (subName, postUid) => {
+    const userListCopy = {...userList};
+    if (!userListCopy[currentUser.uid].favorite.posts[subName]) userListCopy[currentUser.uid].favorite.posts[subName] = [];
+    userListCopy[currentUser.uid].favorite.posts[subName].push(postUid);
+
+    setUserList(userListCopy);
+  }
+  const unfavoritePost = (subName, postUid) => {
+    const userListCopy = {...userList};
+    const index = userListCopy[currentUser.uid].favorite.posts[subName].indexOf(postUid);
+    userListCopy[currentUser.uid].favorite.posts[subName].splice(index, 1);
+
+    setUserList(userListCopy);
+  }
+
+  const favoriteComment = () => {
+
+  }
+  const unfavoriteComment = () => {
+
+  }
+
   const addComment = (commentText, postUid, subName, parentComment) => {
     let subListCopy = {...subList};
-    const subUid = Object.values(subListCopy).filter((sub) => sub.name === subName)[0].uid;
 
     const commentUid = uniqid();
 
     if (parentComment) {
-      parentComment.addChild(commentUid, 'ownerName', commentText);
+      parentComment.addChild(commentUid, postUid, subName, 'ownerName', commentText);
       subListCopy = {...subList};
     } else {
-      subListCopy[subUid].posts[postUid].addComment(commentUid, 'ownerName', commentText);
+      subListCopy[subName].posts[postUid].addComment(commentUid, postUid, subName, 'ownerName', commentText);
     }
 
     setSubList(subListCopy);
@@ -122,19 +164,34 @@ function RouteSwitch() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home loggedIn={loggedIn} subList={subList} topPosts={topPosts} adjustPostVotes={adjustPostVotes} />} />
-        <Route path="/r/all" element={<All loggedIn={loggedIn} subList={subList} />} />
+        <Route path="/" element={<Home loggedIn={loggedIn} currentUser={currentUser} subList={subList} topPosts={topPosts} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} />} />
+        <Route path="/r/all" element={<All loggedIn={loggedIn} currentUser={currentUser} subList={subList} favoritePost={favoritePost} unfavoritePost={unfavoritePost} />} />
         <Route path="/r/new_sub" element={<CreateSubPage loggedIn={loggedIn} subList={subList} createSub={createSub} />} />
         {
           <Route path={`/r/:subName`}>
-            <Route index element={<SubPage loggedIn={loggedIn} subList={subList} adjustPostVotes={adjustPostVotes} deleteSub={deleteSub} />} />
+            <Route index
+              element={<SubPage
+                loggedIn={loggedIn}
+                currentUser={currentUser}
+                subList={subList}
+                followSub={followSub}
+                unfollowSub={unfollowSub}
+                deleteSub={deleteSub}
+                favoritePost={favoritePost}
+                unfavoritePost={unfavoritePost}
+                adjustPostVotes={adjustPostVotes}
+              />}
+            />
               <Route key={uniqid()} path="new_post" element={<CreatePostPage loggedIn={loggedIn} subList={subList} submitPost={submitPost} />} />
               <Route key={uniqid()} path=":postUid/:postTitle"
                 element={<PostPage
                   loggedIn={loggedIn}
+                  currentUser={currentUser}
                   subList={subList}
-                  addComment={addComment}
+                  favoritePost={favoritePost}
+                  unfavoritePost={unfavoritePost}
                   deletePost={deletePost}
+                  addComment={addComment}
                   deleteComment={deleteComment}
                   adjustPostVotes={adjustPostVotes}
                   adjustCommentVotes={adjustCommentVotes}

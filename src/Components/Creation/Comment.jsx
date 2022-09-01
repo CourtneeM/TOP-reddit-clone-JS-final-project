@@ -1,6 +1,8 @@
 class Comment {
-  constructor(uid, owner, text) {
+  constructor(uid, postUid, subName, owner, text) {
     this.uid = uid;
+    this.postUid = postUid;
+    this.subName = subName;
     this.owner = owner;
     this.text = text;
     this.creationDateTime = this.getDateTime();
@@ -14,7 +16,8 @@ class Comment {
     const newDate = new Date();
     return {
       time: { seconds: newDate.getSeconds(), minutes: newDate.getMinutes(), hours: newDate.getHours() },
-      date: { day: newDate.getDate(), month: newDate.getMonth() + 1, year: newDate.getFullYear() }
+      date: { day: newDate.getDate(), month: newDate.getMonth() + 1, year: newDate.getFullYear() },
+      fullDateTime: newDate
     }
   }
 
@@ -43,9 +46,8 @@ class Comment {
     this.deleteStatus.deleteDateTime = 'current date/time';
   }
 
-  addChild(commentUid, owner, text) {
-    this.child = { [commentUid]: new Comment(commentUid, owner, text) };
-    // this.child = { [comment.uid]: comment };
+  addChild(commentUid, postUid, subName, owner, text) {
+    this.child = { [commentUid]: new Comment(commentUid, postUid, subName, owner, text) };
   }
 }
 

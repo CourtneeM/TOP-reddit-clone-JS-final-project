@@ -3,15 +3,15 @@ class User {
     this.uid = uid;
     this.name = name;
     this.email = email;
-    this.joinDate = this.getDateTime;
+    this.joinDate = this.getDateTime();
     this.own = {
       subs: [],
-      posts: [],
-      comments: [],
+      posts: {},
+      comments: {},
     }
     this.favorite = {
-      posts: [],
-      comments: [],
+      posts: {},
+      comments: {},
     }
     this.followedSubs = [];
   }

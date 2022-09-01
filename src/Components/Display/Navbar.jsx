@@ -28,7 +28,7 @@ function Navbar({ subList }) {
   const getSubNames = () => {
     return Object.values(subList).map((sub) => {
       return (
-        <Link to={`/r/${sub.name}`} key={sub.uid} >
+        <Link to={`/r/${sub.name}`} key={sub.name} >
           <li>{sub.name}</li>
         </Link>
       );

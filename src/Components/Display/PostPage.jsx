@@ -96,7 +96,7 @@ const CommentsContainer = styled.div`
   }
 `;
 
-function PostPage({ loggedIn, subList, addComment, deletePost, deleteComment, adjustPostVotes, adjustCommentVotes }) {
+function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost, deletePost, addComment, deleteComment, adjustPostVotes, adjustCommentVotes }) {
   const params = useParams();
 
   const [subName, setSubName] = useState(null);
@@ -153,6 +153,11 @@ function PostPage({ loggedIn, subList, addComment, deletePost, deleteComment, ad
     setComments(commentsCopy);
   }
 
+  const deletePostHandler = () => {
+    // display popup confirmation
+    // if positive: deletePost();
+  }
+
   const adjustPostVotesHandler = (e) => {
     adjustPostVotes(e.target.className === "upvote-icon" ? 1 : -1 , post.uid, post.subName);
   }
@@ -166,6 +171,7 @@ function PostPage({ loggedIn, subList, addComment, deletePost, deleteComment, ad
       return (
         !comment.parentUid ?
         <Comment
+          key={comment.uid}
           loggedIn={loggedIn}
           comment={comment}
           commentReply={commentReplyHandler}
@@ -226,9 +232,14 @@ function PostPage({ loggedIn, subList, addComment, deletePost, deleteComment, ad
                   <p>{getNumComments() === 1 ? getNumComments() + ' comment' : getNumComments() + ' comments'}</p>
                 </div>
                 <div>
-                  <p>Favorite</p>
+                  { loggedIn ?
+                    currentUser.favorite.posts[subName] && currentUser.favorite.posts[subName].includes(post.uid) ?
+                    <p onClick={() => unfavoritePost(subName, post.uid)}>Unfavorite</p> :
+                    <p onClick={() => favoritePost(subName, post.uid)}>Favorite</p> :
+                    null
+                  }
                   <p>Share</p>
-                  { loggedIn && 'owner' && <p onClick={(e) => deletePost(post.owner.uid)}>Delete</p> }
+                  { loggedIn && 'owner.uid matches post.owner.uid' && <p onClick={deletePostHandler}>Delete</p> }
                 </div>
               </PostActions>
             </Body>

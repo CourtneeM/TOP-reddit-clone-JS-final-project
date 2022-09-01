@@ -71,6 +71,11 @@ const Replies = styled.div`
 function Comment({ loggedIn, comment, commentReply, deleteComment, adjustCommentVotes }) {
   const [replyText, setReplyText] = useState('');
 
+  const deleteCommentHandler = () => {
+    // display popup confirmation
+    // if positive: deleteComment();
+  }
+
   const adjustVotesHandler = (e) => {
     adjustCommentVotes(e.target.className === 'upvote-icon' ? 1 : -1, comment.uid);
   }
@@ -115,7 +120,7 @@ function Comment({ loggedIn, comment, commentReply, deleteComment, adjustComment
         <div>
           <p>Favorite</p>
           <p>Share</p>
-          { loggedIn && 'owner' && <p onClick={() => deleteComment(comment.owner.uid)}>Delete</p> }
+          { loggedIn && 'owner.uid matches comment.owner.uid' && <p onClick={deleteCommentHandler}>Delete</p> }
         </div>
       </CommentActions>
       <CommentReply className={`comment-reply-container-${comment.uid} hidden`}>
@@ -133,6 +138,7 @@ function Comment({ loggedIn, comment, commentReply, deleteComment, adjustComment
         { 
           Object.values(comment.child).length > 0 &&
           <Comment
+            key={Object.values(comment.child)[0].uid}
             loggedIn={loggedIn}
             comment={Object.values(comment.child)[0]}
             commentReply={commentReply}

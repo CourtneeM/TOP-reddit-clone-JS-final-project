@@ -37,10 +37,10 @@ function AboutSection({ loggedIn, sub, deleteSub }) {
         </Link>
       }
       {
-        loggedIn && 'owner' && <button onClick={() => deleteSub(sub.owner.uid)}>Delete Sub</button>
+        loggedIn && 'owner.uid matches sub.owner.uid' && <button onClick={deleteSub}>Delete Sub</button>
       }
     </About>
-  )
-}
+  );
+};
 
 export default AboutSection;

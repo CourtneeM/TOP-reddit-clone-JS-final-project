@@ -51,7 +51,7 @@ const VoteStatus = styled.div`
   }
 `;
 
-function PostPreview({ loggedIn, post, adjustPostVotes }) {
+function PostPreview({ loggedIn, currentUser, post, favoritePost, unfavoritePost, adjustPostVotes }) {
   const adjustPostVotesHandler = (e) => {
     adjustPostVotes(e.target.className === "upvote-icon" ? 1 : -1, post.uid, post.subName);
   }
@@ -85,7 +85,12 @@ function PostPreview({ loggedIn, post, adjustPostVotes }) {
       </Body>
       <Options>
         <p>{getNumComments() === 1 ? getNumComments() + ' comment' : getNumComments() + ' comments'}</p>
-        <p>Favorite</p>
+        { loggedIn ?
+          currentUser.favorite.posts[post.subName] && currentUser.favorite.posts[post.subName].includes(post.uid) ?
+          <p onClick={() => unfavoritePost(post.subName, post.uid)}>Unfavorite</p> :
+          <p onClick={() => favoritePost(post.subName, post.uid)}>Favorite</p> :
+          null
+        }
         <p>Share</p>
       </Options>
       <VoteStatus>
