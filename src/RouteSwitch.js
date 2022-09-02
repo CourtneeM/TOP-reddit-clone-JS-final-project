@@ -134,16 +134,19 @@ function RouteSwitch() {
     setUserList(userListCopy);
   }
 
-  const addComment = (commentText, postUid, subName, parentComment) => {
+  const addComment = (commentText, postUid, subName, parentComment=null) => {
     const owner = {uid: currentUser.uid, name: currentUser.name};
     let subListCopy = {...subList};
 
     const commentUid = uniqid();
 
+    
     if (parentComment) {
-      parentComment.addChild(commentUid, postUid, subName, owner, commentText);
-      subListCopy = {...subList};
-    } else {
+      subListCopy[subName].posts[postUid].addComment(commentUid, postUid, subName, owner, commentText, parentComment.uid);
+      parentComment.addChild(commentUid);
+      // parentComment.addChild(commentUid, postUid, subName, owner, commentText);
+      // subListCopy = {...subList};
+      } else {
       subListCopy[subName].posts[postUid].addComment(commentUid, postUid, subName, owner, commentText);
     }
 
@@ -180,9 +183,8 @@ function RouteSwitch() {
   }
   const adjustCommentVotes = (num, commentUid, postUid, subName) => {
     const subListCopy = {...subList};
-    const subUid = Object.values(subListCopy).filter((sub) => sub.name === subName)[0].uid;
+    subListCopy[subName].posts[postUid].comments[commentUid].adjustVotes(num);
     
-    subListCopy[subUid].posts[postUid].comments[commentUid].adjustVotes(num);
     setSubList(subListCopy);
   }
 

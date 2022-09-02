@@ -1,5 +1,5 @@
 class Comment {
-  constructor(uid, postUid, subName, owner, text) {
+  constructor(uid, postUid, subName, owner, text, parentUid=null) {
     this.uid = uid;
     this.postUid = postUid;
     this.subName = subName;
@@ -9,7 +9,8 @@ class Comment {
     this.votes = 0;
     this.editStatus = { edited: false, editDateTime: null };
     this.deleteStatus = { deleted: false, deleteDateTime: null };
-    this.child = {};
+    this.children = [];
+    this.parentUid = parentUid;
   }
 
   getDateTime() {
@@ -46,8 +47,11 @@ class Comment {
     this.deleteStatus.deleteDateTime = 'current date/time';
   }
 
-  addChild(commentUid, postUid, subName, owner, text) {
-    this.child = { [commentUid]: new Comment(commentUid, postUid, subName, owner, text) };
+  // addChild(commentUid, postUid, subName, owner, text, parentUid) {
+  //   this.child = { [commentUid]: new Comment(commentUid, postUid, subName, owner, text, parentUid) };
+  // }
+  addChild(commentUid) {
+    this.children.push(commentUid);
   }
 }
 

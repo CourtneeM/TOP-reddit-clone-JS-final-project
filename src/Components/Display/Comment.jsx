@@ -68,7 +68,7 @@ const Replies = styled.div`
   border-left: 1px solid #888;
 `;
 
-function Comment({ loggedIn, currentUser, comment, commentReply, favoriteComment, unfavoriteComment, deleteComment, adjustCommentVotes }) {
+function Comment({ loggedIn, currentUser, comments, comment, commentReply, favoriteComment, unfavoriteComment, deleteComment, adjustCommentVotes }) {
   const [replyText, setReplyText] = useState('');
 
   const deleteCommentHandler = () => {
@@ -142,18 +142,26 @@ function Comment({ loggedIn, currentUser, comment, commentReply, favoriteComment
       </CommentReply>
       <Replies>
         { 
-          Object.values(comment.child).length > 0 &&
-          <Comment
-            key={Object.values(comment.child)[0].uid}
-            loggedIn={loggedIn}
-            currentUser={currentUser}
-            comment={Object.values(comment.child)[0]}
-            commentReply={commentReply}
-            favoriteComment={favoriteComment}
-            unfavoriteComment={unfavoriteComment}
-            deleteComment={deleteComment}
-            adjustCommentVotes={adjustCommentVotes}
-          />
+          Object.values(comment.children).length > 0 ?
+          Object.values(comments).map((nextComment) => {
+            return comment.children.map((child) => {
+              return nextComment.uid === child ?
+              <Comment
+              key={Object.values(nextComment).uid}
+              loggedIn={loggedIn}
+              currentUser={currentUser}
+              comments={comments}
+              comment={nextComment}
+              commentReply={commentReply}
+              favoriteComment={favoriteComment}
+              unfavoriteComment={unfavoriteComment}
+              deleteComment={deleteComment}
+              adjustCommentVotes={adjustCommentVotes}
+              /> :
+              null
+            })
+          }) :
+          null
         }
       </Replies>
     </Wrapper>

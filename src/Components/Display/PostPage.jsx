@@ -176,6 +176,7 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
           key={comment.uid}
           loggedIn={loggedIn}
           currentUser={currentUser}
+          comments={post.comments}
           comment={comment}
           commentReply={commentReplyHandler}
           favoriteComment={favoriteComment}

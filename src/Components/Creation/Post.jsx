@@ -30,8 +30,8 @@ class Post {
     delete postList.uid
   }
 
-  addComment(commentUid, postUid, subName, owner, text) {
-    this.comments[commentUid] = new Comment(commentUid, postUid, subName, owner, text);
+  addComment(commentUid, postUid, subName, owner, text, parentUid) {
+    this.comments[commentUid] = new Comment(commentUid, postUid, subName, owner, text, parentUid);
   }
 }
 
