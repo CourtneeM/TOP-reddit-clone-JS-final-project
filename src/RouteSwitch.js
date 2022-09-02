@@ -169,8 +169,11 @@ function RouteSwitch() {
     setSubList(subListCopy);
   }
   
-  const deleteComment = (commentOwnerUid) => {
-    // if (commentOwnerUid === currentUser.uid)
+  const deleteComment = (comment) => {
+    const subListCopy = {...subList};
+    subListCopy[comment.subName].posts[comment.postUid].comments[comment.uid].deleteText();
+
+    setSubList(subListCopy);
     console.log('delete comment');
   }
 
@@ -184,7 +187,7 @@ function RouteSwitch() {
   const adjustCommentVotes = (num, commentUid, postUid, subName) => {
     const subListCopy = {...subList};
     subListCopy[subName].posts[postUid].comments[commentUid].adjustVotes(num);
-    
+
     setSubList(subListCopy);
   }
 

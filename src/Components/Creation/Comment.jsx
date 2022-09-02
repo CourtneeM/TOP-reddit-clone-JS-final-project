@@ -36,7 +36,7 @@ class Comment {
 
   deleteText() {
     this.text = 'Comment Deleted';
-    this.owner = 'Deleted';
+    this.owner = {uid: null, name: 'Deleted'};
 
     if (this.editStatus.edited) {
       this.editStatus.edited = false;
@@ -44,7 +44,7 @@ class Comment {
     }
 
     this.deleteStatus.deleted = true;
-    this.deleteStatus.deleteDateTime = 'current date/time';
+    this.deleteStatus.deleteDateTime = this.getDateTime();
   }
 
   // addChild(commentUid, postUid, subName, owner, text, parentUid) {

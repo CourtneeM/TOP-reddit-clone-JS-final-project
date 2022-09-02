@@ -73,7 +73,7 @@ function Comment({ loggedIn, currentUser, comments, comment, commentReply, favor
 
   const deleteCommentHandler = () => {
     // display popup confirmation
-    // if positive: deleteComment();
+    if (comment.owner.uid === currentUser.uid) deleteComment(comment);
   }
 
   const adjustVotesHandler = (e) => {
