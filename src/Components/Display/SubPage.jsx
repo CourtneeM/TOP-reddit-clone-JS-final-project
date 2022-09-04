@@ -103,7 +103,7 @@ function SubPage({ loggedIn, currentUser, subList, followSub, unfollowSub, delet
 
   return (
     <div>
-      <Navbar subList={subList} />
+      <Navbar currentUser={currentUser} subList={subList} />
 
       <Wrapper>
         {

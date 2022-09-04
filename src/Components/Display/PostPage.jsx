@@ -189,26 +189,11 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
     }).filter((comment) => comment);
   }
 
-  const getNumComments = () => {
-    let numComments = 0;
-
-    const getComment = (comment) => {
-      if (comment && comment.child) {
-        numComments += 1;
-        getComment(Object.values(comment.child)[0]);
-      }
-    }
-
-    Object.values(post.comments).forEach((parentComment) => {
-      getComment(parentComment);
-    });
-
-    return numComments;
-  }
+  const getNumComments = () => Object.keys(post.comments).length;
 
   return (
     <div>
-      <Navbar subList={subList} />
+      <Navbar currentUser={currentUser} subList={subList} />
 
       <Wrapper>
         {

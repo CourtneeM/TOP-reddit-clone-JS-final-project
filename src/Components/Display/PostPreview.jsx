@@ -56,22 +56,7 @@ function PostPreview({ loggedIn, currentUser, post, favoritePost, unfavoritePost
     adjustPostVotes(e.target.className === "upvote-icon" ? 1 : -1, post.uid, post.subName);
   }
 
-  const getNumComments = () => {
-    let numComments = 0;
-
-    const getComment = (comment) => {
-      if (comment && comment.child) {
-        numComments += 1;
-        getComment(Object.values(comment.child)[0]);
-      }
-    }
-
-    Object.values(post.comments).forEach((parentComment) => {
-      getComment(parentComment);
-    });
-
-    return numComments;
-  }
+  const getNumComments = () => Object.keys(post.comments).length;
 
   return (
     <Wrapper>

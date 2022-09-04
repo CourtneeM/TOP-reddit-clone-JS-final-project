@@ -62,7 +62,7 @@ const SubmitPost = styled.div`
   }
 `;
 
-function CreatePostPage({ loggedIn, subList, submitPost }) {
+function CreatePostPage({ loggedIn, currentUser, subList, submitPost }) {
   const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
   const [postType, setPostType] = useState('text');
@@ -92,7 +92,7 @@ function CreatePostPage({ loggedIn, subList, submitPost }) {
 
   return (
     <div>
-      <Navbar subList={subList} />
+      <Navbar currentUser={currentUser} subList={subList} />
 
       <Wrapper>
         { loggedIn ?

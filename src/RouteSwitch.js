@@ -16,6 +16,7 @@ import SubPage from './Components/Display/SubPage';
 import PostPage from './Components/Display/PostPage';
 import CreateSubPage from "./Components/Display/CreateSubPage";
 import CreatePostPage from "./Components/Display/CreatePostPage";
+import UserProfile from './Components/Display/UserProfile';
 
 import uniqid from 'uniqid';
 
@@ -68,18 +69,29 @@ function RouteSwitch() {
     const owner = {uid: currentUser.uid, name: currentUser.name};
     const subListCopy = {...subList};
     const newSub = new Sub(subName, owner);
-
     subListCopy[newSub.name] = newSub;
 
     setSubList(subListCopy);
+
+    const userListCopy = {...userList};
+    userListCopy[currentUser.uid].own.subs.push(subName);
+
+    setUserList(userListCopy);
   }
 
   const submitPost = (subName, postTitle, postContent, postType) => {
     const owner = {uid: currentUser.uid, name: currentUser.name};
     const subListCopy = {...subList};
-    subListCopy[subName].addPost(uniqid(), postTitle, owner, postType, postContent, subName);
+    const postUid = uniqid();
+    subListCopy[subName].addPost(postUid, postTitle, owner, postType, postContent, subName);
 
     setSubList(subListCopy);
+
+    const userListCopy = {...userList};
+    if (!userListCopy[currentUser.uid].own.posts[subName]) userListCopy[currentUser.uid].own.posts[subName] = [];
+    userListCopy[currentUser.uid].own.posts[subName].push(postUid);
+
+    setUserList(userListCopy);
   }
 
   const followSub = (subName) => {
@@ -119,8 +131,6 @@ function RouteSwitch() {
     if (!userListCopy[currentUser.uid].favorite.comments[subName]) userListCopy[currentUser.uid].favorite.comments[subName] = {};
     if (!userListCopy[currentUser.uid].favorite.comments[subName][postUid]) userListCopy[currentUser.uid].favorite.comments[subName][postUid] = [];
     userListCopy[currentUser.uid].favorite.comments[subName][postUid].push(commentUid);
-    
-    console.log(userListCopy);
 
     setUserList(userListCopy);
   }
@@ -137,20 +147,24 @@ function RouteSwitch() {
   const addComment = (commentText, postUid, subName, parentComment=null) => {
     const owner = {uid: currentUser.uid, name: currentUser.name};
     let subListCopy = {...subList};
-
     const commentUid = uniqid();
-
     
     if (parentComment) {
       subListCopy[subName].posts[postUid].addComment(commentUid, postUid, subName, owner, commentText, parentComment.uid);
       parentComment.addChild(commentUid);
-      // parentComment.addChild(commentUid, postUid, subName, owner, commentText);
-      // subListCopy = {...subList};
       } else {
       subListCopy[subName].posts[postUid].addComment(commentUid, postUid, subName, owner, commentText);
     }
 
     setSubList(subListCopy);
+
+    const userListCopy = {...userList};
+    if (!userListCopy[currentUser.uid].own.comments[subName]) userListCopy[currentUser.uid].own.comments[subName] = {};
+    if (!userListCopy[currentUser.uid].own.comments[subName][postUid]) userListCopy[currentUser.uid].own.comments[subName][postUid] = [];
+
+    userListCopy[currentUser.uid].own.comments[subName][postUid].push(commentUid);
+
+    setUserList(userListCopy);
   }
 
   const deleteSub = (subName) => {
@@ -196,7 +210,7 @@ function RouteSwitch() {
       <Routes>
         <Route path="/" element={<Home loggedIn={loggedIn} currentUser={currentUser} subList={subList} topPosts={topPosts} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} />} />
         <Route path="/r/all" element={<All loggedIn={loggedIn} currentUser={currentUser} subList={subList} favoritePost={favoritePost} unfavoritePost={unfavoritePost} />} />
-        <Route path="/r/new_sub" element={<CreateSubPage loggedIn={loggedIn} subList={subList} createSub={createSub} />} />
+        <Route path="/r/new_sub" element={<CreateSubPage loggedIn={loggedIn} currentUser={currentUser} subList={subList} createSub={createSub} />} />
         {
           <Route path={`/r/:subName`}>
             <Route index
@@ -212,7 +226,7 @@ function RouteSwitch() {
                 adjustPostVotes={adjustPostVotes}
               />}
             />
-              <Route key={uniqid()} path="new_post" element={<CreatePostPage loggedIn={loggedIn} subList={subList} submitPost={submitPost} />} />
+              <Route key={uniqid()} path="new_post" element={<CreatePostPage loggedIn={loggedIn} currentUser={currentUser} subList={subList} submitPost={submitPost} />} />
               <Route key={uniqid()} path=":postUid/:postTitle"
                 element={<PostPage
                   loggedIn={loggedIn}
@@ -231,6 +245,7 @@ function RouteSwitch() {
               />
           </Route>
         }
+        <Route path='/u/:userUid/:userName' element={<UserProfile loggedIn={loggedIn} currentUser={currentUser} userList={userList} subList={subList} />} />
       </Routes>
     </BrowserRouter>
   );

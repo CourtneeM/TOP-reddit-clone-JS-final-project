@@ -78,7 +78,7 @@ function Home({ loggedIn, currentUser, subList, topPosts, favoritePost, unfavori
 
   return (
     <div>
-      <Navbar subList={subList} />
+      <Navbar currentUser={currentUser} subList={subList} />
       <Wrapper>
         <PostsSection>
           <SortOptions>

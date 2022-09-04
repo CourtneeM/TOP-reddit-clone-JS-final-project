@@ -24,7 +24,7 @@ const Wrapper = styled.div`
   }
 `;
 
-function Navbar({ subList }) {
+function Navbar({ currentUser, subList }) {
   const getSubNames = () => {
     return Object.values(subList).map((sub) => {
       return (
@@ -55,6 +55,10 @@ function Navbar({ subList }) {
           <li>Create Sub</li>
         </Link>
       </ul>
+
+      <Link to={`/u/${currentUser.uid}/${currentUser.name}`}>
+        <p>u/{currentUser.name}</p>
+      </Link>
     </Wrapper>
   );
 };

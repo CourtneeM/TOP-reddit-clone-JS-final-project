@@ -92,7 +92,7 @@ function All({ loggedIn, currentUser, subList, favoritePost, unfavoritePost }) {
 
   return (
     <div>
-      <Navbar subList={subList} />
+      <Navbar currentUser={currentUser} subList={subList} />
       <Wrapper>
         <PostsSection>
           <SortOptions>
