@@ -16,7 +16,7 @@ import SubPage from './Components/Display/SubPage';
 import PostPage from './Components/Display/PostPage';
 import CreateSubPage from "./Components/Display/CreateSubPage";
 import CreatePostPage from "./Components/Display/CreatePostPage";
-import UserProfile from './Components/Display/UserProfile';
+import UserProfile from './Components/Display/UserProfile/UserProfile';
 
 import uniqid from 'uniqid';
 
@@ -245,7 +245,15 @@ function RouteSwitch() {
               />
           </Route>
         }
-        <Route path='/u/:userUid/:userName' element={<UserProfile loggedIn={loggedIn} currentUser={currentUser} userList={userList} subList={subList} />} />
+        <Route path='/u/:userUid/:userName'
+          element={<UserProfile
+            loggedIn={loggedIn}
+            currentUser={currentUser}
+            userList={userList}
+            subList={subList}
+            adjustPostVotes={adjustPostVotes}
+          />}
+        />
       </Routes>
     </BrowserRouter>
   );

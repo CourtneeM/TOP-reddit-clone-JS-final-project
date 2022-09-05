@@ -1,6 +1,7 @@
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 
-import Navbar from './Navbar';
+import Navbar from '../Navbar';
+import PostPreview from './PostPreview';
 
 import styled from 'styled-components';
 import { useState } from 'react';
@@ -39,22 +40,21 @@ const Body = styled.div`
     margin-bottom: 40px;
     font-size: 2.4rem;
   }
-
-  > div p {
-    margin-bottom: 80px;
-  }
 `;
 
-function UserProfile({ loggedIn, currentUser, userList, subList }) {
+function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes }) {
   const [currentSelectedData, setCurrentSelectedData] = useState([]);
   const params = useParams();
 
   const displayPosts = () => {
-    setCurrentSelectedData(Object.keys(userList[params.userUid].own.posts).map((subName) => {
+    const allPosts = [];
+    Object.keys(userList[params.userUid].own.posts).map((subName) => {
       return userList[params.userUid].own.posts[subName].map((postUid) => {
-        return subList[subName].posts[postUid]
+        allPosts.push(subList[subName].posts[postUid]);
       });
-    }));
+    });
+
+    setCurrentSelectedData(allPosts);
   }
   const displayComments = () => {
     setCurrentSelectedData(Object.keys(userList[params.userUid].own.comments).map((subName) => {
@@ -64,11 +64,14 @@ function UserProfile({ loggedIn, currentUser, userList, subList }) {
     }));
   }
   const displayFavoritePosts = () => {
-    setCurrentSelectedData(Object.keys(currentUser.favorite.posts).map((subName) => {
+    const favoritePosts = [];
+    Object.keys(currentUser.favorite.posts).map((subName) => {
       return currentUser.favorite.posts[subName].map((postUid) => {
-        return subList[subName].posts[postUid]
+        favoritePosts.push(subList[subName].posts[postUid]);
       });
-    }));
+    });
+
+    setCurrentSelectedData(favoritePosts);
   }
   const displayFavoriteComments = () => {
     setCurrentSelectedData(Object.keys(currentUser.favorite.comments).map((subName) => {
@@ -103,7 +106,12 @@ function UserProfile({ loggedIn, currentUser, userList, subList }) {
         <Body>
           {
             currentSelectedData.map((el) => {
-              
+              const path = `/r/${el.subName}/${el.uid}/${el.title.split(' ').join('_').toLowerCase()}`;
+              return (
+                <Link to={path} key={el.uid}>
+                  <PostPreview loggedIn={loggedIn} post={el} adjustPostVotes={adjustPostVotes} />
+                </Link>
+              )
             })
           }
         </Body>
