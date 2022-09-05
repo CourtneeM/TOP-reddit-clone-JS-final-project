@@ -57,7 +57,11 @@ function UserProfile({ loggedIn, currentUser, userList, subList }) {
     }));
   }
   const displayComments = () => {
-
+    setCurrentSelectedData(Object.keys(userList[params.userUid].own.comments).map((subName) => {
+      return Object.keys(userList[params.userUid].own.comments[subName]).map((postUid) => {
+        return subList[subName].posts[postUid].comments[userList[params.userUid].own.comments[subName][postUid]];
+      });
+    }));
   }
   const displayFavoritePosts = () => {
     setCurrentSelectedData(Object.keys(currentUser.favorite.posts).map((subName) => {
@@ -98,7 +102,9 @@ function UserProfile({ loggedIn, currentUser, userList, subList }) {
         </Header>
         <Body>
           {
-
+            currentSelectedData.map((el) => {
+              
+            })
           }
         </Body>
       </Wrapper>
