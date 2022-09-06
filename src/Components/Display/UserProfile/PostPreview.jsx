@@ -2,7 +2,8 @@ import styled from "styled-components";
 
 const Wrapper = styled.div`
   position: relative;
-  margin: 0 80px 20px 0;
+  margin-right: 80px;
+  margin-bottom: 20px;
   padding: 20px 60px;
   background-color: #bbb;
 `;

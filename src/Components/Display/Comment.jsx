@@ -120,7 +120,9 @@ function Comment({ loggedIn, currentUser, comments, comment, commentReply, favor
         <div>
           {
             loggedIn ?
-            currentUser.favorite.comments[comment.subName] && currentUser.favorite.comments[comment.subName][comment.postUid].includes(comment.uid) ?
+            currentUser.favorite.comments[comment.subName] &&
+            currentUser.favorite.comments[comment.subName][comment.postUid] &&
+            currentUser.favorite.comments[comment.subName][comment.postUid].includes(comment.uid) ?
             <p onClick={() => unfavoriteComment(comment.subName, comment.postUid, comment.uid)}>Unfavorite</p> :
             <p onClick={() => favoriteComment(comment.subName, comment.postUid, comment.uid)}>Favorite</p> :
             null

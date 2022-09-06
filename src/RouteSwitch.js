@@ -168,27 +168,42 @@ function RouteSwitch() {
   }
 
   const deleteSub = (subName) => {
+    const userListCopy = {...userList};
+    const index = userListCopy[currentUser.uid].own.subs.indexOf(subName);
+    userListCopy[currentUser.uid].own.subs.splice(index, 1);
+
+    setUserList(userListCopy);
+
     const subListCopy = {...subList};
-    
     delete subListCopy[subName];
 
     setSubList(subListCopy);
   }
 
   const deletePost = (subName, postUid) => {
+    const userListCopy = {...userList};
+    const index = userListCopy[currentUser.uid].own.posts[subName].indexOf(postUid);
+    userListCopy[currentUser.uid].own.posts[subName].splice(index, 1);
+
+    setUserList(userListCopy);
+
     const subListCopy = {...subList};
-    
     delete subListCopy[subName].posts[postUid];
     
     setSubList(subListCopy);
   }
   
   const deleteComment = (comment) => {
+    const userListCopy = {...userList};
+    const index = userListCopy[currentUser.uid].own.comments[comment.subName][comment.postUid].indexOf(comment.uid);
+    userListCopy[currentUser.uid].own.comments[comment.subName][comment.postUid].splice(index, 1);
+
+    setUserList(userListCopy);
+
     const subListCopy = {...subList};
     subListCopy[comment.subName].posts[comment.postUid].comments[comment.uid].deleteText();
 
     setSubList(subListCopy);
-    console.log('delete comment');
   }
 
   const adjustPostVotes = (num, postUid, subName) => {

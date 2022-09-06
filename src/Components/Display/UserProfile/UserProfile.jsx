@@ -1,10 +1,11 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
 import Navbar from '../Navbar';
 import PostPreview from './PostPreview';
+import CommentPreview from './CommentPreview';
 
 import styled from 'styled-components';
-import { useState } from 'react';
 
 const Wrapper = styled.div`
   max-width: 1200px;
@@ -33,7 +34,7 @@ const Header = styled.div`
   }
 `;
 const Body = styled.div`
-  padding: 40px 80px 0;
+  padding: 40px 80px 20px;
   background-color: #ccc;
 
   h2 {
@@ -43,42 +44,70 @@ const Body = styled.div`
 `;
 
 function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes }) {
-  const [currentSelectedData, setCurrentSelectedData] = useState([]);
+  const [currentSelectedData, setCurrentSelectedData] = useState({});
   const params = useParams();
 
   const displayPosts = () => {
     const allPosts = [];
-    Object.keys(userList[params.userUid].own.posts).map((subName) => {
-      return userList[params.userUid].own.posts[subName].map((postUid) => {
+    Object.keys(userList[params.userUid].own.posts).forEach((subName) => {
+      userList[params.userUid].own.posts[subName].forEach((postUid) => {
+        if (subList[subName] && subList[subName].posts[postUid])
         allPosts.push(subList[subName].posts[postUid]);
       });
     });
 
-    setCurrentSelectedData(allPosts);
+    setCurrentSelectedData({
+      type: 'posts',
+      data: allPosts
+    });
   }
   const displayComments = () => {
-    setCurrentSelectedData(Object.keys(userList[params.userUid].own.comments).map((subName) => {
-      return Object.keys(userList[params.userUid].own.comments[subName]).map((postUid) => {
-        return subList[subName].posts[postUid].comments[userList[params.userUid].own.comments[subName][postUid]];
-      });
-    }));
-  }
-  const displayFavoritePosts = () => {
-    const favoritePosts = [];
-    Object.keys(currentUser.favorite.posts).map((subName) => {
-      return currentUser.favorite.posts[subName].map((postUid) => {
-        favoritePosts.push(subList[subName].posts[postUid]);
+    const allComments = [];
+    Object.keys(userList[params.userUid].own.comments).forEach((subName) => {
+      Object.keys(userList[params.userUid].own.comments[subName]).forEach((postUid) => {
+        userList[params.userUid].own.comments[subName][postUid].forEach((commentUid) => {
+          if (subList[subName] && subList[subName].posts[postUid] && subList[subName].posts[postUid].comments[commentUid])
+          allComments.push(subList[subName].posts[postUid].comments[commentUid]);
+        });
       });
     });
 
-    setCurrentSelectedData(favoritePosts);
+    setCurrentSelectedData({
+      type: 'comments',
+      data: allComments
+    });
+  }
+  const displayFavoritePosts = () => {
+    const favoritePosts = [];
+    Object.keys(currentUser.favorite.posts).forEach((subName) => {
+      currentUser.favorite.posts[subName].forEach((postUid) => {
+        if (subList[subName] && subList[subName].posts[postUid]) {
+          favoritePosts.push(subList[subName].posts[postUid])
+        };
+      });
+    });
+
+    setCurrentSelectedData({
+      type: 'posts',
+      data: favoritePosts
+    });
   }
   const displayFavoriteComments = () => {
-    setCurrentSelectedData(Object.keys(currentUser.favorite.comments).map((subName) => {
-      return Object.keys(currentUser.favorite.comments[subName]).map((postUid) => {
-        return subList[subName].posts[postUid].comments[currentUser.favorite.comments[subName][postUid]];
+    const favoriteComments = [];
+    Object.keys(currentUser.favorite.comments).forEach((subName) => {
+      Object.keys(currentUser.favorite.comments[subName]).forEach((postUid) => {
+        currentUser.favorite.comments[subName][postUid].forEach((commentUid) => {
+          if (subList[subName] && subList[subName].posts[postUid] && subList[subName].posts[postUid].comments[commentUid]) {
+            favoriteComments.push(subList[subName].posts[postUid].comments[commentUid]);
+          }
+        })
       });
-    }));
+    });
+
+    setCurrentSelectedData({
+      type: 'comments',
+      data: favoriteComments
+    });
   }
 
   const changeSelectedView = (e) => {
@@ -105,14 +134,17 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
         </Header>
         <Body>
           {
-            currentSelectedData.map((el) => {
-              const path = `/r/${el.subName}/${el.uid}/${el.title.split(' ').join('_').toLowerCase()}`;
-              return (
-                <Link to={path} key={el.uid}>
+            Object.values(currentSelectedData).length > 0 ?
+            currentSelectedData.data.map((el) => {
+              return currentSelectedData.type === 'posts' ?
+                <Link to={`/r/${el.subName}/${el.uid}/${el.title.split(' ').join('_').toLowerCase()}`} key={el.uid}>
                   <PostPreview loggedIn={loggedIn} post={el} adjustPostVotes={adjustPostVotes} />
+                </Link> :
+                <Link to={`/r/${el.subName}/${el.postUid}/${subList[el.subName].posts[el.postUid].title.split(' ').join('_').toLowerCase()}`} key={el.uid}>
+                  <CommentPreview loggedIn={loggedIn} comment={el} adjustPostVotes={adjustPostVotes}/>
                 </Link>
-              )
-            })
+            }) :
+            null
           }
         </Body>
       </Wrapper>
