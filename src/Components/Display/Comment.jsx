@@ -103,7 +103,7 @@ function Comment({ loggedIn, currentUser, comments, comment, commentReply, favor
   }
 
   return (
-    <Wrapper>
+    <Wrapper id={comment.uid}>
       <CommentHeader>
         {/* <img src="" alt="user" /> */}
         <Link to={`/u/${comment.owner.uid}/${comment.owner.uid}`}>

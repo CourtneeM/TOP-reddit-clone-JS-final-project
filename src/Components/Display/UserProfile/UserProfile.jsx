@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { HashLink as Link } from 'react-router-hash-link';
 
 import Navbar from '../Navbar';
 import SubPreview from './SubPreview';
@@ -180,7 +181,7 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
       <Link to={`/r/${el.subName}/${el.uid}/${el.title.split(' ').join('_').toLowerCase()}`} key={el.uid}>
         <PostPreview loggedIn={loggedIn} post={el} adjustPostVotes={adjustPostVotes} />
       </Link> :
-      <Link to={`/r/${el.subName}/${el.postUid}/${subList[el.subName].posts[el.postUid].title.split(' ').join('_').toLowerCase()}`} key={el.uid}>
+      <Link to={`/r/${el.subName}/${el.postUid}/${subList[el.subName].posts[el.postUid].title.split(' ').join('_').toLowerCase()}/#${el.uid}`} key={el.uid}>
         <CommentPreview loggedIn={loggedIn} comment={el} adjustCommentVotes={adjustCommentVotes}/>
       </Link>
   }
