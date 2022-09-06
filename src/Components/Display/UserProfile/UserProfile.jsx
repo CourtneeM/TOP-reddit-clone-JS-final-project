@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
 import Navbar from '../Navbar';
+import SubPreview from './SubPreview';
 import PostPreview from './PostPreview';
 import CommentPreview from './CommentPreview';
 
@@ -47,6 +48,18 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
   const [currentSelectedData, setCurrentSelectedData] = useState({});
   const params = useParams();
 
+  const displaySubs = () => {
+    const allSubs = [];
+    
+    userList[params.userUid].own.subs.forEach((subName) => {
+      allSubs.push(subList[subName]);
+    });
+
+    setCurrentSelectedData({
+      type: 'subs',
+      data: allSubs
+    });
+  }
   const displayPosts = () => {
     const allPosts = [];
     Object.keys(userList[params.userUid].own.posts).forEach((subName) => {
@@ -75,6 +88,17 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
     setCurrentSelectedData({
       type: 'comments',
       data: allComments
+    });
+  }
+  const displayFollowedSubs = () => {
+    const followedSubs = [];
+    currentUser.followedSubs.forEach((subName) => {
+      if (subList[subName]) followedSubs.push(subList[subName]);
+    });
+
+    setCurrentSelectedData({
+      type: 'subs',
+      data: followedSubs
     });
   }
   const displayFavoritePosts = () => {
@@ -111,8 +135,10 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
   }
 
   const changeSelectedView = (e) => {
+    if (e.target.textContent === 'Subs') displaySubs();
     if (e.target.textContent === 'Posts') displayPosts();
     if (e.target.textContent === 'Comments') displayComments();
+    if (e.target.textContent === 'Followed Subs') displayFollowedSubs();
     if (e.target.textContent === 'Favorite Posts') displayFavoritePosts();
     if (e.target.textContent === 'Favorite Comments') displayFavoriteComments();
   }
@@ -125,8 +151,10 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
         <Header>
           <ul>
             <li onClick={(e) => changeSelectedView(e)}>Overview</li>
+            <li onClick={(e) => changeSelectedView(e)}>Subs</li>
             <li onClick={(e) => changeSelectedView(e)}>Posts</li>
             <li onClick={(e) => changeSelectedView(e)}>Comments</li>
+            <li onClick={(e) => changeSelectedView(e)}>Followed Subs</li>
             <li onClick={(e) => changeSelectedView(e)}>Favorite Posts</li>
             <li onClick={(e) => changeSelectedView(e)}>Favorite Comments</li>
           </ul>
@@ -136,7 +164,11 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
           {
             Object.values(currentSelectedData).length > 0 ?
             currentSelectedData.data.map((el) => {
-              return currentSelectedData.type === 'posts' ?
+              return currentSelectedData.type === 'subs' ?
+                <Link to={`/r/${el.name}`} key={el.uid}>
+                  <SubPreview sub={el} />
+                </Link> :
+              currentSelectedData.type === 'posts' ?
                 <Link to={`/r/${el.subName}/${el.uid}/${el.title.split(' ').join('_').toLowerCase()}`} key={el.uid}>
                   <PostPreview loggedIn={loggedIn} post={el} adjustPostVotes={adjustPostVotes} />
                 </Link> :
