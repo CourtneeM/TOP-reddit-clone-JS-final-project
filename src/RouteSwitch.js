@@ -38,6 +38,35 @@ function RouteSwitch() {
     const user3 = new User(uniqid(), 'Brenden', 'brendenparker@aol.com');
     const user4 = new User(uniqid(), 'Mike', 'mikehermit@gmail.com');
     const user5 = new User(uniqid(), 'Ricky', 'rickygalvez@yahoo.com');
+
+    const games = new Sub('Games', user2);
+    const digitalArt = new Sub('DigitalArt', user3);
+    const newSubList = {[games.name]: games, [digitalArt.name]: digitalArt};
+
+    user2.own.subs = [games.name];
+    user3.own.subs = [digitalArt.name];
+
+    Object.keys(newSubList).forEach((key) => {
+      if (key === 'Games') {
+        const owner = user4;
+        const post1Uid = uniqid();
+        const post2Uid = uniqid();
+        newSubList[key].addPost(post1Uid, 'New Games Coming Soon', owner, 'text', 'Look at these cool games coming out later this year!', 'Games');
+        newSubList[key].addPost(post2Uid, 'New Games Coming Next Year', owner, 'text', 'Look at these cool games coming out later this year!', 'Games');
+
+        user4.own.posts[key] = [post1Uid, post2Uid];
+      }
+      if (key === 'DigitalArt') {
+        const owner = user5;
+        const post1Uid = uniqid();
+        const post2Uid = uniqid();
+        newSubList[key].addPost(post1Uid, 'Some cool art to look at', owner, 'text', 'Some cool art I found while browsing!', 'DigitalArt');
+        newSubList[key].addPost(post2Uid, 'More art to check out', owner, 'text', 'Some cool art I found while browsing!', 'DigitalArt');
+
+        user5.own.posts[key] = [post1Uid, post2Uid];
+      }
+    });
+
     setUserList({
       [user1.uid]: user1,
       [user2.uid]: user2,
@@ -46,24 +75,6 @@ function RouteSwitch() {
       [user5.uid]: user5,
     });
     setCurrentUser(user1);
-
-    const games = new Sub('Games', user2);
-    const digitalArt = new Sub('DigitalArt', user3);
-    const newSubList = {[games.name]: games, [digitalArt.name]: digitalArt};
-
-    Object.keys(newSubList).forEach((key) => {
-      if (key === 'Games') {
-        const owner = user4;
-        newSubList[key].addPost(uniqid(), 'New Games Coming Soon', owner, 'text', 'Look at these cool games coming out later this year!', 'Games');
-        newSubList[key].addPost(uniqid(), 'New Games Coming Next Year', owner, 'text', 'Look at these cool games coming out later this year!', 'Games');
-      }
-      if (key === 'DigitalArt') {
-        const owner = user5;
-        newSubList[key].addPost(uniqid(), 'Some cool art to look at', owner, 'text', 'Some cool art I found while browsing!', 'DigitalArt');
-        newSubList[key].addPost(uniqid(), 'More art to check out', owner, 'text', 'Some cool art I found while browsing!', 'DigitalArt');
-      }
-    });
-
     setSubList(newSubList);
   }, []);
 

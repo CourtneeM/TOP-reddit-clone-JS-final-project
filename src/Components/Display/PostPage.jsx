@@ -163,7 +163,6 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
   const adjustPostVotesHandler = (e) => {
     adjustPostVotes(e.target.className === "upvote-icon" ? 1 : -1 , post.uid, post.subName);
   }
-
   const adjustCommentVotesHandler = (num, commentUid) => {
     adjustCommentVotes(num, commentUid, post.uid, subName);
   }
@@ -188,7 +187,6 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
       )
     }).filter((comment) => comment);
   }
-
   const getNumComments = () => Object.keys(post.comments).length;
 
   return (
@@ -203,7 +201,11 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
               <Link to={`/r/${subName}`}>
                 <p>/r/{subName}</p>
               </Link>
-              <p>Posted by u/{post.owner.name}</p>
+              <p>Posted by
+                <Link to={`/u/${post.owner.uid}/${post.owner.name}`}>
+                  u/{post.owner.name}
+                </Link>
+              </p>
               <p>{post.creationDateTime.date.month}/{post.creationDateTime.date.day}/{post.creationDateTime.date.year}</p>
 
               <VoteStatus>

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+
 import styled from "styled-components";
 
 const Wrapper = styled.div`
@@ -104,7 +106,9 @@ function Comment({ loggedIn, currentUser, comments, comment, commentReply, favor
     <Wrapper>
       <CommentHeader>
         {/* <img src="" alt="user" /> */}
-        <p>u/{comment.owner.name}</p>
+        <Link to={`/u/${comment.owner.uid}/${comment.owner.uid}`}>
+          <p>u/{comment.owner.name}</p>
+        </Link>
         <p>{comment.creationDateTime.date.month}/{comment.creationDateTime.date.day}/{comment.creationDateTime.date.year}</p>
       </CommentHeader>
 

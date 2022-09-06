@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styled from "styled-components";
 
 const Wrapper = styled.div`
@@ -62,7 +63,11 @@ function PostPreview({ loggedIn, post, adjustPostVotes }) {
     <Wrapper>
       <Header>
         <p>r/{post.subName}</p>
-        <p>Posted by <span>u/{post.owner.name}</span></p>
+        <p>Posted by
+          <Link to={`/u/${post.owner.uid}/${post.owner.name}`}>
+            u/{post.owner.name}
+          </Link>
+        </p>
         <p>{`${post.creationDateTime.date.month}/${post.creationDateTime.date.day}/${post.creationDateTime.date.year}`}</p>
       </Header>
       <Body>

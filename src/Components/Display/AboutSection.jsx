@@ -37,6 +37,11 @@ function AboutSection({ loggedIn, currentUser, sub, deleteSub }) {
       <p>{sub.about ? sub.about : `Lorem ipsum dolor sit amet consectetur, adipisicing elit. Velit deserunt maxime magnam repudiandae,
         dolore dolores, rem quasi odio recusandae omnis quis! Temporibus consequatur optio ratione cumque
         vero nemo non provident!`}</p>
+      <p>Owner: 
+        <Link to={`/u/${sub.owner.uid}/${sub.owner.name}`}>
+          u/{sub.owner.name}
+        </Link>
+      </p>
       <p>{sub.followers.length ? sub.followers.length : 0} Followers</p>
       <p>Created {sub.creationDateTime.date.month}/{sub.creationDateTime.date.day}/{sub.creationDateTime.date.year}</p>
       { loggedIn &&

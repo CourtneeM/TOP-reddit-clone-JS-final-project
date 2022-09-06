@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styled from "styled-components";
 
 const Wrapper = styled.div`
@@ -48,7 +49,11 @@ function CommentPreview({ loggedIn, comment, adjustCommentVotes }) {
     <Wrapper>
       <CommentHeader>
         {/* <img src="" alt="user" /> */}
-        <p>u/{comment.owner.name}</p>
+        <p>
+          <Link to={`/u/${comment.owner.uid}/${comment.owner.name}`}>
+            u/{comment.owner.name}
+          </Link>
+        </p>
         <p>{comment.creationDateTime.date.month}/{comment.creationDateTime.date.day}/{comment.creationDateTime.date.year}</p>
       </CommentHeader>
 
