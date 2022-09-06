@@ -206,9 +206,14 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
             <li onClick={(e) => changeSelectedView(e)}>Subs</li>
             <li onClick={(e) => changeSelectedView(e)}>Posts</li>
             <li onClick={(e) => changeSelectedView(e)}>Comments</li>
-            <li onClick={(e) => changeSelectedView(e)}>Followed Subs</li>
-            <li onClick={(e) => changeSelectedView(e)}>Favorite Posts</li>
-            <li onClick={(e) => changeSelectedView(e)}>Favorite Comments</li>
+            { currentUser.uid === params.userUid ?
+              <>
+                <li onClick={(e) => changeSelectedView(e)}>Followed Subs</li>
+                <li onClick={(e) => changeSelectedView(e)}>Favorite Posts</li>
+                <li onClick={(e) => changeSelectedView(e)}>Favorite Comments</li>
+              </> :
+              null
+            }
           </ul>
           <h1>u/{userList[params.userUid].name}</h1>
         </Header>

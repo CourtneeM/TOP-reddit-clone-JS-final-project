@@ -34,21 +34,31 @@ function RouteSwitch() {
 
   useEffect(() => {
     const user1 = new User(uniqid(), 'Bob', 'bobjones@hotmail.com');
-    setUserList({ [user1.uid]: user1 });
+    const user2 = new User(uniqid(), 'Kevin', 'kevinbarkley@gmail.com');
+    const user3 = new User(uniqid(), 'Brenden', 'brendenparker@aol.com');
+    const user4 = new User(uniqid(), 'Mike', 'mikehermit@gmail.com');
+    const user5 = new User(uniqid(), 'Ricky', 'rickygalvez@yahoo.com');
+    setUserList({
+      [user1.uid]: user1,
+      [user2.uid]: user2,
+      [user3.uid]: user3,
+      [user4.uid]: user4,
+      [user5.uid]: user5,
+    });
     setCurrentUser(user1);
 
-    const games = new Sub('Games', 'Kevin');
-    const digitalArt = new Sub('DigitalArt', 'Brenden');
+    const games = new Sub('Games', user2);
+    const digitalArt = new Sub('DigitalArt', user3);
     const newSubList = {[games.name]: games, [digitalArt.name]: digitalArt};
 
     Object.keys(newSubList).forEach((key) => {
       if (key === 'Games') {
-        const owner = {uid: uniqid(), name: 'Mike'};
+        const owner = user4;
         newSubList[key].addPost(uniqid(), 'New Games Coming Soon', owner, 'text', 'Look at these cool games coming out later this year!', 'Games');
         newSubList[key].addPost(uniqid(), 'New Games Coming Next Year', owner, 'text', 'Look at these cool games coming out later this year!', 'Games');
       }
       if (key === 'DigitalArt') {
-        const owner = {uid: uniqid(), name: 'Ricky'};
+        const owner = user5;
         newSubList[key].addPost(uniqid(), 'Some cool art to look at', owner, 'text', 'Some cool art I found while browsing!', 'DigitalArt');
         newSubList[key].addPost(uniqid(), 'More art to check out', owner, 'text', 'Some cool art I found while browsing!', 'DigitalArt');
       }
