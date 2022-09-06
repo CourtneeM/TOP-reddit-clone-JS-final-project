@@ -44,7 +44,7 @@ const Body = styled.div`
   }
 `;
 
-function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes }) {
+function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes, adjustCommentVotes }) {
   const [currentSelectedData, setCurrentSelectedData] = useState({});
   const params = useParams();
 
@@ -79,7 +79,7 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
     Object.keys(userList[params.userUid].own.comments).forEach((subName) => {
       Object.keys(userList[params.userUid].own.comments[subName]).forEach((postUid) => {
         userList[params.userUid].own.comments[subName][postUid].forEach((commentUid) => {
-          if (subList[subName] && subList[subName].posts[postUid] && subList[subName].posts[postUid].comments[commentUid])
+          if (subList[subName] && subList[subName].posts[postUid])
           allComments.push(subList[subName].posts[postUid].comments[commentUid]);
         });
       });
@@ -133,8 +133,60 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
       data: favoriteComments
     });
   }
+  const displayOverview = () => {
+    const allContent = [];
+    
+    userList[params.userUid].own.subs.forEach((subName) => {
+      allContent.push({
+        type: 'subs',
+        data: subList[subName]
+      });
+    });
+
+    Object.keys(userList[params.userUid].own.posts).forEach((subName) => {
+      userList[params.userUid].own.posts[subName].forEach((postUid) => {
+        if (subList[subName] && subList[subName].posts[postUid])
+        allContent.push({
+          type: 'posts',
+          data: subList[subName].posts[postUid]
+        });
+      });
+    });
+
+    Object.keys(userList[params.userUid].own.comments).forEach((subName) => {
+      Object.keys(userList[params.userUid].own.comments[subName]).forEach((postUid) => {
+        userList[params.userUid].own.comments[subName][postUid].forEach((commentUid) => {
+          if (subList[subName] && subList[subName].posts[postUid] && subList[subName].posts[postUid].comments[commentUid])
+          allContent.push({
+            type: 'comments',
+            data: subList[subName].posts[postUid].comments[commentUid]
+          });
+        });
+      });
+    });
+
+    setCurrentSelectedData({
+      type: 'all',
+      data: allContent
+    });
+  }
+
+  const getPreview = (type, el) => {
+    return type === 'subs' ?
+      <Link to={`/r/${el.name}`} key={el.uid}>
+        <SubPreview sub={el} />
+      </Link> :
+    type === 'posts' ?
+      <Link to={`/r/${el.subName}/${el.uid}/${el.title.split(' ').join('_').toLowerCase()}`} key={el.uid}>
+        <PostPreview loggedIn={loggedIn} post={el} adjustPostVotes={adjustPostVotes} />
+      </Link> :
+      <Link to={`/r/${el.subName}/${el.postUid}/${subList[el.subName].posts[el.postUid].title.split(' ').join('_').toLowerCase()}`} key={el.uid}>
+        <CommentPreview loggedIn={loggedIn} comment={el} adjustCommentVotes={adjustCommentVotes}/>
+      </Link>
+  }
 
   const changeSelectedView = (e) => {
+    if (e.target.textContent === 'Overview') displayOverview();
     if (e.target.textContent === 'Subs') displaySubs();
     if (e.target.textContent === 'Posts') displayPosts();
     if (e.target.textContent === 'Comments') displayComments();
@@ -164,17 +216,9 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
           {
             Object.values(currentSelectedData).length > 0 ?
             currentSelectedData.data.map((el) => {
-              return currentSelectedData.type === 'subs' ?
-                <Link to={`/r/${el.name}`} key={el.uid}>
-                  <SubPreview sub={el} />
-                </Link> :
-              currentSelectedData.type === 'posts' ?
-                <Link to={`/r/${el.subName}/${el.uid}/${el.title.split(' ').join('_').toLowerCase()}`} key={el.uid}>
-                  <PostPreview loggedIn={loggedIn} post={el} adjustPostVotes={adjustPostVotes} />
-                </Link> :
-                <Link to={`/r/${el.subName}/${el.postUid}/${subList[el.subName].posts[el.postUid].title.split(' ').join('_').toLowerCase()}`} key={el.uid}>
-                  <CommentPreview loggedIn={loggedIn} comment={el} adjustPostVotes={adjustPostVotes}/>
-                </Link>
+              return currentSelectedData.type === 'all' ?
+              getPreview(el.type, el.data) :
+              getPreview(currentSelectedData.type, el)
             }) :
             null
           }

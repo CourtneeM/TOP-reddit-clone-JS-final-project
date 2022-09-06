@@ -1,8 +1,7 @@
 import styled from "styled-components";
 
 const Wrapper = styled.div`
-  margin-bottom: 20px;
-  padding: 5px 30px;
+  margin-bottom: 20px;  padding: 5px 30px;
   background-color: #eee;
 `;
 const CommentHeader = styled.div`

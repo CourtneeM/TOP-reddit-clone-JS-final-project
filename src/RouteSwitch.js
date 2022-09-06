@@ -267,6 +267,7 @@ function RouteSwitch() {
             userList={userList}
             subList={subList}
             adjustPostVotes={adjustPostVotes}
+            adjustCommentVotes={adjustCommentVotes}
           />}
         />
       </Routes>
