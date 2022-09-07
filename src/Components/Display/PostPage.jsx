@@ -163,8 +163,8 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
   const adjustPostVotesHandler = (e) => {
     adjustPostVotes(e.target.className === "upvote-icon" ? 1 : -1 , post.uid, post.subName);
   }
-  const adjustCommentVotesHandler = (num, commentUid) => {
-    adjustCommentVotes(num, commentUid, post.uid, subName);
+  const adjustCommentVotesHandler = (num, comment, currentUserCopy) => {
+    adjustCommentVotes(num, comment, post.uid, subName, currentUserCopy);
   }
 
   const getComments = () => {

@@ -234,11 +234,17 @@ function RouteSwitch() {
     subListCopy[subUid].posts[postUid].adjustVotes(num);
     setSubList(subListCopy);
   }
-  const adjustCommentVotes = (num, commentUid, postUid, subName) => {
+  const adjustCommentVotes = (num, comment, postUid, subName, currentUserCopy) => {
     const subListCopy = {...subList};
-    subListCopy[subName].posts[postUid].comments[commentUid].adjustVotes(num);
+    subListCopy[subName].posts[postUid].comments[comment.uid] = comment;
+    subListCopy[subName].posts[postUid].comments[comment.uid].adjustVotes(num);
 
     setSubList(subListCopy);
+
+    const userListCopy = {...userList};
+    userListCopy[currentUser.uid] = currentUserCopy;
+
+    setUserList(userListCopy);
   }
 
   return (

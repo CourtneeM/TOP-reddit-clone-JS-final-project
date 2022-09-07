@@ -7,6 +7,8 @@ class Comment {
     this.text = text;
     this.creationDateTime = this.getDateTime();
     this.votes = 0;
+    this.upvotes = [];
+    this.downvotes = [];
     this.editStatus = { edited: false, editDateTime: null };
     this.deleteStatus = { deleted: false, deleteDateTime: null };
     this.children = [];

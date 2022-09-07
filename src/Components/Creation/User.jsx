@@ -13,6 +13,10 @@ class User {
       posts: {},
       comments: {},
     }
+    this.votes = {
+      upvotes: {},
+      downvotes: {}
+    }
     this.followedSubs = [];
   }
 
