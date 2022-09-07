@@ -44,6 +44,21 @@ const Body = styled.div`
     font-size: 2.4rem;
   }
 `;
+const SortOptions = styled.div`
+  margin: 0 80px 20px 0;
+  padding: 10px 20px;
+
+  background-color: #aaa;
+
+  ul {
+    display: flex;
+    gap: 40px;
+
+    li {
+      cursor: pointer;
+    }
+  }
+`;
 
 function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes, adjustCommentVotes }) {
   const [currentSelectedData, setCurrentSelectedData] = useState({});
@@ -171,7 +186,6 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
       data: allContent
     });
   }
-
   const getPreview = (type, el) => {
     return type === 'subs' ?
       <Link to={`/r/${el.name}`} key={el.uid}>
@@ -191,7 +205,6 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
         />
       </Link>
   }
-
   const changeSelectedView = (e) => {
     if (e.target.textContent === 'Overview') displayOverview();
     if (e.target.textContent === 'Subs') displaySubs();
@@ -200,6 +213,27 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
     if (e.target.textContent === 'Followed Subs') displayFollowedSubs();
     if (e.target.textContent === 'Favorite Posts') displayFavoritePosts();
     if (e.target.textContent === 'Favorite Comments') displayFavoriteComments();
+  }
+  const sortContent = (e) => {
+    const currentSelectedDataCopy = {...currentSelectedData};
+
+    if (e.target.textContent === 'Top') {
+      if (currentSelectedDataCopy.type === 'all') {
+        currentSelectedDataCopy.data.sort((a, b) => b.data.votes - a.data.votes);
+      } else {
+        currentSelectedDataCopy.data.sort((a, b) => b.votes - a.votes);
+      }
+    }
+
+    if (e.target.textContent === 'New') {
+      if (currentSelectedDataCopy.type === 'all') {
+        currentSelectedDataCopy.data.sort((a, b) => b.data.creationDateTime.fullDateTime - a.data.creationDateTime.fullDateTime);
+      } else {
+        currentSelectedDataCopy.data.sort((a, b) => b.creationDateTime.fullDateTime - a.creationDateTime.fullDateTime);
+      }
+    }
+
+    setCurrentSelectedData(currentSelectedDataCopy);
   }
 
   return (
@@ -225,6 +259,12 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
           <h1>u/{userList[params.userUid].name}</h1>
         </Header>
         <Body>
+          <SortOptions>
+            <ul>
+              <li onClick={(e) => sortContent(e)}>Top</li>
+              <li onClick={(e) => sortContent(e)}>New</li>
+            </ul>
+          </SortOptions>
           {
             Object.values(currentSelectedData).length > 0 ?
             currentSelectedData.data.map((el) => {
