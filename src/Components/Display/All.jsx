@@ -81,7 +81,7 @@ function All({ loggedIn, currentUser, subList, favoritePost, unfavoritePost }) {
 
   const getPostPreview = () => {
     return Object.values(posts).map((post) => {
-      const path = `/r/${post.subName.split(' ').join('_').toLowerCase()}/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`
+      const path = `/r/${post.subName}/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`
       return (
         <Link to={path} key={post.uid}>
           <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={favoritePost} unfavoritePost={unfavoritePost} />

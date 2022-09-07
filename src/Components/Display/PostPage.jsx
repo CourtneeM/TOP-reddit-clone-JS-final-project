@@ -246,7 +246,7 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
     e.target.className === "upvote-icon" ? upvoteHandler() : downvoteHandler();
   }
   const adjustCommentVotesHandler = (num, comment, currentUserCopy) => {
-    adjustCommentVotes(num, comment, post.uid, subName, currentUserCopy);
+    adjustCommentVotes(num, comment, currentUserCopy);
   }
 
   const getComments = () => {
