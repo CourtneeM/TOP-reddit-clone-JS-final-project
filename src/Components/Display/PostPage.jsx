@@ -161,7 +161,89 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
   }
 
   const adjustPostVotesHandler = (e) => {
-    adjustPostVotes(e.target.className === "upvote-icon" ? 1 : -1 , post.uid, post.subName);
+    const currentUserCopy = {...currentUser};
+    
+    const initialSetup = (type) => {
+      if (!currentUserCopy.votes[type].posts[post.subName]) {
+        currentUserCopy.votes[type].posts[post.subName] = [];
+      }
+    }
+    const removeEmptySubOrPost = (type) => {
+      if (currentUserCopy.votes[type].posts[post.subName].length === 0) {
+        delete currentUserCopy.votes[type].posts[post.subName];
+      }
+    }
+
+    const upvoteHandler = () => {
+      const removeUpvote = () => {
+        const userUidIndex = post.upvotes.indexOf(currentUser.uid);
+        post.upvotes.splice(userUidIndex, 1);
+
+        const postUidIndex = currentUserCopy.votes.upvotes.posts[post.subName].indexOf(post.uid); 
+        currentUserCopy.votes.upvotes.posts[post.subName].splice(postUidIndex, 1);
+
+        removeEmptySubOrPost('upvotes');
+
+        adjustPostVotes(-1, post, currentUserCopy);
+      }
+      const removeDownvote = () => {
+        const userUidIndex = post.downvotes.indexOf(currentUser.uid);
+        post.downvotes.splice(userUidIndex, 1);
+
+        const postUidIndex = currentUserCopy.votes.downvotes.posts[post.subName].indexOf(post.uid);
+        currentUserCopy.votes.downvotes.posts[post.subName].splice(postUidIndex, 1);
+
+        removeEmptySubOrPost('downvotes');
+        
+        adjustPostVotes(1, post, currentUserCopy);
+      }
+      
+      initialSetup('upvotes');
+
+      if (post.upvotes.includes(currentUser.uid)) return removeUpvote();
+      if (post.downvotes.includes(currentUser.uid)) removeDownvote();
+      
+      post.upvotes.push(currentUser.uid);
+      currentUserCopy.votes.upvotes.posts[post.subName].push(post.uid);
+
+      adjustPostVotes(1, post, currentUserCopy);
+    }
+    const downvoteHandler = () => {
+      const removeDownvote = () => {
+        const userUidIndex = post.downvotes.indexOf(currentUser.uid);
+        post.downvotes.splice(userUidIndex, 1);
+
+        const postUidIndex = currentUserCopy.votes.downvotes.posts[post.subName].indexOf(post.uid);
+        currentUserCopy.votes.downvotes.posts[post.subName].splice(postUidIndex, 1);
+
+        removeEmptySubOrPost('downvotes');
+
+        adjustPostVotes(1, post, currentUserCopy);
+      }
+      const removeUpvote = () => {
+        const userUidIndex = post.upvotes.indexOf(currentUser.uid);
+        post.upvotes.splice(userUidIndex, 1);
+        
+        const postUidIndex = currentUserCopy.votes.upvotes.posts[post.subName].indexOf(post.uid);
+        currentUserCopy.votes.upvotes.posts[post.subName].splice(postUidIndex);
+
+        removeEmptySubOrPost('upvotes');
+        
+        adjustPostVotes(-1, post, currentUserCopy);
+      }
+
+      initialSetup('downvotes');
+
+      if (post.downvotes.includes(currentUser.uid)) return removeDownvote();
+      if (post.upvotes.includes(currentUser.uid)) removeUpvote();
+
+      post.downvotes.push(currentUser.uid);
+      currentUserCopy.votes.downvotes.posts[post.subName].push(post.uid);
+
+      adjustPostVotes(-1, post, currentUserCopy);
+    }
+
+    e.target.className === "upvote-icon" ? upvoteHandler() : downvoteHandler();
   }
   const adjustCommentVotesHandler = (num, comment, currentUserCopy) => {
     adjustCommentVotes(num, comment, post.uid, subName, currentUserCopy);

@@ -82,22 +82,22 @@ function Comment({ loggedIn, currentUser, comments, comment, commentReply, favor
     const currentUserCopy = {...currentUser};
 
     const removeEmptySubOrPost = (type) => {
-      if (type === 'downvotes' && currentUserCopy.votes[type][comment.subName][comment.postUid].length === 0) {
-        delete currentUserCopy.votes[type][comment.subName][comment.postUid];
+      if (type === 'downvotes' && currentUserCopy.votes[type].comments[comment.subName][comment.postUid].length === 0) {
+        delete currentUserCopy.votes[type].comments[comment.subName][comment.postUid];
       }
 
-      if (Object.values(currentUserCopy.votes[type][comment.subName]).length === 0) {
-        delete currentUserCopy.votes[type][comment.subName];
+      if (Object.values(currentUserCopy.votes[type].comments[comment.subName]).length === 0) {
+        delete currentUserCopy.votes[type].comments[comment.subName];
       }
     }
     const upvoteHandler = () => {
       const initialSetup = () => {
-        if (!currentUserCopy.votes.upvotes[comment.subName]) {
-          currentUserCopy.votes.upvotes = { [comment.subName]: { }};
+        if (!currentUserCopy.votes.upvotes.comments[comment.subName]) {
+          currentUserCopy.votes.upvotes.comments = { [comment.subName]: { }};
         }
         
-        if (!currentUserCopy.votes.upvotes[comment.subName][comment.postUid]) {
-          currentUserCopy.votes.upvotes[comment.subName] = { [comment.postUid]: '' };
+        if (!currentUserCopy.votes.upvotes.comments[comment.subName][comment.postUid]) {
+          currentUserCopy.votes.upvotes.comments[comment.subName][comment.postUid] = '';
         }
       }
       
@@ -116,7 +116,7 @@ function Comment({ loggedIn, currentUser, comments, comment, commentReply, favor
         const userUidIndex = comment.upvotes.indexOf(currentUser.uid);
         comment.upvotes.splice(userUidIndex, 1);
 
-        delete currentUserCopy.votes.upvotes[comment.subName][comment.postUid];
+        delete currentUserCopy.votes.upvotes.comments[comment.subName][comment.postUid];
 
         removeEmptySubOrPost('upvotes');
 
@@ -126,8 +126,8 @@ function Comment({ loggedIn, currentUser, comments, comment, commentReply, favor
         const userUidIndex = comment.downvotes.indexOf(currentUser.uid);
         comment.downvotes.splice(userUidIndex, 1);
 
-        const commentUidIndex = currentUserCopy.votes.downvotes[comment.subName][comment.postUid].indexOf(comment.uid);
-        currentUserCopy.votes.downvotes[comment.subName][comment.postUid].splice(commentUidIndex, 1);
+        const commentUidIndex = currentUserCopy.votes.downvotes.comments[comment.subName][comment.postUid].indexOf(comment.uid);
+        currentUserCopy.votes.downvotes.comments[comment.subName][comment.postUid].splice(commentUidIndex, 1);
 
         removeEmptySubOrPost('downvotes');
         
@@ -141,27 +141,26 @@ function Comment({ loggedIn, currentUser, comments, comment, commentReply, favor
       if (comment.downvotes.includes(currentUser.uid)) removeDownvote();
       
       comment.upvotes.push(currentUser.uid);
-      currentUserCopy.votes.upvotes[comment.subName][comment.postUid] = comment.uid;
+      currentUserCopy.votes.upvotes.comments[comment.subName][comment.postUid] = comment.uid;
 
       adjustCommentVotes(1, comment, currentUserCopy);
     }
-    
     const downvoteHandler = () => {
       const initialSetup = () => {
-        if (!currentUserCopy.votes.downvotes[comment.subName]) {
-          currentUserCopy.votes.downvotes = { [comment.subName]: { }};  
+        if (!currentUserCopy.votes.downvotes.comments[comment.subName]) {
+          currentUserCopy.votes.downvotes.comments = { [comment.subName]: { }};  
         }
         
-        if (!currentUserCopy.votes.downvotes[comment.subName][comment.postUid]) {
-          currentUserCopy.votes.downvotes[comment.subName] = { [comment.postUid]: [] };
+        if (!currentUserCopy.votes.downvotes.comments[comment.subName][comment.postUid]) {
+          currentUserCopy.votes.downvotes.comments[comment.subName][comment.postUid] = [];
         }
       }
       const removeDownvote = () => {
         const userUidIndex = comment.downvotes.indexOf(currentUser.uid);
         comment.downvotes.splice(userUidIndex, 1);
 
-        const commentUidIndex = currentUserCopy.votes.downvotes[comment.subName][comment.postUid].indexOf(comment.uid);
-        currentUserCopy.votes.downvotes[comment.subName][comment.postUid].splice(commentUidIndex, 1);
+        const commentUidIndex = currentUserCopy.votes.downvotes.comments[comment.subName][comment.postUid].indexOf(comment.uid);
+        currentUserCopy.votes.downvotes.comments[comment.subName][comment.postUid].splice(commentUidIndex, 1);
 
         removeEmptySubOrPost('downvotes');
 
@@ -171,6 +170,8 @@ function Comment({ loggedIn, currentUser, comments, comment, commentReply, favor
         const userUidIndex = comment.upvotes.indexOf(currentUser.uid);
         comment.upvotes.splice(userUidIndex, 1);
         
+        delete currentUserCopy.votes.upvotes.comments[comment.subName][comment.postUid];
+
         removeEmptySubOrPost('upvotes');
         
         adjustCommentVotes(-1, comment, currentUserCopy);
@@ -181,7 +182,7 @@ function Comment({ loggedIn, currentUser, comments, comment, commentReply, favor
       if (comment.upvotes.includes(currentUser.uid)) removeUpvote();
 
       comment.downvotes.push(currentUser.uid);
-      currentUserCopy.votes.downvotes[comment.subName][comment.postUid].push(comment.uid);
+      currentUserCopy.votes.downvotes.comments[comment.subName][comment.postUid].push(comment.uid);
 
       adjustCommentVotes(-1, comment, currentUserCopy);
     }

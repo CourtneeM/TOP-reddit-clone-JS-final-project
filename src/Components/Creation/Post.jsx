@@ -10,6 +10,8 @@ class Post {
     this.creationDateTime = this.getDateTime();
     this.subName = subName;
     this.votes = 0;
+    this.upvotes = [];
+    this.downvotes = [];
     this.comments = {};
   }
 

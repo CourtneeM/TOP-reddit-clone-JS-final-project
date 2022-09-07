@@ -14,8 +14,14 @@ class User {
       comments: {},
     }
     this.votes = {
-      upvotes: {},
-      downvotes: {}
+      upvotes: {
+        posts: {},
+        comments: {}
+      },
+      downvotes: {
+        posts: {},
+        comments: {}
+      }
     }
     this.followedSubs = [];
   }

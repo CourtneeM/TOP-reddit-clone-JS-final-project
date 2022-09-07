@@ -227,24 +227,28 @@ function RouteSwitch() {
     setSubList(subListCopy);
   }
 
-  const adjustPostVotes = (num, postUid, subName) => {
+  const adjustPostVotes = (num, post, currentUserCopy) => {
     const subListCopy = {...subList};
-    const subUid = Object.values(subListCopy).filter((sub) => sub.name === subName)[0].uid;
-    
-    subListCopy[subUid].posts[postUid].adjustVotes(num);
+    subListCopy[post.subName].posts[post.uid].adjustVotes(num);
     setSubList(subListCopy);
+    
+    const userListCopy = {...userList};
+    userListCopy[currentUserCopy.uid] = currentUserCopy;
+    setUserList(userListCopy);
+
+    setCurrentUser(currentUserCopy);
   }
   const adjustCommentVotes = (num, comment, postUid, subName, currentUserCopy) => {
     const subListCopy = {...subList};
     subListCopy[subName].posts[postUid].comments[comment.uid] = comment;
     subListCopy[subName].posts[postUid].comments[comment.uid].adjustVotes(num);
-
     setSubList(subListCopy);
 
     const userListCopy = {...userList};
     userListCopy[currentUser.uid] = currentUserCopy;
-
     setUserList(userListCopy);
+
+    setCurrentUser(currentUserCopy);
   }
 
   return (
