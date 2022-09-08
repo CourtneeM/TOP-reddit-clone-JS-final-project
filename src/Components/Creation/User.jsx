@@ -9,6 +9,7 @@ class User {
       posts: {},
       comments: {},
     }
+    this.moderator = [];
     this.favorite = {
       posts: {},
       comments: {},

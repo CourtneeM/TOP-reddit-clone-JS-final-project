@@ -1,13 +1,13 @@
 import Post from './Post';
 
 class Sub {
-  constructor(name, owner) {
+  constructor(name, owner, subTitle='', about='', moderators=[]) {
     this.name = name;
-    this.subTitle = '';
+    this.subTitle = subTitle;
     this.owner = owner;
-    this.managers = {};
+    this.moderators = moderators;
     this.followers = [];
-    this.about = '';
+    this.about = about;
     this.creationDateTime = this.getDateTime();
     this.posts = {};
   }
@@ -20,10 +20,6 @@ class Sub {
     }
   }
 
-  edit(name) {
-    this.name = name;
-  }
-
   delete(subList) {
     delete subList.uid;
   }
@@ -32,12 +28,12 @@ class Sub {
     this.owner = newOwner;
   }
 
-  addManager(userUid, user) {
-    this.managers[userUid] = user;
+  addModerator(userUid, user) {
+    this.moderators[userUid] = user;
   }
 
-  removeManager(userUid) {
-    delete this.managers[userUid];
+  removeModerator(userUid) {
+    delete this.moderators[userUid];
   }
 
   addPost(postUid, title, owner, type, content, subName) {

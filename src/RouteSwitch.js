@@ -13,8 +13,9 @@ import Sub from './Components/Creation/Sub';
 import Home from "./Components/Display/Home";
 import All from './Components/Display/All';
 import SubPage from './Components/Display/SubPage';
-import PostPage from './Components/Display/PostPage';
 import CreateSubPage from "./Components/Display/CreateSubPage";
+import EditSubPage from "./Components/Display/EditSubPage";
+import PostPage from './Components/Display/PostPage';
 import CreatePostPage from "./Components/Display/CreatePostPage";
 import UserProfile from './Components/Display/UserProfile/UserProfile';
 
@@ -127,6 +128,16 @@ function RouteSwitch() {
     userListCopy[currentUser.uid].followedSubs.splice(index, 1);
 
     setUserList(userListCopy);
+  }
+
+  const editSub = (sub) => {
+    const subListCopy = {...subList};
+
+    const editedSub = new Sub(sub.name, sub.owner, sub.subTitle, sub.about);
+
+    subListCopy[sub.name] = editedSub;
+
+    setSubList(subListCopy);
   }
 
   const favoritePost = (subName, postUid) => {
@@ -272,23 +283,24 @@ function RouteSwitch() {
                 adjustPostVotes={adjustPostVotes}
               />}
             />
-              <Route key={uniqid()} path="new_post" element={<CreatePostPage loggedIn={loggedIn} currentUser={currentUser} subList={subList} submitPost={submitPost} />} />
-              <Route key={uniqid()} path=":postUid/:postTitle"
-                element={<PostPage
-                  loggedIn={loggedIn}
-                  currentUser={currentUser}
-                  subList={subList}
-                  favoritePost={favoritePost}
-                  unfavoritePost={unfavoritePost}
-                  deletePost={deletePost}
-                  addComment={addComment}
-                  favoriteComment={favoriteComment}
-                  unfavoriteComment={unfavoriteComment}
-                  deleteComment={deleteComment}
-                  adjustPostVotes={adjustPostVotes}
-                  adjustCommentVotes={adjustCommentVotes}
-                />}
-              />
+            <Route key={uniqid()} path="edit_sub" element={<EditSubPage loggedIn={loggedIn} currentUser={currentUser} subList={subList} editSub={editSub} />} />
+            <Route key={uniqid()} path="new_post" element={<CreatePostPage loggedIn={loggedIn} currentUser={currentUser} subList={subList} submitPost={submitPost} />} />
+            <Route key={uniqid()} path=":postUid/:postTitle"
+              element={<PostPage
+                loggedIn={loggedIn}
+                currentUser={currentUser}
+                subList={subList}
+                favoritePost={favoritePost}
+                unfavoritePost={unfavoritePost}
+                deletePost={deletePost}
+                addComment={addComment}
+                favoriteComment={favoriteComment}
+                unfavoriteComment={unfavoriteComment}
+                deleteComment={deleteComment}
+                adjustPostVotes={adjustPostVotes}
+                adjustCommentVotes={adjustCommentVotes}
+              />}
+            />
           </Route>
         }
         <Route path='/u/:userUid/:userName'

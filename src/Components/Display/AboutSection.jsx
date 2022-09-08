@@ -21,9 +21,20 @@ const About = styled.div`
     cursor: pointer;
   }
 `;
+const SubOptions = styled.div`
+  div {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+`;
 
 function AboutSection({ loggedIn, currentUser, sub, deleteSub }) {
   const navigate = useNavigate();
+
+  const editSubHandler = () => {
+    navigate(`/r/${sub.name}/edit_sub`);
+  }
 
   const deleteSubHandler = () =>{
     if (sub.owner.uid === currentUser.uid) deleteSub(sub.name);
@@ -44,14 +55,21 @@ function AboutSection({ loggedIn, currentUser, sub, deleteSub }) {
       </p>
       <p>{sub.followers.length ? sub.followers.length : 0} Followers</p>
       <p>Created {sub.creationDateTime.date.month}/{sub.creationDateTime.date.day}/{sub.creationDateTime.date.year}</p>
-      { loggedIn &&
-        <Link to="new_post">
-          <button>Create Post</button>
-        </Link>
-      }
-      {
-        loggedIn && sub.owner.uid === currentUser.uid && <button onClick={deleteSubHandler}>Delete Sub</button>
-      }
+      <SubOptions>
+        {
+          loggedIn && sub.owner.uid === currentUser.uid ?
+          <div>
+            <button onClick={editSubHandler}>Edit Sub</button>
+            <button onClick={deleteSubHandler}>Delete Sub</button>
+          </div> :
+          null
+        }
+        { loggedIn &&
+          <Link to="new_post">
+            <button>Create Post</button>
+          </Link>
+        }
+      </SubOptions>
     </About>
   );
 };
