@@ -117,12 +117,23 @@ function RouteSwitch() {
   }
 
   const followSub = (subName) => {
+    const subListCopy = {...subList};
+    subListCopy[subName].followers.push(currentUser.uid);
+
+    setSubList(subListCopy);
+
     const userListCopy = {...userList};
     userListCopy[currentUser.uid].followedSubs.push(subName);
 
     setUserList(userListCopy);
   }
   const unfollowSub = (subName) => {
+    const subListCopy = {...subList};
+    const userIndex = subListCopy[subName].followers.indexOf(currentUser.uid);
+    subListCopy[subName].followers.splice(userIndex, 1);
+
+    setSubList(subListCopy);
+
     const userListCopy = {...userList};
     const index = userListCopy[currentUser.uid].followedSubs.indexOf(subName);
     userListCopy[currentUser.uid].followedSubs.splice(index, 1);
@@ -133,7 +144,8 @@ function RouteSwitch() {
   const editSub = (sub) => {
     const subListCopy = {...subList};
 
-    const editedSub = new Sub(sub.name, sub.owner, sub.subTitle, sub.about);
+    const [name, owner, subTitle, moderators, followers, about, creationDateTime, posts] = Object.values(sub);
+    const editedSub = new Sub(name, owner, subTitle, moderators, followers, about, creationDateTime, posts);
 
     subListCopy[sub.name] = editedSub;
 
@@ -274,16 +286,16 @@ function RouteSwitch() {
               element={<SubPage
                 loggedIn={loggedIn}
                 currentUser={currentUser}
+                userList={userList}
                 subList={subList}
                 followSub={followSub}
                 unfollowSub={unfollowSub}
-                deleteSub={deleteSub}
                 favoritePost={favoritePost}
                 unfavoritePost={unfavoritePost}
                 adjustPostVotes={adjustPostVotes}
               />}
             />
-            <Route key={uniqid()} path="edit_sub" element={<EditSubPage loggedIn={loggedIn} currentUser={currentUser} subList={subList} editSub={editSub} />} />
+            <Route key={uniqid()} path="edit_sub" element={<EditSubPage loggedIn={loggedIn} currentUser={currentUser} userList={userList} subList={subList} editSub={editSub} deleteSub={deleteSub} />} />
             <Route key={uniqid()} path="new_post" element={<CreatePostPage loggedIn={loggedIn} currentUser={currentUser} subList={subList} submitPost={submitPost} />} />
             <Route key={uniqid()} path=":postUid/:postTitle"
               element={<PostPage

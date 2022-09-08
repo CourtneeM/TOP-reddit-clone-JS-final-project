@@ -21,7 +21,7 @@ function PostPreview({ sub }) {
     <Wrapper>
       <Body>
         <h4>r/ {sub.name}</h4>
-        <p>{sub.subTitle}sub sub-title</p>
+        <p>{sub.subTitle}</p>
       </Body>
     </Wrapper>
   );

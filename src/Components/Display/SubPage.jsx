@@ -56,7 +56,7 @@ const PostsContainer = styled.div`
 
 `;
 
-function SubPage({ loggedIn, currentUser, subList, followSub, unfollowSub, deleteSub, favoritePost, unfavoritePost, adjustPostVotes }) {
+function SubPage({ loggedIn, currentUser, userList, subList, followSub, unfollowSub, deleteSub, favoritePost, unfavoritePost, adjustPostVotes }) {
   const params = useParams();
 
   const [sub, setSub] = useState({});
@@ -70,11 +70,6 @@ function SubPage({ loggedIn, currentUser, subList, followSub, unfollowSub, delet
     setSub(currentSub);
     setPosts(Object.values(currentSub.posts));
   }, [params.subName, subList, sub.posts]);
-
-  const deleteSubHandler = () => {
-    // display popup confirmation
-    if (sub.owner.uid === currentUser.uid) deleteSub(sub.name);
-  }
 
   const sortPosts = (e) => {
     const postsCopy = [...posts];
@@ -142,7 +137,7 @@ function SubPage({ loggedIn, currentUser, subList, followSub, unfollowSub, delet
               </PostsContainer>
             </PostsSection>
 
-            <AboutSection loggedIn={loggedIn} currentUser={currentUser} sub={sub} deleteSub={deleteSubHandler} /> 
+            <AboutSection loggedIn={loggedIn} currentUser={currentUser} userList={userList} sub={sub} /> 
           </> :
           <p>Loading...</p>
         }

@@ -22,54 +22,68 @@ const About = styled.div`
   }
 `;
 const SubOptions = styled.div`
+  margin-bottom: 40px;
+
   div {
     display: flex;
     gap: 20px;
     margin-bottom: 20px;
   }
 `;
+const ModeratorList = styled.div`
+  > p:first-child {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+`;
 
-function AboutSection({ loggedIn, currentUser, sub, deleteSub }) {
+function AboutSection({ loggedIn, currentUser, userList, sub }) {
   const navigate = useNavigate();
 
   const editSubHandler = () => {
     navigate(`/r/${sub.name}/edit_sub`);
   }
 
-  const deleteSubHandler = () =>{
-    if (sub.owner.uid === currentUser.uid) deleteSub(sub.name);
-
-    navigate('/');
-  }
+  
 
   return (
     <About>
       <h3>About</h3>
-      <p>{sub.about ? sub.about : `Lorem ipsum dolor sit amet consectetur, adipisicing elit. Velit deserunt maxime magnam repudiandae,
-        dolore dolores, rem quasi odio recusandae omnis quis! Temporibus consequatur optio ratione cumque
-        vero nemo non provident!`}</p>
-      <p>Owner: 
+      <p>{sub.about}</p>
+      <p>Owner:
         <Link to={`/u/${sub.owner.uid}/${sub.owner.name}`}>
           u/{sub.owner.name}
         </Link>
       </p>
       <p>{sub.followers.length ? sub.followers.length : 0} Followers</p>
-      <p>Created {sub.creationDateTime.date.month}/{sub.creationDateTime.date.day}/{sub.creationDateTime.date.year}</p>
+      <p>Created: {sub.creationDateTime.date.month}/{sub.creationDateTime.date.day}/{sub.creationDateTime.date.year}</p>
       <SubOptions>
         {
           loggedIn && sub.owner.uid === currentUser.uid ?
           <div>
             <button onClick={editSubHandler}>Edit Sub</button>
-            <button onClick={deleteSubHandler}>Delete Sub</button>
           </div> :
           null
         }
-        { loggedIn &&
+        { 
+          loggedIn &&
           <Link to="new_post">
             <button>Create Post</button>
           </Link>
         }
       </SubOptions>
+      <ModeratorList>
+        <p>Moderators</p>
+        {
+          sub.moderators.map((modUid) => {
+            return (
+              <Link to={`/u/${modUid}/${userList[modUid].name}`}>
+                <p>u/{userList[modUid].name}</p>
+              </Link>
+            )
+          })
+        }
+      </ModeratorList>
     </About>
   );
 };
