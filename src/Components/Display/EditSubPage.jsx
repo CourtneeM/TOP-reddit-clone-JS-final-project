@@ -128,6 +128,7 @@ function EditSubPage({ loggedIn, currentUser, userList, subList, editSub, delete
   const [subAbout, setSubAbout] = useState('');
   const [editModList, setEditModList] = useState(false);
   const [modList, setModList] = useState([]);
+  const [removedMods, setRemovedMods] = useState([]);
 
   const params = useParams();
   const navigate = useNavigate();
@@ -146,9 +147,9 @@ function EditSubPage({ loggedIn, currentUser, userList, subList, editSub, delete
     subCopy.about = subAbout;
     subCopy.moderators = modList;
 
-    editSub(subCopy)
+    editSub(subCopy, removedMods);
 
-    navigate(`/r/${sub.name}`)
+    navigate(`/r/${sub.name}`);
   }
 
   const editModeratorList = () => {
@@ -161,7 +162,16 @@ function EditSubPage({ loggedIn, currentUser, userList, subList, editSub, delete
       newMods.push(el.id);
     });
 
+    let newRemovedMods = removedMods;
+    modList.forEach((modUid) => {
+      if (!newMods.includes(modUid) && !newRemovedMods.includes(modUid)) newRemovedMods.push(modUid);
+    });
 
+    newRemovedMods.forEach((removedModUid, index) => {
+      if (newMods.includes(removedModUid)) newRemovedMods.splice(index, 1); 
+    });
+
+    setRemovedMods(newRemovedMods);
     setModList(newMods);
     setEditModList(false);
   }

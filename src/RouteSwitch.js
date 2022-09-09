@@ -141,7 +141,7 @@ function RouteSwitch() {
     setUserList(userListCopy);
   }
 
-  const editSub = (sub) => {
+  const editSub = (sub, removedMods) => {
     const subListCopy = {...subList};
 
     const [name, owner, subTitle, moderators, followers, about, creationDateTime, posts] = Object.values(sub);
@@ -150,6 +150,20 @@ function RouteSwitch() {
     subListCopy[sub.name] = editedSub;
 
     setSubList(subListCopy);
+
+    const userListCopy = {...userList};
+    moderators.forEach((modUid) => {
+      if (!userListCopy[modUid].moderator.includes(name)) {
+        userListCopy[modUid].moderator.push(name);
+      }
+    });
+
+    removedMods.forEach((removedModUid) => {
+      const index = userListCopy[removedModUid].moderator.indexOf(name);
+      userListCopy[removedModUid].moderator.splice(index, 1);
+    });
+
+    setUserList(userListCopy);
   }
 
   const favoritePost = (subName, postUid) => {
