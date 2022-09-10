@@ -83,42 +83,50 @@ function Comment({ loggedIn, currentUser, subList, comments, comment, commentRep
     setCommentText(comment.text);
   }, [comment]);
 
-  const displayFavoriteButtons = () => {
-    return (
-      loggedIn ?
-      currentUser.favorite.comments[comment.subName] &&
-      currentUser.favorite.comments[comment.subName][comment.postUid] &&
-      currentUser.favorite.comments[comment.subName][comment.postUid].includes(comment.uid) ?
-      <p onClick={() => unfavoriteComment(comment.subName, comment.postUid, comment.uid)}>Unfavorite</p> :
-      <p onClick={() => favoriteComment(comment.subName, comment.postUid, comment.uid)}>Favorite</p> :
-      null
-    )
-  }
   const displayCommentActions = () => {
+    const displayVoteButton = (type, symbol) => {
+      return loggedIn && <p className={`${type}-icon`} onClick={(e) => adjustVotesHandler(e)}>{symbol}</p>
+    };
+    const displayFavoriteButtons = () => {
+      return (
+        loggedIn ?
+        currentUser.favorite.comments[comment.subName] &&
+        currentUser.favorite.comments[comment.subName][comment.postUid] &&
+        currentUser.favorite.comments[comment.subName][comment.postUid].includes(comment.uid) ?
+        <p onClick={() => unfavoriteComment(comment.subName, comment.postUid, comment.uid)}>Unfavorite</p> :
+        <p onClick={() => favoriteComment(comment.subName, comment.postUid, comment.uid)}>Favorite</p> :
+        null
+      );
+    };
+    const displayEditButton = () => {
+      return (
+        (loggedIn && comment.owner.uid === currentUser.uid) &&
+        <p onClick={() => setEditMode(true)}>Edit</p>
+      );
+    };
+    const displayDeleteButton = () => {
+      return (
+        (loggedIn && comment.owner.uid === currentUser.uid) ||
+        (loggedIn && subList[comment.subName].moderators.includes(currentUser.uid)) ?
+        <p onClick={deleteCommentHandler}>Delete</p> :
+        null
+      );
+    };
+
     return (
       <>
         <div>
-          { loggedIn && <p className="upvote-icon" onClick={(e) => adjustVotesHandler(e)}>^</p> }
+          { displayVoteButton('upvote', '^') }
           <p>{comment.votes}</p>
-          { loggedIn && <p className="downvote-icon" onClick={(e) => adjustVotesHandler(e)}>v</p> }
+          { displayVoteButton('upvote', 'v') }
 
           <p onClick={displayReplyContainer}>Reply</p>
         </div>
         <div>
           { displayFavoriteButtons() }
-
           <p>Share</p>
-
-          { 
-            (loggedIn && comment.owner.uid === currentUser.uid) &&
-            <p onClick={() => setEditMode(true)}>Edit</p>
-          }
-          { 
-            (loggedIn && comment.owner.uid === currentUser.uid) ||
-            (loggedIn && subList[comment.subName].moderators.includes(currentUser.uid)) ?
-            <p onClick={deleteCommentHandler}>Delete</p> :
-            null
-          }
+          { displayEditButton() }
+          { displayDeleteButton() }
         </div>
       </>
     );

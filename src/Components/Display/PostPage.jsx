@@ -44,6 +44,10 @@ const Body = styled.div`
   > div p {
     margin-bottom: 80px;
   }
+
+  textarea {
+    width: 100%;
+  }
 `;
 const PostActions = styled.div`
   display: flex;
@@ -97,7 +101,7 @@ const CommentsContainer = styled.div`
   }
 `;
 
-function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost, deletePost, addComment, favoriteComment, unfavoriteComment, editComment, deleteComment, adjustPostVotes, adjustCommentVotes }) {
+function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost, editPost, deletePost, addComment, favoriteComment, unfavoriteComment, editComment, deleteComment, adjustPostVotes, adjustCommentVotes }) {
   const params = useParams();
   const navigate = useNavigate();
 
@@ -106,6 +110,8 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
   const [comments, setComments] = useState([]);
   const [commentInput, setCommentInput] = useState('');
   const [loaded, setLoaded] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [postContent, setPostContent] = useState('');
 
   useEffect(() => {
     const sub = Object.values(subList).filter((sub) => {
@@ -120,6 +126,7 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
   }, [subList]);
 
   useEffect(() => {
+    setPostContent(post.content);
     setLoaded(true);
   }, [post])
 
@@ -129,7 +136,6 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
     addComment(commentInput, post.uid, subName);
     setCommentInput('');
   }
-
   const commentReplyHandler = (replyText, parentComment) => {
     addComment(replyText, post.uid, subName, parentComment);
   }
@@ -154,6 +160,60 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
     setComments(commentsCopy);
   }
 
+  const displayPostActions = () => {
+    const displayFavoriteButtons = () => {
+      return (
+        loggedIn ?
+        currentUser.favorite.posts[subName] && currentUser.favorite.posts[subName].includes(post.uid) ?
+        <p onClick={() => unfavoritePost(subName, post.uid)}>Unfavorite</p> :
+        <p onClick={() => favoritePost(subName, post.uid)}>Favorite</p> :
+        null
+      );
+    };
+    const displayEditButton = () => {
+      return (
+        (loggedIn && post.owner.uid === currentUser.uid) &&
+        <p onClick={() => setEditMode(true)}>Edit</p>
+      );
+    };
+    const displayDeleteButton = () => {
+      return (
+        (loggedIn && post.owner.uid === currentUser.uid) ||
+        (loggedIn && subList[post.subName].moderators.includes(currentUser.uid)) ?
+        <p onClick={deletePostHandler}>Delete</p> :
+        null
+      );
+    };
+
+    return (
+      <>
+        { displayFavoriteButtons() }
+        <p>Share</p>
+        { displayEditButton() }
+        { displayDeleteButton() }
+      </>
+    );
+  }
+  const displayEditActions = () => {
+    return (
+      <>
+        <button onClick={cancelEditPostHandler}>Cancel</button>
+        <button onClick={editPostHandler}>Edit</button>
+      </>
+    )
+  }
+
+  const editPostHandler = () => {
+    setEditMode(false);
+
+    const editedPost = {...post};
+    editedPost.content = postContent;
+    if (post.owner.uid === currentUser.uid) editPost(editedPost);
+  }
+  const cancelEditPostHandler = () => {
+    setEditMode(false);
+    setPostContent(post.content);
+  }
   const deletePostHandler = () => {
     // display popup confirmation
     if ((post.owner.uid === currentUser.uid) || (subList[post.subName].moderators.includes(currentUser.uid))) {
@@ -293,6 +353,10 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
                 </Link>
               </p>
               <p>{post.creationDateTime.date.month}/{post.creationDateTime.date.day}/{post.creationDateTime.date.year}</p>
+              { post.editStatus.edited ?
+                <p>Edited: {post.editStatus.editDateTime.date.month}/{post.editStatus.editDateTime.date.day}/{post.editStatus.editDateTime.date.year}</p> :
+                null
+              }
 
               <VoteStatus>
                 { loggedIn && <p className="upvote-icon" onClick={(e) => adjustPostVotesHandler(e)}>^</p> }
@@ -300,10 +364,14 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
                 { loggedIn && <p className="downvote-icon" onClick={(e) => adjustPostVotesHandler(e)}>v</p> }
               </VoteStatus>
             </Header>
+
             <Body>
               <div>
                 <h2>{post.title}</h2>
-                <p>{post.content}</p>
+                { editMode ?
+                  <textarea name="new-post-content" id="new-post-content" cols="30" rows="10" value={postContent} onChange={(e) => setPostContent(e.target.value)}></textarea> :
+                  <p>{post.content}</p>
+                }
               </div>
 
               <PostActions>
@@ -311,21 +379,14 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
                   <p>{getNumComments() === 1 ? getNumComments() + ' comment' : getNumComments() + ' comments'}</p>
                 </div>
                 <div>
-                  { loggedIn ?
-                    currentUser.favorite.posts[subName] && currentUser.favorite.posts[subName].includes(post.uid) ?
-                    <p onClick={() => unfavoritePost(subName, post.uid)}>Unfavorite</p> :
-                    <p onClick={() => favoritePost(subName, post.uid)}>Favorite</p> :
-                    null
-                  }
-                  <p>Share</p>
-                  { (loggedIn && post.owner.uid === currentUser.uid) ||
-                    (loggedIn && subList[post.subName].moderators.includes(currentUser.uid)) ?
-                    <p onClick={deletePostHandler}>Delete</p> :
-                    null
+                  { editMode ?
+                    displayEditActions() :
+                    displayPostActions()
                   }
                 </div>
               </PostActions>
             </Body>
+
             <CommentSection>
               {
                 loggedIn &&
@@ -337,6 +398,7 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
                   </form>
                 </CompositionContainer>
               }
+              
               <CommentsContainer>
                 <div>
                   <p>Sort:</p>

@@ -238,6 +238,12 @@ function RouteSwitch() {
     setSubList(subListCopy);
   }
 
+  const editPost = (editedPost) => {
+    const subListCopy = {...subList};
+    subListCopy[editedPost.subName].posts[editedPost.uid].edit(editedPost.content);
+
+    setSubList(subListCopy);
+  }
   const deletePost = (subName, postUid) => {
     const subListCopy = {...subList};
     const userListCopy = {...userList};
@@ -339,6 +345,7 @@ function RouteSwitch() {
                 subList={subList}
                 favoritePost={favoritePost}
                 unfavoritePost={unfavoritePost}
+                editPost={editPost}
                 deletePost={deletePost}
                 addComment={addComment}
                 favoriteComment={favoriteComment}

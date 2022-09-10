@@ -30,8 +30,8 @@ class Post {
     this.votes = this.votes + num;
   }
 
-  edit(text) {
-    this.text = text;
+  edit(content) {
+    this.content = content;
     this.editStatus = {
       edited: true,
       editDateTime: this.getDateTime(),
