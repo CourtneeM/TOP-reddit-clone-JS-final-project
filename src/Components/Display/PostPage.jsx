@@ -97,7 +97,7 @@ const CommentsContainer = styled.div`
   }
 `;
 
-function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost, deletePost, addComment, favoriteComment, unfavoriteComment, deleteComment, adjustPostVotes, adjustCommentVotes }) {
+function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost, deletePost, addComment, favoriteComment, unfavoriteComment, editComment, deleteComment, adjustPostVotes, adjustCommentVotes }) {
   const params = useParams();
   const navigate = useNavigate();
 
@@ -265,6 +265,7 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
           commentReply={commentReplyHandler}
           favoriteComment={favoriteComment}
           unfavoriteComment={unfavoriteComment}
+          editComment={editComment}
           deleteComment={deleteComment}
           adjustCommentVotes={adjustCommentVotesHandler}
         /> :

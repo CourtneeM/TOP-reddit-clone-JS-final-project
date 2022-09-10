@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import styled from "styled-components";
@@ -26,8 +26,12 @@ const CommentHeader = styled.div`
     color: #555;
   }
 `;
-const CommentText = styled.p`
+const CommentText = styled.div`
   padding: 20px 0;
+
+  textarea {
+    width: 100%;
+  }
 `;
 const CommentActions = styled.div`
   display: flex;
@@ -70,11 +74,74 @@ const Replies = styled.div`
   border-left: 1px solid #888;
 `;
 
-function Comment({ loggedIn, currentUser, subList, comments, comment, commentReply, favoriteComment, unfavoriteComment, deleteComment, adjustCommentVotes }) {
+function Comment({ loggedIn, currentUser, subList, comments, comment, commentReply, favoriteComment, unfavoriteComment, editComment, deleteComment, adjustCommentVotes }) {
   const [replyText, setReplyText] = useState('');
+  const [editMode, setEditMode] = useState(false);
+  const [commentText, setCommentText] = useState('');
+
+  useEffect(() => {
+    setCommentText(comment.text);
+  }, [comment]);
+
+  const displayFavoriteButtons = () => {
+    return (
+      loggedIn ?
+      currentUser.favorite.comments[comment.subName] &&
+      currentUser.favorite.comments[comment.subName][comment.postUid] &&
+      currentUser.favorite.comments[comment.subName][comment.postUid].includes(comment.uid) ?
+      <p onClick={() => unfavoriteComment(comment.subName, comment.postUid, comment.uid)}>Unfavorite</p> :
+      <p onClick={() => favoriteComment(comment.subName, comment.postUid, comment.uid)}>Favorite</p> :
+      null
+    )
+  }
+  const displayCommentActions = () => {
+    return (
+      <>
+        <div>
+          { loggedIn && <p className="upvote-icon" onClick={(e) => adjustVotesHandler(e)}>^</p> }
+          <p>{comment.votes}</p>
+          { loggedIn && <p className="downvote-icon" onClick={(e) => adjustVotesHandler(e)}>v</p> }
+
+          <p onClick={displayReplyContainer}>Reply</p>
+        </div>
+        <div>
+          { displayFavoriteButtons() }
+
+          <p>Share</p>
+
+          { 
+            (loggedIn && comment.owner.uid === currentUser.uid) &&
+            <p onClick={() => setEditMode(true)}>Edit</p>
+          }
+          { 
+            (loggedIn && comment.owner.uid === currentUser.uid) ||
+            (loggedIn && subList[comment.subName].moderators.includes(currentUser.uid)) ?
+            <p onClick={deleteCommentHandler}>Delete</p> :
+            null
+          }
+        </div>
+      </>
+    );
+  }
+  const displayEditActions = () => {
+    return (
+      <>
+        <button onClick={cancelEditCommentHandler}>Cancel</button>
+        <button onClick={editCommentHandler}>Edit</button>
+      </>
+    )
+  }
 
   const editCommentHandler = () => {
-    
+    setEditMode(false);
+
+    const editedComment = {...comment};
+    editedComment.text = commentText;
+    if (comment.owner.uid === currentUser.uid) editComment(editedComment);
+  }
+  const cancelEditCommentHandler = () => {
+    setEditMode(false);
+    setCommentText(comment.text);
   }
   const deleteCommentHandler = () => {
     // display popup confirmation
@@ -223,37 +290,24 @@ function Comment({ loggedIn, currentUser, subList, comments, comment, commentRep
           <p>u/{comment.owner.name}</p>
         </Link>
         <p>{comment.creationDateTime.date.month}/{comment.creationDateTime.date.day}/{comment.creationDateTime.date.year}</p>
+        { comment.editStatus.edited ?
+          <p>Edited: {comment.editStatus.editDateTime.date.month}/{comment.editStatus.editDateTime.date.day}/{comment.editStatus.editDateTime.date.year}</p> :
+          null
+        }
       </CommentHeader>
 
-      <CommentText>{comment.text}</CommentText>
+      <CommentText>
+        { editMode ?
+          <textarea name="comment-text" id="comment-text" cols="30" rows="10" value={commentText} onChange={(e) => setCommentText(e.target.value)}></textarea> :
+          <p>{comment.text}</p>
+        }
+      </CommentText>
 
       <CommentActions>
-        <div>
-          { loggedIn && <p className="upvote-icon" onClick={(e) => adjustVotesHandler(e)}>^</p> }
-          <p>{comment.votes}</p>
-          { loggedIn && <p className="downvote-icon" onClick={(e) => adjustVotesHandler(e)}>v</p> }
-          <p onClick={displayReplyContainer}>Reply</p>
-        </div>
-        <div>
-          {
-            loggedIn ?
-            currentUser.favorite.comments[comment.subName] &&
-            currentUser.favorite.comments[comment.subName][comment.postUid] &&
-            currentUser.favorite.comments[comment.subName][comment.postUid].includes(comment.uid) ?
-            <p onClick={() => unfavoriteComment(comment.subName, comment.postUid, comment.uid)}>Unfavorite</p> :
-            <p onClick={() => favoriteComment(comment.subName, comment.postUid, comment.uid)}>Favorite</p> :
-            null
-          }
-          <p>Share</p>
-          { (loggedIn && comment.owner.uid === currentUser.uid) &&
-            <p onClick={editCommentHandler}>Edit</p>
-          }
-          { (loggedIn && comment.owner.uid === currentUser.uid) ||
-            (loggedIn && subList[comment.subName].moderators.includes(currentUser.uid)) ?
-            <p onClick={deleteCommentHandler}>Delete</p> :
-            null
-          }
-        </div>
+        { editMode ?
+          displayEditActions() :
+          displayCommentActions()
+        }
       </CommentActions>
       <CommentReply className={`comment-reply-container-${comment.uid} hidden`}>
         <textarea name="comment-reply" id="comment-reply" cols="30" rows="10"
