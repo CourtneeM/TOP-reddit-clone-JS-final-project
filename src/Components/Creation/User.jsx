@@ -9,7 +9,7 @@ class User {
       posts: {},
       comments: {},
     }
-    this.moderator = [];
+    this.moderator = ['Games'];
     this.favorite = {
       posts: {},
       comments: {},

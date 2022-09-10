@@ -156,7 +156,9 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
 
   const deletePostHandler = () => {
     // display popup confirmation
-    if (post.owner.uid === currentUser.uid) deletePost(subName, post.uid);
+    if ((post.owner.uid === currentUser.uid) || (subList[post.subName].moderators.includes(currentUser.uid))) {
+      deletePost(subName, post.uid);
+    }
     navigate(`/r/${subName}`);
   }
 
@@ -314,7 +316,11 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
                     null
                   }
                   <p>Share</p>
-                  { loggedIn && post.owner.uid === currentUser.uid && <p onClick={deletePostHandler}>Delete</p> }
+                  { (loggedIn && post.owner.uid === currentUser.uid) ||
+                    (loggedIn && subList[post.subName].moderators.includes(currentUser.uid)) ?
+                    <p onClick={deletePostHandler}>Delete</p> :
+                    null
+                  }
                 </div>
               </PostActions>
             </Body>

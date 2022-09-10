@@ -34,7 +34,7 @@ function RouteSwitch() {
   const [loggedIn, setLoggedIn] = useState(true);
 
   useEffect(() => {
-    const user1 = new User(uniqid(), 'Bob', 'bobjones@hotmail.com');
+    const user1 = new User(1, 'Bob', 'bobjones@hotmail.com');
     const user2 = new User(uniqid(), 'Kevin', 'kevinbarkley@gmail.com');
     const user3 = new User(uniqid(), 'Brenden', 'brendenparker@aol.com');
     const user4 = new User(uniqid(), 'Mike', 'mikehermit@gmail.com');
@@ -240,8 +240,8 @@ function RouteSwitch() {
 
   const deletePost = (subName, postUid) => {
     const userListCopy = {...userList};
-    const index = userListCopy[currentUser.uid].own.posts[subName].indexOf(postUid);
-    userListCopy[currentUser.uid].own.posts[subName].splice(index, 1);
+    const index = userListCopy[subList[subName].posts[postUid].owner.uid].own.posts[subName].indexOf(postUid);
+    userListCopy[subList[subName].posts[postUid].owner.uid].own.posts[subName].splice(index, 1);
 
     setUserList(userListCopy);
 
