@@ -252,15 +252,16 @@ function RouteSwitch() {
   }
   
   const deleteComment = (comment) => {
+    const subListCopy = {...subList};
     const userListCopy = {...userList};
-    const index = userListCopy[currentUser.uid].own.comments[comment.subName][comment.postUid].indexOf(comment.uid);
-    userListCopy[currentUser.uid].own.comments[comment.subName][comment.postUid].splice(index, 1);
+    const commentPath = subListCopy[comment.subName].posts[comment.postUid].comments[comment.uid];
+    const commentOwnerUid = commentPath.owner.uid;
+    const index = userListCopy[commentOwnerUid].own.comments[comment.subName][comment.postUid].indexOf(comment.uid);
 
+    userListCopy[commentOwnerUid].own.comments[comment.subName][comment.postUid].splice(index, 1);
     setUserList(userListCopy);
 
-    const subListCopy = {...subList};
-    subListCopy[comment.subName].posts[comment.postUid].comments[comment.uid].deleteText();
-
+    commentPath.deleteText();
     setSubList(subListCopy);
   }
 

@@ -1,9 +1,10 @@
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 
 import Navbar from './Navbar';
 import Comment from './Comment';
+
 import styled from "styled-components";
-import { useEffect, useState } from 'react';
 
 const Wrapper = styled.div`
   max-width: 1200px;
@@ -119,7 +120,6 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
   }, [subList]);
 
   useEffect(() => {
-
     setLoaded(true);
   }, [post])
 
@@ -259,6 +259,7 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
           key={comment.uid}
           loggedIn={loggedIn}
           currentUser={currentUser}
+          subList={subList}
           comments={post.comments}
           comment={comment}
           commentReply={commentReplyHandler}

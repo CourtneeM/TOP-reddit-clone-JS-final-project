@@ -70,12 +70,14 @@ const Replies = styled.div`
   border-left: 1px solid #888;
 `;
 
-function Comment({ loggedIn, currentUser, comments, comment, commentReply, favoriteComment, unfavoriteComment, deleteComment, adjustCommentVotes }) {
+function Comment({ loggedIn, currentUser, subList, comments, comment, commentReply, favoriteComment, unfavoriteComment, deleteComment, adjustCommentVotes }) {
   const [replyText, setReplyText] = useState('');
 
   const deleteCommentHandler = () => {
     // display popup confirmation
-    if (comment.owner.uid === currentUser.uid) deleteComment(comment);
+    if ((comment.owner.uid === currentUser.uid) || (loggedIn && subList[comment.subName].moderators.includes(currentUser.uid))) {
+      deleteComment(comment);
+    }
   }
 
   const adjustVotesHandler = (e) => {
@@ -240,7 +242,11 @@ function Comment({ loggedIn, currentUser, comments, comment, commentReply, favor
             null
           }
           <p>Share</p>
-          { loggedIn && comment.owner.uid === currentUser.uid && <p onClick={deleteCommentHandler}>Delete</p> }
+          { (loggedIn && comment.owner.uid === currentUser.uid) ||
+            (loggedIn && subList[comment.subName].moderators.includes(currentUser.uid)) ?
+            <p onClick={deleteCommentHandler}>Delete</p> :
+            null
+          }
         </div>
       </CommentActions>
       <CommentReply className={`comment-reply-container-${comment.uid} hidden`}>
