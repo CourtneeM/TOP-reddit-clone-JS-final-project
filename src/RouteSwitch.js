@@ -34,7 +34,7 @@ function RouteSwitch() {
   const [loggedIn, setLoggedIn] = useState(true);
 
   useEffect(() => {
-    const user1 = new User(1, 'Bob', 'bobjones@hotmail.com');
+    const user1 = new User(uniqid(), 'Bob', 'bobjones@hotmail.com');
     const user2 = new User(uniqid(), 'Kevin', 'kevinbarkley@gmail.com');
     const user3 = new User(uniqid(), 'Brenden', 'brendenparker@aol.com');
     const user4 = new User(uniqid(), 'Mike', 'mikehermit@gmail.com');
@@ -239,14 +239,20 @@ function RouteSwitch() {
   }
 
   const deletePost = (subName, postUid) => {
+    const subListCopy = {...subList};
     const userListCopy = {...userList};
-    const index = userListCopy[subList[subName].posts[postUid].owner.uid].own.posts[subName].indexOf(postUid);
-    userListCopy[subList[subName].posts[postUid].owner.uid].own.posts[subName].splice(index, 1);
+    const postOwnerUid = subListCopy[subName].posts[postUid].owner.uid;
+    const index = userListCopy[postOwnerUid].own.posts[subName].indexOf(postUid);
+    const deletedPost = userListCopy[postOwnerUid].own.posts[subName].splice(index, 1)[0];
+
+    if (!userListCopy[postOwnerUid].deletedContent.posts[subName]) {
+      userListCopy[postOwnerUid].deletedContent.posts[subName] = [];
+    }
+    userListCopy[postOwnerUid].deletedContent.posts[subName].push(deletedPost);
 
     setUserList(userListCopy);
 
-    const subListCopy = {...subList};
-    delete subListCopy[subName].posts[postUid];
+    subListCopy[subName].posts[postUid].deleteText();
     
     setSubList(subListCopy);
   }
@@ -258,7 +264,15 @@ function RouteSwitch() {
     const commentOwnerUid = commentPath.owner.uid;
     const index = userListCopy[commentOwnerUid].own.comments[comment.subName][comment.postUid].indexOf(comment.uid);
 
-    userListCopy[commentOwnerUid].own.comments[comment.subName][comment.postUid].splice(index, 1);
+    const deletedComment = userListCopy[commentOwnerUid].own.comments[comment.subName][comment.postUid].splice(index, 1)[0];
+    if (!userListCopy[commentOwnerUid].deletedContent.comments[comment.subName]) {
+      userListCopy[commentOwnerUid].deletedContent.comments[comment.subName] = {};
+    }
+    if (!userListCopy[commentOwnerUid].deletedContent.comments[comment.subName][comment.postUid]) {
+      userListCopy[commentOwnerUid].deletedContent.comments[comment.subName][comment.postUid] = [];
+    }
+    userListCopy[commentOwnerUid].deletedContent.comments[comment.subName][comment.postUid].push(deletedComment);
+
     setUserList(userListCopy);
 
     commentPath.deleteText();

@@ -73,6 +73,9 @@ const Replies = styled.div`
 function Comment({ loggedIn, currentUser, subList, comments, comment, commentReply, favoriteComment, unfavoriteComment, deleteComment, adjustCommentVotes }) {
   const [replyText, setReplyText] = useState('');
 
+  const editCommentHandler = () => {
+    
+  }
   const deleteCommentHandler = () => {
     // display popup confirmation
     if ((comment.owner.uid === currentUser.uid) || (loggedIn && subList[comment.subName].moderators.includes(currentUser.uid))) {
@@ -242,6 +245,9 @@ function Comment({ loggedIn, currentUser, subList, comments, comment, commentRep
             null
           }
           <p>Share</p>
+          { (loggedIn && comment.owner.uid === currentUser.uid) &&
+            <p onClick={editCommentHandler}>Edit</p>
+          }
           { (loggedIn && comment.owner.uid === currentUser.uid) ||
             (loggedIn && subList[comment.subName].moderators.includes(currentUser.uid)) ?
             <p onClick={deleteCommentHandler}>Delete</p> :

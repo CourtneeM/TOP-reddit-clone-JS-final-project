@@ -249,6 +249,33 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
       data: downvotedContent,
     });
   }
+  const displayDeleted = () => {
+    const deletedContent = [];
+
+    Object.keys(currentUser.deletedContent.posts).forEach((subName) => {
+      currentUser.deletedContent.posts[subName].forEach((postUid) => {
+        deletedContent.push({
+          type: 'posts',
+          data: subList[subName].posts[postUid],
+        });
+      });
+    });
+
+    Object.keys(currentUser.deletedContent.comments).forEach((subName) => {
+      Object.keys(currentUser.deletedContent.comments[subName]).forEach((postUid) => {
+        const commentUid = currentUser.deletedContent.comments[subName][postUid];
+        deletedContent.push({
+          type: 'comments',
+          data: subList[subName].posts[postUid].comments[commentUid],
+        });
+      });
+    });
+
+    setCurrentSelectedData({
+      type: 'all',
+      data: deletedContent,
+    });
+  }
   const getPreview = (type, el) => {
     return type === 'subs' ?
       <Link to={`/r/${el.name}`} key={el.uid}>
@@ -278,6 +305,7 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
     if (e.target.textContent === 'Favorite Comments') displayFavoriteComments();
     if (e.target.textContent === 'Upvoted') displayUpvoted();
     if (e.target.textContent === 'Downvoted') displayDownvoted();
+    if (e.target.textContent === 'Deleted') displayDeleted();
 
     [...document.querySelectorAll('.views-list li')].forEach((li) => li.classList.remove('selected-view'));
     e.target.classList.add('selected-view');
@@ -323,6 +351,7 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
                 <li onClick={(e) => changeSelectedView(e)}>Favorite Comments</li>
                 <li onClick={(e) => changeSelectedView(e)}>Upvoted</li>
                 <li onClick={(e) => changeSelectedView(e)}>Downvoted</li>
+                <li onClick={(e) => changeSelectedView(e)}>Deleted</li>
               </> :
               null
             }

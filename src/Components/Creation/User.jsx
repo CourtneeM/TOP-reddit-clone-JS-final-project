@@ -8,12 +8,16 @@ class User {
       subs: [],
       posts: {},
       comments: {},
-    }
-    this.moderator = ['Games'];
-    this.favorite = {
+    };
+    this.deletedContent = {
       posts: {},
       comments: {},
     }
+    this.moderator = [];
+    this.favorite = {
+      posts: {},
+      comments: {},
+    };
     this.votes = {
       upvotes: {
         posts: {},

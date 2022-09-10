@@ -32,13 +32,12 @@ class Comment {
     this.text = text;
     this.editStatus = {
       edited: true,
-      editDateTime: 'current date/time',
+      editDateTime: this.getDateTime(),
     }
   }
 
   deleteText() {
     this.text = 'Comment Deleted';
-    this.owner = {uid: null, name: 'Deleted'};
 
     if (this.editStatus.edited) {
       this.editStatus.edited = false;
@@ -49,9 +48,6 @@ class Comment {
     this.deleteStatus.deleteDateTime = this.getDateTime();
   }
 
-  // addChild(commentUid, postUid, subName, owner, text, parentUid) {
-  //   this.child = { [commentUid]: new Comment(commentUid, postUid, subName, owner, text, parentUid) };
-  // }
   addChild(commentUid) {
     this.children.push(commentUid);
   }

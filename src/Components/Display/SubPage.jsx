@@ -86,7 +86,8 @@ function SubPage({ loggedIn, currentUser, userList, subList, followSub, unfollow
   }
 
   const getPostPreview = () => {
-    return Object.values(posts).map((post) => {
+    const existingPosts = Object.values(posts).filter((post) => !post.deleteStatus.deleted);
+    return existingPosts.map((post) => {
       const path = `${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`;
       return (
         <Link to={path} key={post.uid}>

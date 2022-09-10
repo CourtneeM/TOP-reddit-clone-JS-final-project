@@ -12,6 +12,8 @@ class Post {
     this.votes = 0;
     this.upvotes = [];
     this.downvotes = [];
+    this.editStatus = { edited: false, editDateTime: null };
+    this.deleteStatus = { deleted: false, deleteDateTime: null };
     this.comments = {};
   }
 
@@ -26,6 +28,26 @@ class Post {
 
   adjustVotes(num) {
     this.votes = this.votes + num;
+  }
+
+  edit(text) {
+    this.text = text;
+    this.editStatus = {
+      edited: true,
+      editDateTime: this.getDateTime(),
+    }
+  }
+
+  deleteText() {
+    this.content = 'Post Deleted';
+
+    if (this.editStatus.edited) {
+      this.editStatus.edited = false;
+      this.editStatus.editDateTime = null;
+    }
+
+    this.deleteStatus.deleted = true;
+    this.deleteStatus.deleteDateTime = this.getDateTime();
   }
 
   delete(postList) {
