@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { HashLink as Link } from 'react-router-hash-link';
 
@@ -19,8 +19,15 @@ const Wrapper = styled.div`
 const Header = styled.div`
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   position: relative;
   padding: 20px 0;
+
+  h1 {
+    flex: 1 1 100%;
+    margin-bottom: 40px;
+    text-align: right;
+  }
 
   ul {
     display: flex;
@@ -31,8 +38,8 @@ const Header = styled.div`
     }
   }
 
-  h1 {
-    margin-left: auto;
+  .selected-view {
+    background-color: #ccc;
   }
 `;
 const Body = styled.div`
@@ -63,6 +70,10 @@ const SortOptions = styled.div`
 function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes, adjustCommentVotes }) {
   const [currentSelectedData, setCurrentSelectedData] = useState({});
   const params = useParams();
+
+  useEffect(() => {
+    displayOverview();
+  }, [subList]);
 
   const displaySubs = () => {
     const allSubs = [];
@@ -186,6 +197,58 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
       data: allContent
     });
   }
+  const displayUpvoted = () => {
+    const upvotedContent = [];
+    Object.keys(currentUser.votes.upvotes.posts).forEach((subName) => {
+      currentUser.votes.upvotes.posts[subName].forEach((postUid) => {
+        upvotedContent.push({
+          type: 'posts',
+          data: subList[subName].posts[postUid],
+        });
+      });
+    });
+
+    Object.keys(currentUser.votes.upvotes.comments).forEach((subName) => {
+      Object.keys(currentUser.votes.upvotes.comments[subName]).forEach((postUid) => {
+        const commentUid = currentUser.votes.upvotes.comments[subName][postUid];
+        upvotedContent.push({
+          type: 'comments',
+          data: subList[subName].posts[postUid].comments[commentUid],
+        });
+      });
+    });
+
+    setCurrentSelectedData({
+      type: 'all',
+      data: upvotedContent,
+    });
+  }
+  const displayDownvoted = () => {
+    const downvotedContent = [];
+    Object.keys(currentUser.votes.downvotes.posts).forEach((subName) => {
+      currentUser.votes.downvotes.posts[subName].forEach((postUid) => {
+        downvotedContent.push({
+          type: 'posts',
+          data: subList[subName].posts[postUid],
+        });
+      });
+    });
+
+    Object.keys(currentUser.votes.downvotes.comments).forEach((subName) => {
+      Object.keys(currentUser.votes.downvotes.comments[subName]).forEach((postUid) => {
+        const commentUid = currentUser.votes.downvotes.comments[subName][postUid];
+        downvotedContent.push({
+          type: 'comments',
+          data: subList[subName].posts[postUid].comments[commentUid],
+        });
+      });
+    });
+
+    setCurrentSelectedData({
+      type: 'all',
+      data: downvotedContent,
+    });
+  }
   const getPreview = (type, el) => {
     return type === 'subs' ?
       <Link to={`/r/${el.name}`} key={el.uid}>
@@ -213,6 +276,11 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
     if (e.target.textContent === 'Followed Subs') displayFollowedSubs();
     if (e.target.textContent === 'Favorite Posts') displayFavoritePosts();
     if (e.target.textContent === 'Favorite Comments') displayFavoriteComments();
+    if (e.target.textContent === 'Upvoted') displayUpvoted();
+    if (e.target.textContent === 'Downvoted') displayDownvoted();
+
+    [...document.querySelectorAll('.views-list li')].forEach((li) => li.classList.remove('selected-view'));
+    e.target.classList.add('selected-view');
   }
   const sortContent = (e) => {
     const currentSelectedDataCopy = {...currentSelectedData};
@@ -242,8 +310,9 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
 
       <Wrapper>
         <Header>
-          <ul>
-            <li onClick={(e) => changeSelectedView(e)}>Overview</li>
+          <h1>u/{userList[params.userUid].name}</h1>
+          <ul className='views-list'>
+            <li className='selected-view' onClick={(e) => changeSelectedView(e)}>Overview</li>
             <li onClick={(e) => changeSelectedView(e)}>Subs</li>
             <li onClick={(e) => changeSelectedView(e)}>Posts</li>
             <li onClick={(e) => changeSelectedView(e)}>Comments</li>
@@ -252,11 +321,12 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
                 <li onClick={(e) => changeSelectedView(e)}>Followed Subs</li>
                 <li onClick={(e) => changeSelectedView(e)}>Favorite Posts</li>
                 <li onClick={(e) => changeSelectedView(e)}>Favorite Comments</li>
+                <li onClick={(e) => changeSelectedView(e)}>Upvoted</li>
+                <li onClick={(e) => changeSelectedView(e)}>Downvoted</li>
               </> :
               null
             }
           </ul>
-          <h1>u/{userList[params.userUid].name}</h1>
         </Header>
         <Body>
           <SortOptions>
