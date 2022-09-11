@@ -13,6 +13,11 @@ const Wrapper = styled.div`
   margin: 0 auto;
   padding: 40px 0;
 
+  button {
+    padding: 7px 15px;
+    cursor: pointer;
+  }
+
   .hidden {
     display: none;
   }
@@ -49,13 +54,16 @@ const Body = styled.div`
     margin-bottom: 80px;
   }
 
-  textarea {
+  input, textarea {
     width: 100%;
+    margin-bottom: 80px;
+    padding: 8px;
   }
 `;
 const PostActions = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   position: relative;
 
   div {
@@ -143,37 +151,84 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
     setPostContent(post.content);
     setLoaded(true);
   }, [post])
+  
+  const displayTextPost = () => {
+    return (
+      <Body>
+        <div>
+          <h2>{post.title}</h2>
+          { editMode ?
+            <textarea name="new-post-content" id="new-post-content" cols="30" rows="10" value={postContent} onChange={(e) => setPostContent(e.target.value)}></textarea> :
+            <p>{post.content}</p>
+          }
+        </div>
 
-  const addCommentHandler = (e) => {
-    e.preventDefault();
-
-    addComment(commentInput, post.uid, subName);
-    setCommentInput('');
+        <PostActions>
+          <div>
+            <p>{getNumComments() === 1 ? getNumComments() + ' comment' : getNumComments() + ' comments'}</p>
+          </div>
+          <div>
+            { editMode ?
+              displayEditActions() :
+              displayPostActions()
+            }
+          </div>
+        </PostActions>
+      </Body>
+    );
   }
-  const commentReplyHandler = (replyText, parentComment) => {
-    addComment(replyText, post.uid, subName, parentComment);
+  const displayImagePost = () => {
+    return (
+      <Body>
+        <div>
+          <h2>{post.title}</h2>
+          { editMode ?
+            <input type="file" name="new-post-content" id="new-post-content" onChange={(e) => setPostContent(e.target.value)} /> :
+            <img src={post.content} alt="" />
+          }
+        </div>
+
+        <PostActions>
+          <div>
+            <p>{getNumComments() === 1 ? getNumComments() + ' comment' : getNumComments() + ' comments'}</p>
+          </div>
+          <div>
+            { editMode ?
+              displayEditActions() :
+              displayPostActions()
+            }
+          </div>
+        </PostActions>
+      </Body>
+    );
   }
+  const displayLinkPost = () => {
+    return (
+      <Body>
+        <div>
+          <h2>{post.title}</h2>
+          { editMode ?
+            <input type="url"name="new-post-content" id="new-post-content" value={postContent} onChange={(e) => setPostContent(e.target.value)} /> :
+            <Link to={post.content}>
+              <p>{post.content}</p>
+            </Link>
+          }
+        </div>
 
-  const sortComments = (e) => {
-    const commentsCopy = [...comments];
-    if (e.target.textContent === 'Highest Rating') {
-      commentsCopy.sort((a, b) => b.votes - a.votes);
-    }
-    if (e.target.textContent === 'Lowest Rating') {
-      commentsCopy.sort((a, b) => a.votes - b.votes);
-    }
-    if (e.target.textContent === 'Oldest') {
-      commentsCopy.sort((a, b) => b.creationDateTime.fullDateTime - a.creationDateTime.fullDateTime);
-      
-    }
-    if (e.target.textContent === 'Newest') {
-      commentsCopy.sort((a, b) => a.creationDateTime.fullDateTime - b.creationDateTime.fullDateTime);
-
-    }
-
-    setComments(commentsCopy);
+        <PostActions>
+          <div>
+            <p>{getNumComments() === 1 ? getNumComments() + ' comment' : getNumComments() + ' comments'}</p>
+          </div>
+          <div>
+            { editMode ?
+              displayEditActions() :
+              displayPostActions()
+            }
+          </div>
+        </PostActions>
+      </Body>
+    );
   }
-
   const displayPostActions = () => {
     const displayFavoriteButtons = () => {
       return (
@@ -243,7 +298,6 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
     navigate(`/r/${subName}`);
   }
   
-
   const adjustPostVotesHandler = (e) => {
     const currentUserCopy = {...currentUser};
     
@@ -333,6 +387,34 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
     adjustCommentVotes(num, comment, currentUserCopy);
   }
 
+  const sortComments = (e) => {
+    const commentsCopy = [...comments];
+    if (e.target.textContent === 'Highest Rating') {
+      commentsCopy.sort((a, b) => b.votes - a.votes);
+    }
+    if (e.target.textContent === 'Lowest Rating') {
+      commentsCopy.sort((a, b) => a.votes - b.votes);
+    }
+    if (e.target.textContent === 'Oldest') {
+      commentsCopy.sort((a, b) => b.creationDateTime.fullDateTime - a.creationDateTime.fullDateTime);
+      
+    }
+    if (e.target.textContent === 'Newest') {
+      commentsCopy.sort((a, b) => a.creationDateTime.fullDateTime - b.creationDateTime.fullDateTime);
+
+    }
+
+    setComments(commentsCopy);
+  }
+  const addCommentHandler = (e) => {
+    e.preventDefault();
+
+    addComment(commentInput, post.uid, subName);
+    setCommentInput('');
+  }
+  const commentReplyHandler = (replyText, parentComment) => {
+    addComment(replyText, post.uid, subName, parentComment);
+  }
   const getComments = () => {
     return Object.values(comments).map((comment) => {
       return (
@@ -374,7 +456,7 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
                   u/{post.owner.name}
                 </Link>
               </p>
-              <p>{post.creationDateTime.date.month}/{post.creationDateTime.date.day}/{post.creationDateTime.date.year}</p>
+              <p>{ post.creationDateTime.date.month}/{post.creationDateTime.date.day}/{post.creationDateTime.date.year }</p>
               { post.editStatus.edited ?
                 <p>Edited: {post.editStatus.editDateTime.date.month}/{post.editStatus.editDateTime.date.day}/{post.editStatus.editDateTime.date.year}</p> :
                 null
@@ -387,27 +469,13 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
               </VoteStatus>
             </Header>
 
-            <Body>
-              <div>
-                <h2>{post.title}</h2>
-                { editMode ?
-                  <textarea name="new-post-content" id="new-post-content" cols="30" rows="10" value={postContent} onChange={(e) => setPostContent(e.target.value)}></textarea> :
-                  <p>{post.content}</p>
-                }
-              </div>
-
-              <PostActions>
-                <div>
-                  <p>{getNumComments() === 1 ? getNumComments() + ' comment' : getNumComments() + ' comments'}</p>
-                </div>
-                <div>
-                  { editMode ?
-                    displayEditActions() :
-                    displayPostActions()
-                  }
-                </div>
-              </PostActions>
-            </Body>
+            { 
+              post.type === 'link' ?
+              displayLinkPost() :
+              post.type === 'images/videos' ?
+              displayImagePost() :
+              displayTextPost()
+            }
 
             <CommentSection>
               {

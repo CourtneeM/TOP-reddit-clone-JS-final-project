@@ -118,7 +118,10 @@ function CreatePostPage({ loggedIn, currentUser, subList, submitPost }) {
                     onChange={(e) => setPostContent(e.target.value)}>
                   </textarea> :
                   postType === 'images/videos' ?
-                  <input type="file" name="post-content" id="post-content" /> :
+                  <input type="file" name="post-content" id="file-upload"
+                    value={postContent}
+                    onChange={(e) => setPostContent(e.target.value)}
+                  /> :
                   <input type="url" name="post-content" id="post-content" placeholder="URL"
                     value={postContent}
                     onChange={(e) => setPostContent(e.target.value)}
