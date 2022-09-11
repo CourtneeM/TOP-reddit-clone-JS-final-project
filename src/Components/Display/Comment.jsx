@@ -112,6 +112,14 @@ function Comment({ loggedIn, currentUser, subList, comments, comment, commentRep
         null
       );
     };
+    const shareCommentHandler = () => {
+      const initialUrl = window.location.href.slice(0, window.location.href.lastIndexOf('/r/'));
+      navigator.clipboard.writeText(`${initialUrl}/r/${comment.subName}/${comment.postUid}/${subList[comment.subName].posts[comment.postUid].title.split(' ').join('_').toLowerCase()}/#${comment.uid}`);
+  
+      const shareBtn = document.getElementById(comment.uid).querySelector('.share-btn');
+      shareBtn.textContent = 'Link copied';
+      setTimeout(() => shareBtn.textContent = 'Share', 5000);
+    }
 
     return (
       <>
@@ -124,7 +132,7 @@ function Comment({ loggedIn, currentUser, subList, comments, comment, commentRep
         </div>
         <div>
           { displayFavoriteButtons() }
-          <p>Share</p>
+          <p className='share-btn' onClick={shareCommentHandler}>Share</p>
           { displayEditButton() }
           { displayDeleteButton() }
         </div>

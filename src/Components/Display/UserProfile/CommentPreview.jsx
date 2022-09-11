@@ -39,7 +39,7 @@ const CommentActions = styled.div`
   }
 `;
 
-function CommentPreview({ loggedIn, currentUser, comments, comment, adjustCommentVotes }) {
+function CommentPreview({ loggedIn, currentUser, postTitle, comments, comment, adjustCommentVotes }) {
   const adjustVotesHandler = (e) => {
     const currentUserCopy = {...currentUser};
 
@@ -151,9 +151,17 @@ function CommentPreview({ loggedIn, currentUser, comments, comment, adjustCommen
 
     e.target.className === 'upvote-icon' ? upvoteHandler() : downvoteHandler();
   }
+  const shareCommentHandler = () => {
+    const initialUrl = window.location.href.slice(0, window.location.href.lastIndexOf('/u/'));
+    navigator.clipboard.writeText(`${initialUrl}/r/${comment.subName}/${comment.postUid}/${postTitle.split(' ').join('_').toLowerCase()}/#${comment.uid}`);
+
+    const shareBtn = document.getElementById(comment.uid).querySelector('.share-btn');
+    shareBtn.textContent = 'Link copied';
+    setTimeout(() => shareBtn.textContent = 'Share', 5000);
+  }
   
   return (
-    <Wrapper>
+    <Wrapper id={comment.uid}>
       <CommentHeader>
         {/* <img src="" alt="user" /> */}
         <p>
@@ -173,7 +181,7 @@ function CommentPreview({ loggedIn, currentUser, comments, comment, adjustCommen
           { loggedIn && <p className="downvote-icon" onClick={(e) => adjustVotesHandler(e)}>v</p> }
         </div>
         <div>
-          <p>Share</p>
+          <p className='share-btn' onClick={shareCommentHandler}>Share</p>
         </div>
       </CommentActions>
     </Wrapper>

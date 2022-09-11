@@ -289,6 +289,7 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
         <CommentPreview
           loggedIn={loggedIn}
           currentUser={currentUser}
+          postTitle={subList[el.subName].posts[el.postUid].title}
           comments={Object.values(subList[el.subName].posts[el.postUid].comments)}
           comment={el}
           adjustCommentVotes={adjustCommentVotes}
