@@ -138,11 +138,19 @@ function PostPreview({ loggedIn, currentUser, post, adjustPostVotes }) {
 
     e.target.className === "upvote-icon" ? upvoteHandler() : downvoteHandler();
   }
+  const sharePostHandler = () => {
+    const url = window.location.href.slice(0, window.location.href.lastIndexOf('/u/'));
+    navigator.clipboard.writeText(`${url}/r/${post.subName}/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`);
+
+    const shareBtn = document.getElementById(`post-${post.uid}`).querySelector('.share-btn');
+    shareBtn.textContent = 'Link copied';
+    setTimeout(() => shareBtn.textContent = 'Share', 5000);
+  }
 
   const getNumComments = () => Object.keys(post.comments).length;
 
   return (
-    <Wrapper>
+    <Wrapper id={`post-${post.uid}`}>
       <Header>
         <p>r/{post.subName}</p>
         <p>Posted by
@@ -158,7 +166,7 @@ function PostPreview({ loggedIn, currentUser, post, adjustPostVotes }) {
       </Body>
       <Options>
         <p>{getNumComments() === 1 ? getNumComments() + ' comment' : getNumComments() + ' comments'}</p>
-        <p>Share</p>
+        <p className='share-btn' onClick={sharePostHandler}>Share</p>
       </Options>
       <VoteStatus>
         { loggedIn && <p className="upvote-icon" onClick={(e) => adjustPostVotesHandler(e)}>^</p> }

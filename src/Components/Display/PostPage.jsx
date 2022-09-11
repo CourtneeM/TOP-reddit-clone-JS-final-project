@@ -12,6 +12,10 @@ const Wrapper = styled.div`
   min-width: 800px;
   margin: 0 auto;
   padding: 40px 0;
+
+  .hidden {
+    display: none;
+  }
 `;
 const Header = styled.div`
   display: flex;
@@ -52,6 +56,7 @@ const Body = styled.div`
 const PostActions = styled.div`
   display: flex;
   justify-content: space-between;
+  position: relative;
 
   div {
     display: flex;
@@ -64,6 +69,15 @@ const PostActions = styled.div`
     &:nth-child(2) p {
       cursor: pointer;
     }
+  }
+
+  .link-copied-msg {
+    position: absolute;
+    top: -30px;
+    right: -60px;
+    text-align: center;
+    font-size: 0.9rem;
+    background-color: #fff;
   }
 `;
 const CommentSection = styled.div`
@@ -184,11 +198,18 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
         null
       );
     };
+    const sharePostHandler = () => {
+      navigator.clipboard.writeText(window.location.href);
+
+      const shareBtn = document.getElementById(`post-${post.uid}`).querySelector('.share-btn');
+      shareBtn.textContent = 'Link copied';
+      setTimeout(() => shareBtn.textContent = 'Share', 5000);
+    }
 
     return (
       <>
         { displayFavoriteButtons() }
-        <p>Share</p>
+        <p className='share-btn' onClick={sharePostHandler}>Share</p>
         { displayEditButton() }
         { displayDeleteButton() }
       </>
@@ -221,6 +242,7 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
     }
     navigate(`/r/${subName}`);
   }
+  
 
   const adjustPostVotesHandler = (e) => {
     const currentUserCopy = {...currentUser};
@@ -339,7 +361,7 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
     <div>
       <Navbar currentUser={currentUser} subList={subList} />
 
-      <Wrapper>
+      <Wrapper id={`post-${post.uid}`}>
         {
           loaded ?
           <>
