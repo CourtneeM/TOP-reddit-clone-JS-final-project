@@ -410,6 +410,9 @@ function RouteSwitch() {
       await updateDoc(doc(db, 'subs', subName), {
         posts: allSubPosts,
       });
+      await updateDoc(doc(db, 'users', currentUser.uid), {
+        own: userListCopy[currentUser.uid].own,
+      });
     }
 
     addCommentInFirestore();
@@ -471,6 +474,9 @@ function RouteSwitch() {
       await updateDoc(doc(db, 'subs', comment.subName), {
         posts: allSubPosts,
       });
+      await updateDoc(doc(db, 'users', currentUser.uid), {
+        own: userListCopy[currentUser.uid].own,
+      });
     }
 
     deleteCommentInFirestore();
@@ -511,6 +517,14 @@ function RouteSwitch() {
     userListCopy[currentUser.uid].favorite.comments[subName][postUid].push(commentUid);
 
     setUserList(userListCopy);
+    
+    const editCommentInFirestore = async () => {
+      await updateDoc(doc(db, 'users', currentUser.uid), {
+        favorite: userListCopy[currentUser.uid].favorite,
+      });
+    }
+
+    editCommentInFirestore();
   }
   const unfavoriteComment = (subName, postUid, commentUid) => {
     const userListCopy = {...userList};
@@ -520,6 +534,14 @@ function RouteSwitch() {
     if (userListCopy[currentUser.uid].favorite.comments[subName][postUid].length === 0) delete userListCopy[currentUser.uid].favorite.comments[subName];
 
     setUserList(userListCopy);
+
+    const editCommentInFirestore = async () => {
+      await updateDoc(doc(db, 'users', currentUser.uid), {
+        favorite: userListCopy[currentUser.uid].favorite,
+      });
+    }
+
+    editCommentInFirestore();
   }
   
   return (
