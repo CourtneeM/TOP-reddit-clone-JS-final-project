@@ -279,6 +279,17 @@ function RouteSwitch() {
       const allSubPosts = {};
       Object.keys(subListCopy[editedPost.subName].posts).forEach((postUid) => {
         allSubPosts[postUid] = {...subListCopy[editedPost.subName].posts[postUid]};
+
+        const post = allSubPosts[postUid];
+        const existingComments = post.comments;
+        delete post.comments;
+        post.comments = {};
+
+        Object.keys(existingComments).forEach((commentUid) => {
+          post.comments[commentUid] = {...existingComments[commentUid]};
+        });
+
+        allSubPosts[postUid] = post;
       });
       
       await updateDoc(doc(db, 'subs', editedPost.subName), {
@@ -336,10 +347,24 @@ function RouteSwitch() {
       const allSubPosts = {};
       Object.keys(subListCopy[post.subName].posts).forEach((postUid) => {
         allSubPosts[postUid] = {...subListCopy[post.subName].posts[postUid]};
+
+        const existingPost = allSubPosts[postUid];
+        const existingComments = existingPost.comments;
+        delete existingPost.comments;
+        existingPost.comments = {};
+
+        Object.keys(existingComments).forEach((commentUid) => {
+          existingPost.comments[commentUid] = {...existingComments[commentUid]};
+        });
+
+        allSubPosts[postUid] = existingPost;
       });
       
       await updateDoc(doc(db, 'subs', post.subName), {
         posts: allSubPosts
+      });
+      await updateDoc(doc(db, 'users', currentUser.uid), {
+        votes: userListCopy[currentUser.uid].votes,
       });
     }
     editPostInFirestore();
@@ -505,6 +530,9 @@ function RouteSwitch() {
 
       await updateDoc(doc(db, 'subs', comment.subName), {
         posts: allSubPosts,
+      });
+      await updateDoc(doc(db, 'users', currentUser.uid), {
+        votes: userListCopy[currentUser.uid].votes,
       });
     }
 
