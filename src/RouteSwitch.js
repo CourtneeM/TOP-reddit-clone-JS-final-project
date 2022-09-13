@@ -309,17 +309,26 @@ function RouteSwitch() {
       userListCopy[postOwnerUid].deletedContent.posts[subName] = [];
     }
     userListCopy[postOwnerUid].deletedContent.posts[subName].push(deletedPost);
-
     setUserList(userListCopy);
 
     subListCopy[subName].posts[postUid].deleteText();
-    
     setSubList(subListCopy);
 
     const deleteFromFirestore = async () => {
       const allSubPosts = {};
       Object.keys(subListCopy[subName].posts).forEach((postUid) => {
         allSubPosts[postUid] = {...subListCopy[subName].posts[postUid]};
+
+        const post = allSubPosts[postUid];
+        const existingComments = post.comments;
+        delete post.comments;
+        post.comments = {};
+
+        Object.keys(existingComments).forEach((commentUid) => {
+          post.comments[commentUid] = {...existingComments[commentUid]};
+        });
+
+        allSubPosts[postUid] = post;
       });
       
       await updateDoc(doc(db, 'subs', subName), {
