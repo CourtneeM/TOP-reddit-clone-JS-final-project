@@ -69,7 +69,7 @@ function RouteSwitch() {
     //   }
     // });
 
-    const getSubs = async () => {
+    const getExistingData = async () => {
       const querySnapshot = await getDocs(collection(db, 'subs'));
       querySnapshot.forEach((doc) => {
         const {name, owner, subTitle, moderators, followers, about, creationDateTime, posts} = doc.data();
@@ -86,11 +86,12 @@ function RouteSwitch() {
           const existingComments = post.comments;
           delete post.comments;
           post.comments = {};
+
           Object.keys(existingComments).forEach((commentUid) => {
             const { uid, postUid, subName, owner, text, parentUid, creationDateTime, votes, upvotes, downvotes, editStatus, deleteStatus, children } = existingComments[commentUid];
             post.addComment(uid, postUid, subName, owner, text, parentUid, creationDateTime, votes, upvotes, downvotes, editStatus, deleteStatus, children);
           });
-          post.comments = existingComments;
+
           existingSub.posts[postUid] = post;
         });
 
@@ -109,7 +110,7 @@ function RouteSwitch() {
       [user5.uid]: user5,
     });
     setCurrentUser(user1);
-    getSubs();
+    getExistingData();
   }, []);
 
   useEffect(() => {
@@ -198,7 +199,9 @@ function RouteSwitch() {
     setUserList(userListCopy);
 
     const editSubInFirestore = async () => {
-      await updateDoc(doc(db, 'subs', subName), { ...subListCopy[subName] });
+      await updateDoc(doc(db, 'subs', subName), {
+        'followers': subListCopy[subName].followers,
+      });
     }
     editSubInFirestore();
   }
@@ -216,7 +219,9 @@ function RouteSwitch() {
     setUserList(userListCopy);
 
     const editSubInFirestore = async () => {
-      await updateDoc(doc(db, 'subs', subName), { ...subListCopy[subName] });
+      await updateDoc(doc(db, 'subs', subName), {
+        'followers': subListCopy[subName].followers,
+      });
     }
     editSubInFirestore();
   }

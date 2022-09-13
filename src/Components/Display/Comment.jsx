@@ -126,7 +126,7 @@ function Comment({ loggedIn, currentUser, subList, comments, comment, commentRep
         <div>
           { displayVoteButton('upvote', '^') }
           <p>{comment.votes}</p>
-          { displayVoteButton('upvote', 'v') }
+          { displayVoteButton('downvote', 'v') }
 
           <p onClick={displayReplyContainer}>Reply</p>
         </div>
