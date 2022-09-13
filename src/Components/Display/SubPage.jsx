@@ -56,7 +56,7 @@ const PostsContainer = styled.div`
 
 `;
 
-function SubPage({ loggedIn, currentUser, userList, subList, followSub, unfollowSub, deleteSub, favoritePost, unfavoritePost, adjustPostVotes }) {
+function SubPage({ loggedIn, currentUser, userList, subList, followSub, unfollowSub, favoritePost, unfavoritePost, adjustPostVotes }) {
   const params = useParams();
 
   const [sub, setSub] = useState({});
@@ -89,6 +89,7 @@ function SubPage({ loggedIn, currentUser, userList, subList, followSub, unfollow
     const existingPosts = Object.values(posts).filter((post) => !post.deleteStatus.deleted);
     return existingPosts.map((post) => {
       const path = `${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`;
+
       return (
         <Link to={path} key={post.uid}>
           <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} />

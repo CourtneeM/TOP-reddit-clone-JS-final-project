@@ -1,26 +1,30 @@
 class Comment {
-  constructor(uid, postUid, subName, owner, text, parentUid=null) {
+  constructor(uid, postUid, subName, owner, text, parentUid=null, creationDateTime=this.getDateTime(), votes=0, upvotes=[], downvotes=[],
+              editStatus=this.editStatus(), deleteStatus=this.deleteStatus(), children=[]) {
     this.uid = uid;
     this.postUid = postUid;
     this.subName = subName;
     this.owner = owner;
     this.text = text;
-    this.creationDateTime = this.getDateTime();
-    this.votes = 0;
-    this.upvotes = [];
-    this.downvotes = [];
-    this.editStatus = { edited: false, editDateTime: null };
-    this.deleteStatus = { deleted: false, deleteDateTime: null };
-    this.children = [];
     this.parentUid = parentUid;
+    this.creationDateTime = creationDateTime;
+    this.votes = votes;
+    this.upvotes = upvotes;
+    this.downvotes = downvotes;
+    this.editStatus = editStatus;
+    this.deleteStatus = deleteStatus;
+    this.children = children;
   }
+
+  editStatus() { return { edited: false, editDateTime: null } };
+  deleteStatus() { return { deleted: false, deleteDateTime: null } };
 
   getDateTime() {
     const newDate = new Date();
     return {
       time: { seconds: newDate.getSeconds(), minutes: newDate.getMinutes(), hours: newDate.getHours() },
       date: { day: newDate.getDate(), month: newDate.getMonth() + 1, year: newDate.getFullYear() },
-      fullDateTime: newDate
+      // fullDateTime: newDate
     }
   }
 

@@ -36,8 +36,8 @@ class Sub {
     delete this.moderators[userUid];
   }
 
-  addPost(postUid, title, owner, type, content, subName) {
-    this.posts[postUid] = new Post(postUid, title, owner, type, content, subName);
+  addPost(postUid, title, owner, type, content, subName, creationDateTime, votes, upvotes, downvotes, editStatus, deleteStatus, comments) {
+    this.posts[postUid] = new Post(postUid, title, owner, type, content, subName, creationDateTime, votes, upvotes, downvotes, editStatus, deleteStatus, comments);
   }
 
   getTopPosts() {

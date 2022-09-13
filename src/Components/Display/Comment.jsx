@@ -346,6 +346,7 @@ function Comment({ loggedIn, currentUser, subList, comments, comment, commentRep
               key={Object.values(nextComment).uid}
               loggedIn={loggedIn}
               currentUser={currentUser}
+              subList={subList}
               comments={comments}
               comment={nextComment}
               commentReply={commentReply}

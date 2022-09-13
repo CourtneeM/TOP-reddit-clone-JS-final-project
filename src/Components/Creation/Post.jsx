@@ -1,28 +1,32 @@
 import Comment from './Comment';
 
 class Post {
-  constructor(uid, title, owner, type, content, subName) {
+  constructor(uid, title, owner, type, content, subName, creationDateTime=this.getDateTime(), votes=0, upvotes=[], downvotes=[],
+              editStatus=this.editStatus(), deleteStatus=this.deleteStatus(), comments={}) {
     this.uid =  uid;
     this.title = title;
     this.owner = owner;
     this.type = type;
-    this.content = content; // either text or an image/video link
-    this.creationDateTime = this.getDateTime();
+    this.content = content;
     this.subName = subName;
-    this.votes = 0;
-    this.upvotes = [];
-    this.downvotes = [];
-    this.editStatus = { edited: false, editDateTime: null };
-    this.deleteStatus = { deleted: false, deleteDateTime: null };
-    this.comments = {};
+    this.creationDateTime = creationDateTime;
+    this.votes = votes;
+    this.upvotes = upvotes;
+    this.downvotes = downvotes;
+    this.editStatus = editStatus;
+    this.deleteStatus = deleteStatus;
+    this.comments = comments;
   }
+  
+  editStatus() { return { edited: false, editDateTime: null } };
+  deleteStatus() { return { deleted: false, deleteDateTime: null } };
 
   getDateTime() {
     const newDate = new Date();
     return {
       time: { seconds: newDate.getSeconds(), minutes: newDate.getMinutes(), hours: newDate.getHours() },
       date: { day: newDate.getDate(), month: newDate.getMonth() + 1, year: newDate.getFullYear() },
-      fullDateTime: newDate
+      // fullDateTime: newDate
     }
   }
 
@@ -54,8 +58,8 @@ class Post {
     delete postList.uid
   }
 
-  addComment(commentUid, postUid, subName, owner, text, parentUid) {
-    this.comments[commentUid] = new Comment(commentUid, postUid, subName, owner, text, parentUid);
+  addComment(commentUid, postUid, subName, owner, text, parentUid, creationDateTime, votes, upvotes, downvotes, editStatus, deleteStatus, children) {
+    this.comments[commentUid] = new Comment(commentUid, postUid, subName, owner, text, parentUid, creationDateTime, votes, upvotes, downvotes, editStatus, deleteStatus, children);
   }
 }
 
