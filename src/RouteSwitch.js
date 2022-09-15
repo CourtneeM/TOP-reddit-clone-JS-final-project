@@ -591,6 +591,7 @@ function RouteSwitch() {
               element={<PostPage
                 loggedIn={loggedIn}
                 currentUser={currentUser}
+                userList={userList}
                 subList={subList}
                 favoritePost={favoritePost}
                 unfavoritePost={unfavoritePost}

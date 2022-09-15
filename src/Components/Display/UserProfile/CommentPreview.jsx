@@ -1,4 +1,7 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { getDownloadURL, ref } from 'firebase/storage';
+
 import styled from "styled-components";
 
 const Wrapper = styled.div`
@@ -7,6 +10,7 @@ const Wrapper = styled.div`
 `;
 const CommentHeader = styled.div`
   display: flex;
+  align-items: center;
   gap: 20px;
   padding: 15px 0;
 
@@ -17,6 +21,17 @@ const CommentHeader = styled.div`
   p:nth-child(2) {
     font-style: italic;
     color: #555;
+  }
+
+  .user-name-image {
+    display: flex;
+    align-items: center;
+
+    img {
+      width: 30px;
+      height: 30px;
+      margin-right: 10px;
+    }
   }
 `;
 const CommentText = styled.p`
@@ -39,7 +54,18 @@ const CommentActions = styled.div`
   }
 `;
 
-function CommentPreview({ loggedIn, currentUser, postTitle, comments, comment, adjustCommentVotes }) {
+function CommentPreview({ loggedIn, currentUser, userList, postTitle, comments, comment, adjustCommentVotes, storage }) {
+  const [profileImg, setProfileImg] = useState('');
+  
+  useEffect(() => {
+    const imageRef = ref(storage, userList[comment.owner.uid].profileImage);
+    getDownloadURL(imageRef)
+      .then((url) => {
+        setProfileImg(url);
+      })
+      .catch((err) => console.log('error setting profile image', err));
+  }, [storage]);
+
   const adjustVotesHandler = (e) => {
     const currentUserCopy = {...currentUser};
 
@@ -163,12 +189,12 @@ function CommentPreview({ loggedIn, currentUser, postTitle, comments, comment, a
   return (
     <Wrapper id={comment.uid}>
       <CommentHeader>
-        {/* <img src="" alt="user" /> */}
-        <p>
-          <Link to={`/u/${comment.owner.uid}/${comment.owner.name}`}>
-            u/{comment.owner.name}
-          </Link>
-        </p>
+        <Link to={`/u/${comment.owner.uid}/${comment.owner.name}`}>
+          <div className='user-name-image'>
+            <img src={profileImg} alt="" />
+            <p>u/{comment.owner.name}</p>
+          </div>
+        </Link>
         <p>{comment.creationDateTime.date.month}/{comment.creationDateTime.date.day}/{comment.creationDateTime.date.year}</p>
       </CommentHeader>
 

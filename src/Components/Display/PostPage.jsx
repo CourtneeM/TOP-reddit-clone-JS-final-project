@@ -128,7 +128,7 @@ const CommentsContainer = styled.div`
   }
 `;
 
-function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost, editPost, deletePost, addComment, favoriteComment, unfavoriteComment, editComment, deleteComment, adjustPostVotes, adjustCommentVotes, storage }) {
+function PostPage({ loggedIn, currentUser, userList, subList, favoritePost, unfavoritePost, editPost, deletePost, addComment, favoriteComment, unfavoriteComment, editComment, deleteComment, adjustPostVotes, adjustCommentVotes, storage }) {
   const params = useParams();
   const navigate = useNavigate();
 
@@ -435,6 +435,7 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
           key={comment.uid}
           loggedIn={loggedIn}
           currentUser={currentUser}
+          userList={userList}
           subList={subList}
           comments={post.comments}
           comment={comment}
@@ -444,6 +445,7 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
           editComment={editComment}
           deleteComment={deleteComment}
           adjustCommentVotes={adjustCommentVotesHandler}
+          storage={storage}
         /> :
         null
       )

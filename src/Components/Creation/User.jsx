@@ -1,8 +1,9 @@
 class User {
-  constructor(uid, name, email) {
+  constructor(uid, name, email, profileImage) {
     this.uid = uid;
     this.name = name;
     this.email = email;
+    this.profileImage = profileImage;
     this.joinDate = this.getDateTime();
     this.own = {
       subs: [],

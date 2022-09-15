@@ -1,3 +1,4 @@
+import { getDownloadURL, ref } from "firebase/storage";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -14,6 +15,7 @@ const Wrapper = styled.div`
 `;
 const CommentHeader = styled.div`
   display: flex;
+  align-items: center;
   gap: 20px;
   padding: 15px 0;
 
@@ -24,6 +26,17 @@ const CommentHeader = styled.div`
   p:nth-child(2) {
     font-style: italic;
     color: #555;
+  }
+
+  .user-name-image {
+    display: flex;
+    align-items: center;
+
+    img {
+      width: 30px;
+      height: 30px;
+      margin-right: 10px;
+    }
   }
 `;
 const CommentText = styled.div`
@@ -74,14 +87,24 @@ const Replies = styled.div`
   border-left: 1px solid #888;
 `;
 
-function Comment({ loggedIn, currentUser, subList, comments, comment, commentReply, favoriteComment, unfavoriteComment, editComment, deleteComment, adjustCommentVotes }) {
+function Comment({ loggedIn, currentUser, userList, subList, comments, comment, commentReply, favoriteComment, unfavoriteComment, editComment, deleteComment, adjustCommentVotes, storage }) {
   const [replyText, setReplyText] = useState('');
   const [editMode, setEditMode] = useState(false);
   const [commentText, setCommentText] = useState('');
+  const [profileImg, setProfileImg] = useState('');
 
   useEffect(() => {
     setCommentText(comment.text);
   }, [comment]);
+
+  useEffect(() => {
+    const imageRef = ref(storage, userList[comment.owner.uid].profileImage);
+    getDownloadURL(imageRef)
+      .then((url) => {
+        setProfileImg(url);
+      })
+      .catch((err) => console.log('error setting profile image', err));
+  }, [storage]);
 
   const displayCommentActions = () => {
     const displayVoteButton = (type, symbol) => {
@@ -301,9 +324,11 @@ function Comment({ loggedIn, currentUser, subList, comments, comment, commentRep
   return (
     <Wrapper id={comment.uid}>
       <CommentHeader>
-        {/* <img src="" alt="user" /> */}
         <Link to={`/u/${comment.owner.uid}/${comment.owner.uid}`}>
-          <p>u/{comment.owner.name}</p>
+          <div className='user-name-image'>
+            <img src={profileImg} alt="" />
+            <p>u/{comment.owner.name}</p>
+          </div>
         </Link>
         <p>{comment.creationDateTime.date.month}/{comment.creationDateTime.date.day}/{comment.creationDateTime.date.year}</p>
         { comment.editStatus.edited ?
@@ -346,6 +371,7 @@ function Comment({ loggedIn, currentUser, subList, comments, comment, commentRep
               key={Object.values(nextComment).uid}
               loggedIn={loggedIn}
               currentUser={currentUser}
+              userList={userList}
               subList={subList}
               comments={comments}
               comment={nextComment}
@@ -354,6 +380,7 @@ function Comment({ loggedIn, currentUser, subList, comments, comment, commentRep
               unfavoriteComment={unfavoriteComment}
               deleteComment={deleteComment}
               adjustCommentVotes={adjustCommentVotes}
+              storage={storage}
               /> :
               null
             })

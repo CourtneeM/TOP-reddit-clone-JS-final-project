@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { HashLink as Link } from 'react-router-hash-link';
+import { getDownloadURL, ref } from 'firebase/storage';
 
 import Navbar from '../Navbar';
 import SubPreview from './SubPreview';
@@ -69,11 +70,21 @@ const SortOptions = styled.div`
 
 function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes, adjustCommentVotes, storage }) {
   const [currentSelectedData, setCurrentSelectedData] = useState({});
+  const [profileImage, setProfileImg] = useState('');
   const params = useParams();
 
   useEffect(() => {
     displayOverview();
   }, [subList]);
+
+  useEffect(() => {
+    const imageRef = ref(storage, currentUser.profileImage);
+    getDownloadURL(imageRef)
+      .then((url) => {
+        setProfileImg(url);
+      })
+      .catch((err) => console.log('error setting profile image', err));
+  }, [storage]);
 
   const displaySubs = () => {
     const allSubs = [];
@@ -289,10 +300,12 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
         <CommentPreview
           loggedIn={loggedIn}
           currentUser={currentUser}
+          userList={userList}
           postTitle={subList[el.subName].posts[el.postUid].title}
           comments={Object.values(subList[el.subName].posts[el.postUid].comments)}
           comment={el}
           adjustCommentVotes={adjustCommentVotes}
+          storage={storage}
         />
       </Link>
   }
@@ -339,6 +352,7 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
 
       <Wrapper>
         <Header>
+          <img src={profileImage} alt="" />
           <h1>u/{userList[params.userUid].name}</h1>
           <ul className='views-list'>
             <li className='selected-view' onClick={(e) => changeSelectedView(e)}>Overview</li>
