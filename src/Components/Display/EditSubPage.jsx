@@ -79,7 +79,6 @@ const ModeratorList = styled.div`
     }
   }
 
-
   ul {
     display: flex;
     flex-wrap: wrap;

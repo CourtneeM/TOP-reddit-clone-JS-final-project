@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { initializeApp } from "firebase/app";
-import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore, setDoc, updateDoc } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { getFirestore, collection, doc, getDocs, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { getStorage, ref, deleteObject } from 'firebase/storage';
 import { getFirebaseConfig } from './firebase-config';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
@@ -34,36 +34,6 @@ function RouteSwitch() {
   const [loggedIn, setLoggedIn] = useState(true);
 
   useEffect(() => {
-    
-
-    // const games = new Sub('Games', {uid: user2.uid, name: user2.name});
-    // const digitalArt = new Sub('DigitalArt', {uid: user3.uid, name: user3.name});
-    
-
-    // user2.own.subs = [games.name];
-    // user3.own.subs = [digitalArt.name];
-
-    // Object.keys(newSubList).forEach((key) => {
-    //   if (key === 'Games') {
-    //     const owner = {uid: user4.uid, name: user4.name};
-    //     const post1Uid = uniqid();
-    //     const post2Uid = uniqid();
-    //     newSubList[key].addPost(post1Uid, 'New Games Coming Soon', owner, 'text', 'Look at these cool games coming out later this year!', 'Games');
-    //     newSubList[key].addPost(post2Uid, 'New Games Coming Next Year', owner, 'text', 'Look at these cool games coming out later this year!', 'Games');
-
-    //     user4.own.posts[key] = [post1Uid, post2Uid];
-    //   }
-    //   if (key === 'DigitalArt') {
-    //     const owner = { uid: user5.uid, name: user5.name };
-    //     const post1Uid = uniqid();
-    //     const post2Uid = uniqid();
-    //     newSubList[key].addPost(post1Uid, 'Some cool art to look at', owner, 'text', 'Some cool art I found while browsing!', 'DigitalArt');
-    //     newSubList[key].addPost(post2Uid, 'More art to check out', owner, 'text', 'Some cool art I found while browsing!', 'DigitalArt');
-
-    //     user5.own.posts[key] = [post1Uid, post2Uid];
-    //   }
-    // });
-
     const getExistingData = () => {
       const getSubList = async () => {
         const newSubList = {};
@@ -243,8 +213,8 @@ function RouteSwitch() {
     const owner = {uid: currentUser.uid, name: currentUser.name};
     const subListCopy = {...subList};
     const postUid = uniqid();
-    subListCopy[subName].addPost(postUid, postTitle, owner, postType, postContent, subName);
 
+    subListCopy[subName].addPost(postUid, postTitle, owner, postType, postContent, subName);
     setSubList(subListCopy);
 
     const userListCopy = {...userList};
@@ -299,21 +269,6 @@ function RouteSwitch() {
     editPostInFirestore();
   }
   const deletePost = (subName, postUid) => {
-    const subListCopy = {...subList};
-    const userListCopy = {...userList};
-    const postOwnerUid = subListCopy[subName].posts[postUid].owner.uid;
-    const index = userListCopy[postOwnerUid].own.posts[subName].indexOf(postUid);
-    const deletedPost = userListCopy[postOwnerUid].own.posts[subName].splice(index, 1)[0];
-
-    if (!userListCopy[postOwnerUid].deletedContent.posts[subName]) {
-      userListCopy[postOwnerUid].deletedContent.posts[subName] = [];
-    }
-    userListCopy[postOwnerUid].deletedContent.posts[subName].push(deletedPost);
-    setUserList(userListCopy);
-
-    subListCopy[subName].posts[postUid].deleteText();
-    setSubList(subListCopy);
-
     const deleteFromFirestore = async () => {
       const allSubPosts = {};
       Object.keys(subListCopy[subName].posts).forEach((postUid) => {
@@ -339,6 +294,33 @@ function RouteSwitch() {
         deletedContent: userListCopy[currentUser.uid].deletedContent
       });
     }
+    const deleteFromStorage = () => {
+      const imageRef = ref(storage, subListCopy[subName].posts[postUid].content);
+      
+      console.log(imageRef);
+      deleteObject(imageRef)
+        .then(() => console.log('image deleted'))
+        .catch((err) => console.log('error', err));
+    }
+
+    const subListCopy = {...subList};
+    const userListCopy = {...userList};
+    const postOwnerUid = subListCopy[subName].posts[postUid].owner.uid;
+    const index = userListCopy[postOwnerUid].own.posts[subName].indexOf(postUid);
+
+    if (subListCopy[subName].posts[postUid].type === 'images/videos') deleteFromStorage();
+
+    const deletedPost = userListCopy[postOwnerUid].own.posts[subName].splice(index, 1)[0];
+
+    if (!userListCopy[postOwnerUid].deletedContent.posts[subName]) {
+      userListCopy[postOwnerUid].deletedContent.posts[subName] = [];
+    }
+    userListCopy[postOwnerUid].deletedContent.posts[subName].push(deletedPost);
+    setUserList(userListCopy);
+
+    subListCopy[subName].posts[postUid].deleteText();
+    setSubList(subListCopy);
+
     deleteFromFirestore();
   }
   const adjustPostVotes = (num, post, currentUserCopy) => {
@@ -584,8 +566,8 @@ function RouteSwitch() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home loggedIn={loggedIn} currentUser={currentUser} subList={subList} topPosts={topPosts} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} />} />
-        <Route path="/r/all" element={<All loggedIn={loggedIn} currentUser={currentUser} subList={subList} favoritePost={favoritePost} unfavoritePost={unfavoritePost} />} />
+        <Route path="/" element={<Home loggedIn={loggedIn} currentUser={currentUser} subList={subList} topPosts={topPosts} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage} />}  />
+        <Route path="/r/all" element={<All loggedIn={loggedIn} currentUser={currentUser} subList={subList} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage} />} />
         <Route path="/r/new_sub" element={<CreateSubPage loggedIn={loggedIn} currentUser={currentUser} subList={subList} createSub={createSub} />} />
         {
           <Route path={`/r/:subName`}>
@@ -600,10 +582,11 @@ function RouteSwitch() {
                 favoritePost={favoritePost}
                 unfavoritePost={unfavoritePost}
                 adjustPostVotes={adjustPostVotes}
+                storage={storage}
               />}
             />
             <Route key={uniqid()} path="edit_sub" element={<EditSubPage loggedIn={loggedIn} currentUser={currentUser} userList={userList} subList={subList} editSub={editSub} deleteSub={deleteSub} />} />
-            <Route key={uniqid()} path="new_post" element={<CreatePostPage loggedIn={loggedIn} currentUser={currentUser} subList={subList} submitPost={submitPost} />} />
+            <Route key={uniqid()} path="new_post" element={<CreatePostPage loggedIn={loggedIn} currentUser={currentUser} subList={subList} submitPost={submitPost} storage={storage} />} />
             <Route key={uniqid()} path=":postUid/:postTitle"
               element={<PostPage
                 loggedIn={loggedIn}
@@ -620,6 +603,7 @@ function RouteSwitch() {
                 deleteComment={deleteComment}
                 adjustPostVotes={adjustPostVotes}
                 adjustCommentVotes={adjustCommentVotes}
+                storage={storage}
               />}
             />
           </Route>
@@ -632,6 +616,7 @@ function RouteSwitch() {
             subList={subList}
             adjustPostVotes={adjustPostVotes}
             adjustCommentVotes={adjustCommentVotes}
+            storage={storage}
           />}
         />
       </Routes>

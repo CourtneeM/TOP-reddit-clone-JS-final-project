@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { getDownloadURL, ref } from 'firebase/storage';
 
 import Navbar from './Navbar';
 import Comment from './Comment';
@@ -58,6 +59,10 @@ const Body = styled.div`
     width: 100%;
     margin-bottom: 80px;
     padding: 8px;
+  }
+
+  img {
+    width: 100%;
   }
 `;
 const PostActions = styled.div`
@@ -123,7 +128,7 @@ const CommentsContainer = styled.div`
   }
 `;
 
-function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost, editPost, deletePost, addComment, favoriteComment, unfavoriteComment, editComment, deleteComment, adjustPostVotes, adjustCommentVotes }) {
+function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost, editPost, deletePost, addComment, favoriteComment, unfavoriteComment, editComment, deleteComment, adjustPostVotes, adjustCommentVotes, storage }) {
   const params = useParams();
   const navigate = useNavigate();
 
@@ -146,11 +151,13 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
     setPost(currentPost);
     setComments(Object.values(currentPost.comments));
   }, [subList]);
-
   useEffect(() => {
     setPostContent(post.content);
     setLoaded(true);
-  }, [post])
+  }, [post]);
+  useEffect(() => {
+    if (post.type === 'images/videos') document.getElementById('post-image').setAttribute('src', postContent);
+  }, [postContent]);
   
   const displayTextPost = () => {
     return (
@@ -178,13 +185,18 @@ function PostPage({ loggedIn, currentUser, subList, favoritePost, unfavoritePost
     );
   }
   const displayImagePost = () => {
+    const pathRef = ref(storage, post.content);
+    getDownloadURL(pathRef).then((url) => {
+      setPostContent(url);
+    });
+
     return (
       <Body>
         <div>
           <h2>{post.title}</h2>
           { editMode ?
             <input type="file" name="new-post-content" id="new-post-content" onChange={(e) => setPostContent(e.target.value)} /> :
-            <img src={post.content} alt="" />
+            <img src={''} alt="" id='post-image' />
           }
         </div>
 

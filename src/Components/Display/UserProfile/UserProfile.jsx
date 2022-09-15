@@ -67,7 +67,7 @@ const SortOptions = styled.div`
   }
 `;
 
-function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes, adjustCommentVotes }) {
+function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes, adjustCommentVotes, storage }) {
   const [currentSelectedData, setCurrentSelectedData] = useState({});
   const params = useParams();
 
@@ -283,7 +283,7 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
       </Link> :
     type === 'posts' ?
       <Link to={`/r/${el.subName}/${el.uid}/${el.title.split(' ').join('_').toLowerCase()}`} key={el.uid}>
-        <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={el} adjustPostVotes={adjustPostVotes} />
+        <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={el} adjustPostVotes={adjustPostVotes} storage={storage} />
       </Link> :
       <Link to={`/r/${el.subName}/${el.postUid}/${subList[el.subName].posts[el.postUid].title.split(' ').join('_').toLowerCase()}/#${el.uid}`} key={el.uid}>
         <CommentPreview

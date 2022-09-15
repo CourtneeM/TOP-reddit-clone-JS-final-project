@@ -56,7 +56,7 @@ const PostsContainer = styled.div`
 
 `;
 
-function SubPage({ loggedIn, currentUser, userList, subList, followSub, unfollowSub, favoritePost, unfavoritePost, adjustPostVotes }) {
+function SubPage({ loggedIn, currentUser, userList, subList, followSub, unfollowSub, favoritePost, unfavoritePost, adjustPostVotes, storage }) {
   const params = useParams();
 
   const [sub, setSub] = useState({});
@@ -92,7 +92,7 @@ function SubPage({ loggedIn, currentUser, userList, subList, followSub, unfollow
 
       return (
         <Link to={path} key={post.uid}>
-          <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} />
+          <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage} />
         </Link>
       )
     });

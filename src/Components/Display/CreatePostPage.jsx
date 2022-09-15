@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
+import { ref, uploadBytes } from "firebase/storage";
 
 import Navbar from "./Navbar";
 
+import uniqid from 'uniqid';
 import styled from "styled-components";
 
 const Wrapper = styled.div`
@@ -62,7 +64,7 @@ const SubmitPost = styled.div`
   }
 `;
 
-function CreatePostPage({ loggedIn, currentUser, subList, submitPost }) {
+function CreatePostPage({ loggedIn, currentUser, subList, submitPost, storage }) {
   const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
   const [postType, setPostType] = useState('text');
@@ -79,11 +81,19 @@ function CreatePostPage({ loggedIn, currentUser, subList, submitPost }) {
 
     e.target.id = 'selected-post-type';
   }
-
+  const uploadImage = (storageRef) => {
+    uploadBytes(storageRef, postContent).then((snapshot) => console.log('Uploaded image'));
+  }
   const submitPostHandler = (e) => {
     e.preventDefault();
 
-    submitPost(params.subName, postTitle, postContent, postType);
+    if (postType === 'images/videos') {
+      const storageRef = ref(storage, `images/posts/${postContent.name}-${uniqid()}`);      
+      uploadImage(storageRef);
+      submitPost(params.subName, postTitle, storageRef._location.path_, postType);
+    } else {
+      // submitPost(params.subName, postTitle, postContent, postType);
+    }
     navigate(`/r/${params.subName}`);
     
     setPostTitle('');
@@ -119,8 +129,7 @@ function CreatePostPage({ loggedIn, currentUser, subList, submitPost }) {
                   </textarea> :
                   postType === 'images/videos' ?
                   <input type="file" name="post-content" id="file-upload"
-                    value={postContent}
-                    onChange={(e) => setPostContent(e.target.value)}
+                    onChange={(e) => setPostContent(e.target.files[0])}
                   /> :
                   <input type="url" name="post-content" id="post-content" placeholder="URL"
                     value={postContent}

@@ -1,4 +1,7 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ref, getDownloadURL} from 'firebase/storage';
+
 import styled from "styled-components";
 
 const Wrapper = styled.div`
@@ -23,11 +26,17 @@ const Header = styled.div`
   }
 `;
 const Body = styled.div`
+  max-height: 250px;
   margin-bottom: 15px;
+  overflow: hidden;
 
   h4 {
     margin-bottom: 15px;
     font-size: 1.4rem;
+  }
+
+  img {
+    width: 100%;
   }
 `;
 const Options = styled.div`
@@ -52,7 +61,32 @@ const VoteStatus = styled.div`
   }
 `;
 
-function PostPreview({ loggedIn, currentUser, post, adjustPostVotes }) {
+function PostPreview({ loggedIn, currentUser, post, adjustPostVotes, storage }) {
+  const [postContent, setPostContent] = useState('');
+
+  useEffect(() => {
+    if (post.type === 'images/videos' && storage) {
+      const pathRef = ref(storage, post.content);
+      let attempt = 0;
+
+      const getImage = () => {
+        getDownloadURL(pathRef).then((url) => {
+          setPostContent(url);
+        }).catch((err) => {
+          attempt += 1;
+          if (attempt >= 5) return console.log('error retrieving image', err);
+
+          console.log('error retrieving image, retrying...', err);
+          setTimeout(() => getImage(), 3000);
+        });
+      }
+
+      getImage();
+    } else {
+      setPostContent(post.content);
+    }
+  }, [storage]);
+
   const adjustPostVotesHandler = (e) => {
     const currentUserCopy = {...currentUser};
     
@@ -162,7 +196,10 @@ function PostPreview({ loggedIn, currentUser, post, adjustPostVotes }) {
       </Header>
       <Body>
         <h4>{post.title}</h4>
-        <p>{post.content}</p>
+        { post.type === 'images/videos' ?
+          <img src={postContent} alt="" /> :
+          <p>{postContent}</p>
+        }
       </Body>
       <Options>
         <p>{getNumComments() === 1 ? getNumComments() + ' comment' : getNumComments() + ' comments'}</p>

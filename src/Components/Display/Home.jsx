@@ -39,7 +39,7 @@ const PostsContainer = styled.div`
 
 `;
 
-function Home({ loggedIn, currentUser, subList, topPosts, favoritePost, unfavoritePost, adjustPostVotes }) {
+function Home({ loggedIn, currentUser, subList, topPosts, favoritePost, unfavoritePost, adjustPostVotes, storage }) {
   const [posts, setPosts] = useState([]);
   
   useEffect(() => {
@@ -64,13 +64,14 @@ function Home({ loggedIn, currentUser, subList, topPosts, favoritePost, unfavori
   }
 
   const getPostPreview = () => {
-    return Object.values(posts).map((post) => {
+    const existingPosts = posts.filter((post) => !Object.values(post)[0].deleteStatus.deleted);
+    return existingPosts.map((post) => {
       const postDetails = Object.values(post)[0];
       const path = `/r/${postDetails.subName}/${postDetails.uid}/${postDetails.title.split(' ').join('_').toLowerCase()}`;
 
       return (
         <Link to={path} key={postDetails.uid}>
-          <PostPreview key={postDetails.uid} loggedIn={loggedIn} currentUser={currentUser} post={postDetails} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} />
+          <PostPreview key={postDetails.uid} loggedIn={loggedIn} currentUser={currentUser} post={postDetails} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage} />
         </Link>
       )
     });
