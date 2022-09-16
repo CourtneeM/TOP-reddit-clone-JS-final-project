@@ -33,9 +33,10 @@ const CommentHeader = styled.div`
     align-items: center;
 
     img {
-      width: 30px;
-      height: 30px;
+      width: 40px;
+      height: 40px;
       margin-right: 10px;
+      border-radius: 50%;
     }
   }
 `;

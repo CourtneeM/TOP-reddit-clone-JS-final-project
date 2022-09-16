@@ -564,17 +564,18 @@ function RouteSwitch() {
   }
 
   const editUser = (profileImgPath) => {
+    const editUserInFirestore = async () => {
+      await updateDoc(doc(db, 'users', currentUser.uid), {
+        profileImage: profileImgPath,
+      });
+    }
+
     const userListCopy = {...userList};
     userListCopy[currentUser.uid].profileImage = profileImgPath;
 
     setUserList(userListCopy);
     setCurrentUser(userListCopy[currentUser.uid]);
 
-    const editUserInFirestore = async () => {
-      await updateDoc(doc(db, 'users', currentUser.uid), {
-        profileImage: profileImgPath,
-      });
-    }
     editUserInFirestore();
   }
   

@@ -133,12 +133,12 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
         if (attempt >= 5) return console.log('error retrieving image', err);
 
         console.log('error retrieving image, retrying...', err);
-        setTimeout(() => getImage(), 3000);
+        setTimeout(() => getImage(), 2000);
       });
     }
 
     getImage();
-  }, [storage]);
+  }, [storage, currentUser.profileImage]);
 
   const displayNewProfileImgInput = () => {
     document.querySelector('.new-profile-image-input').style.display = 'block';
@@ -150,13 +150,13 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
   const saveNewProfileImg = () => {
     const deletePrevFromStorage = () => {
       const prevImgRef = ref(storage, profileImg);
-      
+
       deleteObject(prevImgRef)
         .then(() => console.log('image deleted'))
         .catch((err) => console.log('error', err));
     }
 
-    if (!ref(storage, profileImg)._location.path_ === 'images/profiles/default-profile-image.png') deletePrevFromStorage();
+    if (!(ref(storage, profileImg)._location.path_ === 'images/profiles/default-profile-image.png')) deletePrevFromStorage();
 
     const imageRef = ref(storage, `images/profiles/${newProfileImg.name}-${currentUser.uid}`);
     uploadBytes(imageRef, newProfileImg).then((snapshot) => console.log('Uploaded image'));
