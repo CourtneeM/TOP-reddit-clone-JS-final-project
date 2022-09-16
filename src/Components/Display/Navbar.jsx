@@ -24,7 +24,7 @@ const Wrapper = styled.div`
   }
 `;
 
-function Navbar({ currentUser, subList }) {
+function Navbar({ loggedIn, signInOut, currentUser, subList }) {
   const getSubNames = () => {
     return Object.values(subList).map((sub) => {
       return (
@@ -56,9 +56,15 @@ function Navbar({ currentUser, subList }) {
         </Link>
       </ul>
 
-      <Link to={`/u/${currentUser.uid}/${currentUser.name}`}>
-        <p>u/{currentUser.name}</p>
-      </Link>
+      { loggedIn ?
+        <div>
+          <Link to={`/u/${currentUser.uid}/${currentUser.name}`}>
+            <p>u/{currentUser.name}</p>
+          </Link>
+          <button onClick={signInOut.signUserOut}>Sign Out</button>
+        </div> :
+        <button onClick={signInOut.signUserIn}>Sign In</button>
+      }
     </Wrapper>
   );
 };

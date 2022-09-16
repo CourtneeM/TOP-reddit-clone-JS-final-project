@@ -128,7 +128,7 @@ const CommentsContainer = styled.div`
   }
 `;
 
-function PostPage({ loggedIn, currentUser, userList, subList, favoritePost, unfavoritePost, editPost, deletePost, addComment, favoriteComment, unfavoriteComment, editComment, deleteComment, adjustPostVotes, adjustCommentVotes, storage }) {
+function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favoritePost, unfavoritePost, editPost, deletePost, addComment, favoriteComment, unfavoriteComment, editComment, deleteComment, adjustPostVotes, adjustCommentVotes, storage }) {
   const params = useParams();
   const navigate = useNavigate();
 
@@ -455,7 +455,7 @@ function PostPage({ loggedIn, currentUser, userList, subList, favoritePost, unfa
 
   return (
     <div>
-      <Navbar currentUser={currentUser} subList={subList} />
+      <Navbar loggedIn={loggedIn} signInOut={signInOut}currentUser={currentUser} subList={subList} />
 
       <Wrapper id={`post-${post.uid}`}>
         {

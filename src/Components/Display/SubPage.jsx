@@ -56,7 +56,7 @@ const PostsContainer = styled.div`
 
 `;
 
-function SubPage({ loggedIn, currentUser, userList, subList, followSub, unfollowSub, favoritePost, unfavoritePost, adjustPostVotes, storage }) {
+function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSub, unfollowSub, favoritePost, unfavoritePost, adjustPostVotes, storage }) {
   const params = useParams();
 
   const [sub, setSub] = useState({});
@@ -100,7 +100,7 @@ function SubPage({ loggedIn, currentUser, userList, subList, followSub, unfollow
 
   return (
     <div>
-      <Navbar currentUser={currentUser} subList={subList} />
+      <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} />
 
       <Wrapper>
         {

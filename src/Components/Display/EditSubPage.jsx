@@ -121,7 +121,7 @@ const DeleteSub = styled.button`
   cursor: pointer;
 `;
 
-function EditSubPage({ loggedIn, currentUser, userList, subList, editSub, deleteSub }) {
+function EditSubPage({ loggedIn, signInOut, currentUser, userList, subList, editSub, deleteSub }) {
   const [sub, setSub] = useState({});
   const [subTitle, setSubTitle] = useState('');
   const [subAbout, setSubAbout] = useState('');
@@ -189,7 +189,7 @@ function EditSubPage({ loggedIn, currentUser, userList, subList, editSub, delete
 
   return (
     <div>
-      <Navbar currentUser={currentUser} subList={subList} />
+      <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} />
 
       <Wrapper>
         { loggedIn ?

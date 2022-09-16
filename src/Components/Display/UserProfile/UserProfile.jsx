@@ -111,7 +111,7 @@ const SortOptions = styled.div`
   }
 `;
 
-function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes, adjustCommentVotes, editUser, storage }) {
+function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adjustPostVotes, adjustCommentVotes, editUser, storage }) {
   const [currentSelectedData, setCurrentSelectedData] = useState({});
   const [profileImg, setProfileImg] = useState('');
   const [newProfileImg, setNewProfileImg] = useState('');
@@ -426,7 +426,7 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
 
   return (
     <div>
-      <Navbar currentUser={currentUser} subList={subList} />
+      <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} />
 
       <Wrapper>
         <Header>

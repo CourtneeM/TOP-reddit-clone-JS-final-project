@@ -39,7 +39,7 @@ const PostsContainer = styled.div`
 
 `;
 
-function Home({ loggedIn, currentUser, subList, topPosts, favoritePost, unfavoritePost, adjustPostVotes, storage }) {
+function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePost, unfavoritePost, adjustPostVotes, storage }) {
   const [posts, setPosts] = useState([]);
   
   useEffect(() => {
@@ -79,7 +79,7 @@ function Home({ loggedIn, currentUser, subList, topPosts, favoritePost, unfavori
 
   return (
     <div>
-      <Navbar currentUser={currentUser} subList={subList} />
+      <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} />
       <Wrapper>
         <PostsSection>
           <SortOptions>
