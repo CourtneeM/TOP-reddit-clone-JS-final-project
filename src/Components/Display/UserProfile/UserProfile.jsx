@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { HashLink as Link } from 'react-router-hash-link';
-import { getDownloadURL, ref } from 'firebase/storage';
+import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 import Navbar from '../Navbar';
 import SubPreview from './SubPreview';
@@ -26,7 +26,6 @@ const Header = styled.div`
 
   h1 {
     flex: 1 1 100%;
-    margin-bottom: 40px;
     text-align: right;
   }
 
@@ -37,6 +36,50 @@ const Header = styled.div`
     li {
       cursor: pointer;
     }
+  }
+
+  .user-name-image {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    margin-bottom: 40px;
+    
+    div {
+      position: relative;
+
+      img {
+        margin-right: 20px;
+      }
+      
+      .profile-img {
+        width: 75px;
+        height: 75px;
+        border-radius: 50%;
+      }
+
+      .change-profile-image {
+        display: none;
+        position: absolute;
+        top: 30px;
+        left: 0px;
+        font-size: 0.8rem;
+        text-align: center;
+        background: #fff;
+        cursor: pointer;
+      }
+
+      &:hover {
+        .change-profile-image {
+          display: block;
+        }
+      }
+    }
+  }
+
+  .new-profile-image-input {
+    display: none;
+    position: absolute;
+    right: 0;
   }
 
   .selected-view {
@@ -68,9 +111,10 @@ const SortOptions = styled.div`
   }
 `;
 
-function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes, adjustCommentVotes, storage }) {
+function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes, adjustCommentVotes, editUser, storage }) {
   const [currentSelectedData, setCurrentSelectedData] = useState({});
-  const [profileImage, setProfileImg] = useState('');
+  const [profileImg, setProfileImg] = useState('');
+  const [newProfileImg, setNewProfileImg] = useState('');
   const params = useParams();
 
   useEffect(() => {
@@ -78,14 +122,48 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
   }, [subList]);
 
   useEffect(() => {
-    const imageRef = ref(storage, currentUser.profileImage);
-    getDownloadURL(imageRef)
-      .then((url) => {
+    const pathRef = ref(storage, currentUser.profileImage);
+    let attempt = 0;
+
+    const getImage = () => {
+      getDownloadURL(pathRef).then((url) => {
         setProfileImg(url);
-      })
-      .catch((err) => console.log('error setting profile image', err));
+      }).catch((err) => {
+        attempt += 1;
+        if (attempt >= 5) return console.log('error retrieving image', err);
+
+        console.log('error retrieving image, retrying...', err);
+        setTimeout(() => getImage(), 3000);
+      });
+    }
+
+    getImage();
   }, [storage]);
 
+  const displayNewProfileImgInput = () => {
+    document.querySelector('.new-profile-image-input').style.display = 'block';
+  }
+  const cancelNewProfileImg = () => {
+    document.querySelector('.new-profile-image-input').style.display = 'none';
+    setNewProfileImg('');
+  }
+  const saveNewProfileImg = () => {
+    const deletePrevFromStorage = () => {
+      const prevImgRef = ref(storage, profileImg);
+      
+      deleteObject(prevImgRef)
+        .then(() => console.log('image deleted'))
+        .catch((err) => console.log('error', err));
+    }
+
+    if (!ref(storage, profileImg)._location.path_ === 'images/profiles/default-profile-image.png') deletePrevFromStorage();
+
+    const imageRef = ref(storage, `images/profiles/${newProfileImg.name}-${currentUser.uid}`);
+    uploadBytes(imageRef, newProfileImg).then((snapshot) => console.log('Uploaded image'));
+
+    editUser(imageRef._location.path_);
+    cancelNewProfileImg();
+  }
   const displaySubs = () => {
     const allSubs = [];
     
@@ -352,8 +430,18 @@ function UserProfile({ loggedIn, currentUser, userList, subList, adjustPostVotes
 
       <Wrapper>
         <Header>
-          <img src={profileImage} alt="" />
-          <h1>u/{userList[params.userUid].name}</h1>
+          <div className='user-name-image'>
+            <div>
+              <img src={profileImg} alt="" className='profile-img' />
+              <p className='change-profile-image' onClick={() => displayNewProfileImgInput()}>Change Image</p>
+            </div>
+            <h1>u/{userList[params.userUid].name}</h1>
+          </div>
+          <div className='new-profile-image-input'>
+            <input type="file" name="" id="" onChange={(e) => setNewProfileImg(e.target.files[0])} />
+            <button onClick={cancelNewProfileImg}>Cancel</button>
+            <button onClick={saveNewProfileImg}>Save</button>
+          </div>
           <ul className='views-list'>
             <li className='selected-view' onClick={(e) => changeSelectedView(e)}>Overview</li>
             <li onClick={(e) => changeSelectedView(e)}>Subs</li>
