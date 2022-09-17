@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -25,6 +26,14 @@ const Wrapper = styled.div`
 `;
 
 function Navbar({ loggedIn, signInOut, currentUser, subList }) {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (currentUser && Object.values(currentUser).length > 0) {
+      setLoading(false);
+    }
+  }, [currentUser]);
+
   const getSubNames = () => {
     return Object.values(subList).map((sub) => {
       return (
@@ -57,12 +66,14 @@ function Navbar({ loggedIn, signInOut, currentUser, subList }) {
       </ul>
 
       { loggedIn ?
-        <div>
-          <Link to={`/u/${currentUser.uid}/${currentUser.name}`}>
-            <p>u/{currentUser.name}</p>
-          </Link>
-          <button onClick={signInOut.signUserOut}>Sign Out</button>
-        </div> :
+          loading ?
+          <p>Loading...</p> :
+          <div>
+            <Link to={`/u/${currentUser.uid}/${currentUser.name}`}>
+              <p>u/{currentUser.name}</p>
+            </Link>
+            <button onClick={signInOut.signUserOut}>Sign Out</button>
+          </div> :
         <button onClick={signInOut.signUserIn}>Sign In</button>
       }
     </Wrapper>

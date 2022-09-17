@@ -88,11 +88,20 @@ function RouteSwitch() {
     setTopPosts([].concat.apply([], Object.keys(subList).map((key) => subList[key].getTopPosts())));
   }, [subList]);
 
+  useEffect(() => {
+    if (Object.values(userList).length > 0 && auth.currentUser) {
+      setCurrentUser(userList[auth.currentUser.uid]);
+      setLoggedIn(true);
+    }
+  }, [userList, loggedIn])
+
   onAuthStateChanged(auth, (user) => {
-    console.log('auth state changed');
-    if (user && currentUser.uid !== user.uid) {
+    if (user && !loggedIn) {
       setLoggedIn(true);
       setCurrentUser(userList[user.uid]);
+    } else if (!user && loggedIn) {
+      setLoggedIn(false);
+      setCurrentUser(null);
     }
   });
 
@@ -100,7 +109,7 @@ function RouteSwitch() {
     const signUserIn = () => {
       setPersistence(auth, browserSessionPersistence)
       .then(() => {
-        signInWithPopup(auth, provider)
+        return signInWithPopup(auth, provider)
           .then((res) => {
             const credential = GoogleAuthProvider.credentialFromResult(res);
             const token = credential.accessToken;
