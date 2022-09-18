@@ -41,17 +41,35 @@ const PostContent = styled.div`
   margin: 60px auto 80px;
   padding: 0 40px;
 
-  input:first-child {
-    width: 100%;
-    margin-bottom: 20px;
-    padding: 10px;
-    font-size: 1rem;
+  div:first-child {
+    position: relative;
+    input {
+      width: 100%;
+      margin-bottom: 40px;
+      padding: 10px;
+      font-size: 1rem;
+    }
+
+    p {
+      position: absolute;
+      bottom: 13px;
+      color: red;
+    }
   }
 
   textarea, input:nth-child(2) {
     width: 100%;
     padding: 10px;
     font-size: 1rem;
+  }
+
+  .post-error-msg {
+    margin-top: 10px;
+    color: red;
+  }
+
+  .hidden {
+    display: none;
   }
 `;
 const SubmitPost = styled.div`
@@ -87,17 +105,32 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
   const submitPostHandler = (e) => {
     e.preventDefault();
 
+    if (postTitle === '') return displayInputError('title');
+    if ((postType === 'images/videos' && postContent === '') || (postType === 'link' && postContent === '')) return displayInputError('post');
+
     if (postType === 'images/videos') {
-      const storageRef = ref(storage, `images/posts/${postContent.name}-${uniqid()}`);      
+      const storageRef = ref(storage, `images/posts/${postContent.name}-${uniqid()}`);   
       uploadImage(storageRef);
       submitPost(params.subName, postTitle, storageRef._location.path_, postType);
     } else {
-      // submitPost(params.subName, postTitle, postContent, postType);
+      submitPost(params.subName, postTitle, postContent, postType);
     }
     navigate(`/r/${params.subName}`);
     
     setPostTitle('');
     setPostContent('');
+  }
+  const displayInputError = (type) => {
+    const errorMsg = document.querySelector(`.${type}-error-msg`);
+
+    if (type === 'title') errorMsg.textContent = 'Error: Post title cannot be empty';
+    if (type === 'post') errorMsg.textContent = 'Error: Post content cannot be empty';
+
+    setTimeout(() => {
+      errorMsg.classList.add('hidden');
+    }, 5000);
+    errorMsg.classList.remove('hidden');
+    
   }
 
   return (
@@ -121,23 +154,24 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
             <PostContent>
               <div>
                 <input type="text" placeholder="Title" value={postTitle} onChange={(e) => setPostTitle(e.target.value)} />
-                {
-                  postType === 'text' ? 
-                  <textarea name="post-content" id="post-content" cols="30" rows="10" placeholder="Text (optional)"
-                    value={postContent}
-                    onChange={(e) => setPostContent(e.target.value)}>
-                  </textarea> :
-                  postType === 'images/videos' ?
-                  <input type="file" name="post-content" id="file-upload"
-                    onChange={(e) => setPostContent(e.target.files[0])}
-                  /> :
-                  <input type="url" name="post-content" id="post-content" placeholder="URL"
-                    value={postContent}
-                    onChange={(e) => setPostContent(e.target.value)}
-                  />
-                }
+                <p className='title-error-msg hidden'></p>
               </div>
-
+              {
+                postType === 'text' ? 
+                <textarea name="post-content" id="post-content" cols="30" rows="10" placeholder="Text (optional)"
+                  value={postContent}
+                  onChange={(e) => setPostContent(e.target.value)}>
+                </textarea> :
+                postType === 'images/videos' ?
+                <input type="file" name="post-content" id="file-upload"
+                  onChange={(e) => setPostContent(e.target.files[0])}
+                /> :
+                <input type="url" name="post-content" id="post-content" placeholder="URL"
+                  value={postContent}
+                  onChange={(e) => setPostContent(e.target.value)}
+                />
+              }
+              <p className='post-error-msg hidden'></p>
             </PostContent>
 
             <SubmitPost>
