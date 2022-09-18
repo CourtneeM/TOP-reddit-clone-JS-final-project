@@ -78,11 +78,9 @@ const CommentReply = styled.div`
     display: flex;
     justify-content: flex-end;
     gap: 40px;
-
-    p {
-      cursor: pointer;
-    }
   }
+
+  p { color: red; }
 `;
 const Replies = styled.div`
   border-left: 1px solid #888;
@@ -97,7 +95,6 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
   useEffect(() => {
     setCommentText(comment.text);
   }, [comment]);
-
   useEffect(() => {
     const imageRef = ref(storage, userList[comment.owner.uid].profileImage);
     getDownloadURL(imageRef)
@@ -171,6 +168,9 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
       </>
     )
   }
+  const displayReplyContainer = () => {
+    document.querySelector(`.comment-reply-container-${comment.uid}`).classList.remove('hidden');
+  }
 
   const editCommentHandler = () => {
     setEditMode(false);
@@ -188,6 +188,32 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
     if ((comment.owner.uid === currentUser.uid) || (loggedIn && subList[comment.subName].moderators.includes(currentUser.uid))) {
       deleteComment(comment);
     }
+  }
+  const commentReplyHandler = (e) => {
+    e.preventDefault();
+
+    if (replyText === '') return displayInputError();
+
+    document.querySelector(`.comment-reply-container-${comment.uid}`).classList.add('hidden');
+
+    commentReply(replyText, comment);
+    setReplyText('');
+  }
+  const displayInputError = () => {
+    const errorMsg = document.querySelector(`.comment-error-msg-${comment.uid}`);
+
+    errorMsg.textContent = 'Error: Comment cannot be empty';
+
+    setTimeout(() => {
+      errorMsg.classList.add('hidden');
+    }, 5000);
+    errorMsg.classList.remove('hidden');
+  }
+  const cancelReply = (e) => {
+    e.preventDefault();
+
+    document.querySelector(`.comment-reply-container-${comment.uid}`).classList.add('hidden');
+    setReplyText('');
   }
 
   const adjustVotesHandler = (e) => {
@@ -302,26 +328,6 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
     e.target.className === 'upvote-icon' ? upvoteHandler() : downvoteHandler();
   }
 
-  const displayReplyContainer = () => {
-    document.querySelector(`.comment-reply-container-${comment.uid}`).classList.remove('hidden');
-  }
-
-  const commentReplyHandler = (e) => {
-    e.preventDefault();
-
-    document.querySelector(`.comment-reply-container-${comment.uid}`).classList.add('hidden');
-
-    commentReply(replyText, comment);
-    setReplyText('');
-  }
-  
-  const cancelReply = (e) => {
-    e.preventDefault();
-
-    document.querySelector(`.comment-reply-container-${comment.uid}`).classList.add('hidden');
-    setReplyText('');
-  }
-
   return (
     <Wrapper id={comment.uid}>
       <CommentHeader>
@@ -361,6 +367,7 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
           <button onClick={(e) => cancelReply(e)}>Cancel</button>
           <button onClick={(e) => commentReplyHandler(e)}>Reply</button>
         </div>
+        <p className={`comment-error-msg-${comment.uid} hidden`}></p>
       </CommentReply>
       <Replies>
         { 

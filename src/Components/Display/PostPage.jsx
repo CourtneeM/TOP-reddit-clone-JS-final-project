@@ -95,6 +95,10 @@ const PostActions = styled.div`
 `;
 const CommentSection = styled.div`
   padding: 20px 0;
+  
+  .comment-error-msg {
+    color: red;
+  }
 `;
 const CompositionContainer = styled.div`
   margin: 60px auto 80px;
@@ -421,8 +425,20 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
   const addCommentHandler = (e) => {
     e.preventDefault();
 
+    if (commentInput === '') return displayInputError();
+
     addComment(commentInput, post.uid, subName);
     setCommentInput('');
+  }
+  const displayInputError = () => {
+    const errorMsg = document.querySelector(`.comment-error-msg`);
+
+    errorMsg.textContent = 'Error: Comment cannot be empty';
+
+    setTimeout(() => {
+      errorMsg.classList.add('hidden');
+    }, 5000);
+    errorMsg.classList.remove('hidden');
   }
   const commentReplyHandler = (replyText, parentComment) => {
     addComment(replyText, post.uid, subName, parentComment);
@@ -500,6 +516,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
                     <textarea name="comment-text" id="comment-text" cols="30" rows="10" value={commentInput} onChange={(e) => setCommentInput(e.target.value)}></textarea>
                     <button onClick={(e) => addCommentHandler(e)}>Submit</button>
                   </form>
+                  <p className='comment-error-msg hidden'></p>
                 </CompositionContainer>
               }
               

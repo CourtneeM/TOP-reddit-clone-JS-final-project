@@ -130,7 +130,6 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
       errorMsg.classList.add('hidden');
     }, 5000);
     errorMsg.classList.remove('hidden');
-    
   }
 
   return (
