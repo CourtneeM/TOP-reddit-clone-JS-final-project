@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { HashLink as Link } from 'react-router-hash-link';
-import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { deleteObject, getDownloadURL, getMetadata, ref, updateMetadata, uploadBytes } from 'firebase/storage';
 
 import Navbar from '../Navbar';
 import SubPreview from './SubPreview';
@@ -16,6 +16,10 @@ const Wrapper = styled.div`
   min-width: 800px;
   margin: 0 auto;
   padding: 40px 0;
+
+  .hidden {
+    display: none;
+  }
 `;
 const Header = styled.div`
   display: flex;
@@ -111,10 +115,10 @@ const SortOptions = styled.div`
   }
 `;
 
-function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adjustPostVotes, adjustCommentVotes, editUser, storage }) {
+function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adjustPostVotes, adjustCommentVotes, editUser, uploadImage, storage }) {
   const [currentSelectedData, setCurrentSelectedData] = useState({});
   const [profileImg, setProfileImg] = useState('');
-  const [newProfileImg, setNewProfileImg] = useState('');
+  const [newProfileImg, setNewProfileImg] = useState({});
   const params = useParams();
 
   useEffect(() => {
@@ -147,22 +151,37 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
     document.querySelector('.new-profile-image-input').style.display = 'none';
     setNewProfileImg('');
   }
-  const saveNewProfileImg = () => {
+  const saveNewProfileImg = async () => {
+    const isFileTooLarge = (fileSize) => fileSize > (5 * 1024 * 1024);
     const deletePrevFromStorage = () => {
       const prevImgRef = ref(storage, profileImg);
 
       deleteObject(prevImgRef)
-        .then(() => console.log('image deleted'))
+        .then(() => console.log('prev profile image deleted'))
         .catch((err) => console.log('error', err));
     }
 
-    if (!(ref(storage, profileImg)._location.path_ === 'images/profiles/default-profile-image.png')) deletePrevFromStorage();
+    if (isFileTooLarge(newProfileImg.size)) return displayInputError('too large');
+    if (newProfileImg['type'].split('/')[0] !== 'image' ) return displayInputError('not image');
 
     const imageRef = ref(storage, `images/profiles/${newProfileImg.name}-${currentUser.uid}`);
-    uploadBytes(imageRef, newProfileImg).then((snapshot) => console.log('Uploaded image'));
+    await uploadImage(imageRef, newProfileImg);
+    
+    getDownloadURL(imageRef).then((url) => {
+      editUser(imageRef._location.path_);
+      cancelNewProfileImg();
 
-    editUser(imageRef._location.path_);
-    cancelNewProfileImg();
+      updateMetadata(imageRef, { customMetadata: { owner: currentUser.uid } });
+      if (!(ref(storage, profileImg)._location.path_ === 'images/profiles/default-profile-image.png')) deletePrevFromStorage();
+    }).catch((err) => {
+      if (newProfileImg['type'].split('/')[0] !== 'image') {
+        displayInputError('not image');
+        console.log('Error: File is not image', err);
+      } else {
+        displayInputError('too large');
+        console.log('Error: Image too large', err);
+      }
+    });
   }
   const displaySubs = () => {
     const allSubs = [];
@@ -365,6 +384,17 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
       data: deletedContent,
     });
   }
+  const displayInputError = (reason) => {
+    const errorMsg = document.querySelector(`.error-msg`);
+
+    if (reason === 'too large') errorMsg.textContent = 'Error: File size too large. Max 5MB';
+    if (reason === 'not image') errorMsg.textContent = 'Error: File must be an image';
+
+    setTimeout(() => {
+      errorMsg.classList.add('hidden');
+    }, 5000);
+    errorMsg.classList.remove('hidden');
+  }
   const getPreview = (type, el) => {
     return type === 'subs' ?
       <Link to={`/r/${el.name}`} key={el.uid}>
@@ -434,6 +464,7 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
             <div>
               <img src={profileImg} alt="" className='profile-img' />
               <p className='change-profile-image' onClick={() => displayNewProfileImgInput()}>Change Image</p>
+              <p className='error-msg hidden'></p>
             </div>
             <h1>u/{userList[params.userUid].name}</h1>
           </div>

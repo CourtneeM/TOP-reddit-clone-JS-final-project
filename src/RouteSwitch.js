@@ -273,7 +273,6 @@ function RouteSwitch() {
   const submitPost = (subName, postUid, postTitle, postContent, postType) => {
     const owner = {uid: currentUser.uid, name: currentUser.name};
     const subListCopy = {...subList};
-    console.log(postContent);
     subListCopy[subName].addPost(postUid, postTitle, owner, postType, postContent, subName);
     setSubList(subListCopy);
 
@@ -328,8 +327,11 @@ function RouteSwitch() {
     }
     editPostInFirestore();
   }
-  const uploadImage = (storageRef, postContent) => {
-    uploadBytes(storageRef, postContent).then((snapshot) => console.log('Uploaded image'));
+  const uploadImage = async (storageRef, content) => {
+    console.log(storageRef, content);
+    await uploadBytes(storageRef, content)
+      .then((snapshot) => console.log('Uploaded image'))
+      .catch((err) => console.log('error uploading image', err));
   }
   const deletePost = (subName, postUid) => {
     const deleteFromFirestore = async () => {
@@ -702,6 +704,7 @@ function RouteSwitch() {
             adjustPostVotes={adjustPostVotes}
             adjustCommentVotes={adjustCommentVotes}
             editUser={editUser}
+            uploadImage={uploadImage}
             storage={storage}
           />}
         />

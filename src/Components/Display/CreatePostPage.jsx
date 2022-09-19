@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
-import { ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, getMetadata, ref, updateMetadata, uploadBytes } from "firebase/storage";
 
 import Navbar from "./Navbar";
 
@@ -100,28 +100,45 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
     e.target.id = 'selected-post-type';
   }
   
-  const submitPostHandler = (e) => {
-    const isFileTooLarge = (fileSize) => fileSize > 20971520;
+  const submitPostHandler = async (e) => {
+    const isFileTooLarge = (fileSize) => fileSize > (20 * 1024 * 1024);
 
     e.preventDefault();
 
     if (postTitle === '') return displayInputError('title');
     if ((postType === 'images/videos' && (postContent === '' || postContent === undefined)) || (postType === 'link' && postContent === '')) return displayInputError('post');
     if (postType === 'images/videos' && isFileTooLarge(postContent.size)) return displayInputError('post', 'too large');
+    if (postType === 'images/videos' && postContent['type'].split('/')[0] !== 'image' ) return displayInputError('post', 'not image');
 
     const postUid = uniqid();
 
     if (postType === 'images/videos') {
       const storageRef = ref(storage, `images/posts/${postContent.name}-${postUid}`);
-      uploadImage(storageRef, postContent);
-      submitPost(params.subName, postUid, postTitle, storageRef._location.path_, postType);
+      await uploadImage(storageRef, postContent);
+      
+      getDownloadURL(storageRef).then((url) => {
+        updateMetadata(storageRef, { customMetadata: { owner: currentUser.uid } });
+        submitPost(params.subName, postUid, postTitle, storageRef._location.path_, postType);
+
+        setPostTitle('');
+        setPostContent('');
+        navigate(`/r/${params.subName}`);
+      }).catch((err) => {
+        if (postContent['type'].split('/')[0] !== 'image') {
+          displayInputError('post', 'not image');
+          console.log('Error: File is not image', err);
+        } else {
+          displayInputError('post', 'too large');
+          console.log('Error: Image too large', err);
+        }
+      });
     } else {
       submitPost(params.subName, postUid, postTitle, postContent, postType);
+      
+      setPostTitle('');
+      setPostContent('');
+      navigate(`/r/${params.subName}`);
     }
-    navigate(`/r/${params.subName}`);
-    
-    setPostTitle('');
-    setPostContent('');
   }
   const displayInputError = (type, reason=null) => {
     const errorMsg = document.querySelector(`.${type}-error-msg`);
@@ -131,6 +148,8 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
     if (type === 'post') {
       if (reason === 'too large') {
         errorMsg.textContent = 'Error: File size too large. Max 20MB';
+      } else if (reason === 'not image') {
+        errorMsg.textContent = 'Error: File must be an image';
       } else {
         errorMsg.textContent = 'Error: Post content cannot be empty';
       }

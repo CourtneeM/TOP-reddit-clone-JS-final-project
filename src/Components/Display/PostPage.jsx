@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { deleteObject, getDownloadURL, ref } from 'firebase/storage';
+import { deleteObject, getDownloadURL, getMetadata, ref, updateMetadata } from 'firebase/storage';
 
 import Navbar from './Navbar';
 import Comment from './Comment';
@@ -174,6 +174,13 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
     if (post.type === 'images/videos') document.getElementById('post-image').setAttribute('src', postContent);
   }, [postContent]);
   
+  const deleteImageFromStorage = () => {
+    const prevImgRef = ref(storage, postContent);
+
+    deleteObject(prevImgRef)
+      .then(() => console.log('image deleted'))
+      .catch((err) => console.log('error', err));
+  }
   const displayTextPost = () => {
     return (
       <Body>
@@ -311,35 +318,46 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
   const setEditModeHandler = () => {
     setEditMode(true);
   }
-  const editPostHandler = () => {
-    const isFileTooLarge = (fileSize) => fileSize > 20971520;
-    const deletePrevFromStorage = () => {
-      const prevImgRef = ref(storage, postContent);
-
-      deleteObject(prevImgRef)
-        .then(() => console.log('image deleted'))
-        .catch((err) => console.log('error', err));
-    }
+  const editPostHandler = async () => {
+    const isFileTooLarge = (fileSize) => fileSize > (20 * 1024 * 1024);
 
     if ((post.type === 'images/videos' && (editedPostContent === '' || editedPostContent === undefined)) || (post.type === 'link' && postContent === '')) return displayInputError('post');
     if (post.type === 'images/videos' && isFileTooLarge(editedPostContent.size)) return displayInputError('post', 'too large');
-    
-    setEditMode(false);
+    if (post.type === 'images/videos' && editedPostContent['type'].split('/')[0] !== 'image' ) return displayInputError('post', 'not image');
 
     const editedPost = {...post};
 
     if (post.type === 'images/videos') {
-      deletePrevFromStorage();
+      const storageRef = ref(storage, `images/posts/${editedPostContent.name}-${post.uid}`);
+      await uploadImage(storageRef, editedPostContent);
       
-      const storageRef = ref(storage, `images/posts/${editedPostContent.name}-${post.uid}`);   
-      uploadImage(storageRef, editedPostContent);
-      editedPost.content = `images/posts/${editedPostContent.name}-${post.uid}`;
-      setPostContent(editedPostContent);
+      getDownloadURL(storageRef).then((url) => {
+        editedPost.content = `images/posts/${editedPostContent.name}-${post.uid}`;
+        setPost(editedPost);
+        setPostContent(editedPost.content);
+        
+        editPost(editedPost);
+
+        updateMetadata(storageRef, { customMetadata: { owner: currentUser.uid } });
+        deleteImageFromStorage();
+      }).catch((err) => {
+        if (editedPostContent['type'].split('/')[0] !== 'image') {
+          displayInputError('post', 'not image');
+          console.log('Error: File is not image', err);
+        } else {
+          displayInputError('post', 'too large');
+          console.log('Error: Image too large', err);
+        }
+      });
     } else {
       editedPost.content = postContent;
-      setPostContent(postContent);
+      setPost(editedPost);
+      setPostContent(editedPost.content);
+
+      editPost(editedPost);
     }
-    if (post.owner.uid === currentUser.uid) editPost(editedPost);
+
+    setEditMode(false);
   }
   const cancelEditPostHandler = () => {
     setEditMode(false);
@@ -349,6 +367,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
     // display popup confirmation
     if ((post.owner.uid === currentUser.uid) || (subList[post.subName].moderators.includes(currentUser.uid))) {
       deletePost(subName, post.uid);
+      deleteImageFromStorage();
     }
     navigate(`/r/${subName}`);
   }
@@ -474,6 +493,8 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
 
     if (reason === 'too large') {
       errorMsg.textContent = 'Error: File size too large. Max 20MB';
+    } else if (reason === 'not image') {
+      errorMsg.textContent = `Error: File is not an image`;
     } else {
       errorMsg.textContent = `Error: ${type} content cannot be empty`;
     }
