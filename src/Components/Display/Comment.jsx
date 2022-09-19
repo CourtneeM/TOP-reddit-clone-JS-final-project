@@ -46,6 +46,8 @@ const CommentText = styled.div`
   textarea {
     width: 100%;
   }
+
+  p:last-child { color: red; }
 `;
 const CommentActions = styled.div`
   display: flex;
@@ -173,6 +175,8 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
   }
 
   const editCommentHandler = () => {
+    if (commentText === '') return displayInputError();
+
     setEditMode(false);
 
     const editedComment = {...comment};
@@ -349,6 +353,7 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
           <textarea name="comment-text" id="comment-text" cols="30" rows="10" value={commentText} onChange={(e) => setCommentText(e.target.value)}></textarea> :
           <p>{comment.text}</p>
         }
+        <p className={`comment-error-msg-${comment.uid} hidden`}></p>
       </CommentText>
 
       <CommentActions>

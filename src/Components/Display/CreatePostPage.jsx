@@ -82,7 +82,7 @@ const SubmitPost = styled.div`
   }
 `;
 
-function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost, storage }) {
+function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost, uploadImage, storage }) {
   const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
   const [postType, setPostType] = useState('text');
@@ -99,21 +99,20 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
 
     e.target.id = 'selected-post-type';
   }
-  const uploadImage = (storageRef) => {
-    uploadBytes(storageRef, postContent).then((snapshot) => console.log('Uploaded image'));
-  }
+  
   const submitPostHandler = (e) => {
     e.preventDefault();
 
     if (postTitle === '') return displayInputError('title');
     if ((postType === 'images/videos' && postContent === '') || (postType === 'link' && postContent === '')) return displayInputError('post');
+    const postUid = uniqid();
 
     if (postType === 'images/videos') {
-      const storageRef = ref(storage, `images/posts/${postContent.name}-${uniqid()}`);   
-      uploadImage(storageRef);
-      submitPost(params.subName, postTitle, storageRef._location.path_, postType);
+      const storageRef = ref(storage, `images/posts/${postContent.name}-${postUid}`);
+      uploadImage(storageRef, postContent);
+      submitPost(params.subName, postUid, postTitle, storageRef._location.path_, postType);
     } else {
-      submitPost(params.subName, postTitle, postContent, postType);
+      submitPost(params.subName, postUid, postTitle, postContent, postType);
     }
     navigate(`/r/${params.subName}`);
     

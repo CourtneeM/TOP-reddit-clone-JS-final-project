@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { getDownloadURL, ref } from 'firebase/storage';
+import { deleteObject, getDownloadURL, ref } from 'firebase/storage';
 
 import Navbar from './Navbar';
 import Comment from './Comment';
@@ -63,6 +63,16 @@ const Body = styled.div`
 
   img {
     width: 100%;
+  }
+
+  div:first-child {
+    position: relative;
+
+    .post-error-msg {
+      position: absolute;
+      bottom: -20px;
+      color: red;
+    }
   }
 `;
 const PostActions = styled.div`
@@ -132,7 +142,7 @@ const CommentsContainer = styled.div`
   }
 `;
 
-function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favoritePost, unfavoritePost, editPost, deletePost, addComment, favoriteComment, unfavoriteComment, editComment, deleteComment, adjustPostVotes, adjustCommentVotes, storage }) {
+function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favoritePost, unfavoritePost, editPost, deletePost, addComment, favoriteComment, unfavoriteComment, editComment, deleteComment, adjustPostVotes, adjustCommentVotes, uploadImage, storage }) {
   const params = useParams();
   const navigate = useNavigate();
 
@@ -143,6 +153,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
   const [loaded, setLoaded] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [postContent, setPostContent] = useState('');
+  const [editedPostContent, setEditedPostContent] = useState('');
 
   useEffect(() => {
     const sub = Object.values(subList).filter((sub) => {
@@ -199,9 +210,10 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
         <div>
           <h2>{post.title}</h2>
           { editMode ?
-            <input type="file" name="new-post-content" id="new-post-content" onChange={(e) => setPostContent(e.target.value)} /> :
+            <input type="file" name="new-post-content" id="new-post-content" onChange={(e) => setEditedPostContent(e.target.files[0])} /> :
             <img src={''} alt="" id='post-image' />
           }
+          <p className='post-error-msg hidden'></p>
         </div>
 
         <PostActions>
@@ -229,6 +241,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
               <p>{post.content}</p>
             </Link>
           }
+          <p className='post-error-msg hidden'></p>
         </div>
 
         <PostActions>
@@ -258,7 +271,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
     const displayEditButton = () => {
       return (
         (loggedIn && post.owner.uid === currentUser.uid) &&
-        <p onClick={() => setEditMode(true)}>Edit</p>
+        <p onClick={setEditModeHandler}>Edit</p>
       );
     };
     const displayDeleteButton = () => {
@@ -295,11 +308,35 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
     )
   }
 
+  const setEditModeHandler = () => {
+    setEditMode(true);
+  }
   const editPostHandler = () => {
+    const deletePrevFromStorage = () => {
+      const prevImgRef = ref(storage, postContent);
+
+      deleteObject(prevImgRef)
+        .then(() => console.log('image deleted'))
+        .catch((err) => console.log('error', err));
+    }
+
+    if ((post.type === 'images/videos' && editedPostContent === '') || (post.type === 'link' && postContent === '')) return displayInputError('post');
+    
     setEditMode(false);
 
     const editedPost = {...post};
-    editedPost.content = postContent;
+
+    if (post.type === 'images/videos') {
+      deletePrevFromStorage();
+      
+      const storageRef = ref(storage, `images/posts/${editedPostContent.name}-${post.uid}`);   
+      uploadImage(storageRef, editedPostContent);
+      editedPost.content = `images/posts/${editedPostContent.name}-${post.uid}`;
+      setPostContent(editedPostContent);
+    } else {
+      editedPost.content = postContent;
+      setPostContent(postContent);
+    }
     if (post.owner.uid === currentUser.uid) editPost(editedPost);
   }
   const cancelEditPostHandler = () => {
@@ -425,15 +462,15 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
   const addCommentHandler = (e) => {
     e.preventDefault();
 
-    if (commentInput === '') return displayInputError();
+    if (commentInput === '') return displayInputError('comment');
 
     addComment(commentInput, post.uid, subName);
     setCommentInput('');
   }
-  const displayInputError = () => {
-    const errorMsg = document.querySelector(`.comment-error-msg`);
+  const displayInputError = (type) => {
+    const errorMsg = document.querySelector(`.${type}-error-msg`);
 
-    errorMsg.textContent = 'Error: Comment cannot be empty';
+    errorMsg.textContent = `Error: ${type} cannot be empty`;
 
     setTimeout(() => {
       errorMsg.classList.add('hidden');

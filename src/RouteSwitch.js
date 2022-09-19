@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, doc, getDocs, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { getStorage, ref, deleteObject } from 'firebase/storage';
+import { getStorage, ref, deleteObject, uploadBytes } from 'firebase/storage';
 import { getFirebaseConfig } from './firebase-config';
 import { getAuth, onAuthStateChanged, useAuthState, GoogleAuthProvider,  signInWithPopup, signOut, setPersistence, browserSessionPersistence } from "firebase/auth";
 
@@ -270,11 +270,10 @@ function RouteSwitch() {
     editSubInFirestore();
   }
 
-  const submitPost = (subName, postTitle, postContent, postType) => {
+  const submitPost = (subName, postUid, postTitle, postContent, postType) => {
     const owner = {uid: currentUser.uid, name: currentUser.name};
     const subListCopy = {...subList};
-    const postUid = uniqid();
-
+    console.log(postContent);
     subListCopy[subName].addPost(postUid, postTitle, owner, postType, postContent, subName);
     setSubList(subListCopy);
 
@@ -328,6 +327,9 @@ function RouteSwitch() {
       });
     }
     editPostInFirestore();
+  }
+  const uploadImage = (storageRef, postContent) => {
+    uploadBytes(storageRef, postContent).then((snapshot) => console.log('Uploaded image'));
   }
   const deletePost = (subName, postUid) => {
     const deleteFromFirestore = async () => {
@@ -665,7 +667,7 @@ function RouteSwitch() {
               />}
             />
             <Route key={uniqid()} path="edit_sub" element={<EditSubPage loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} userList={userList} subList={subList} editSub={editSub} deleteSub={deleteSub} />} />
-            <Route key={uniqid()} path="new_post" element={<CreatePostPage loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} submitPost={submitPost} storage={storage} />} />
+            <Route key={uniqid()} path="new_post" element={<CreatePostPage loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} submitPost={submitPost} uploadImage={uploadImage} storage={storage} />} />
             <Route key={uniqid()} path=":postUid/:postTitle"
               element={<PostPage
                 loggedIn={loggedIn}
@@ -684,6 +686,7 @@ function RouteSwitch() {
                 deleteComment={deleteComment}
                 adjustPostVotes={adjustPostVotes}
                 adjustCommentVotes={adjustCommentVotes}
+                uploadImage={uploadImage}
                 storage={storage}
               />}
             />
