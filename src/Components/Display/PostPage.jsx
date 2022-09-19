@@ -312,6 +312,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
     setEditMode(true);
   }
   const editPostHandler = () => {
+    const isFileTooLarge = (fileSize) => fileSize > 20971520;
     const deletePrevFromStorage = () => {
       const prevImgRef = ref(storage, postContent);
 
@@ -320,7 +321,8 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
         .catch((err) => console.log('error', err));
     }
 
-    if ((post.type === 'images/videos' && editedPostContent === '') || (post.type === 'link' && postContent === '')) return displayInputError('post');
+    if ((post.type === 'images/videos' && (editedPostContent === '' || editedPostContent === undefined)) || (post.type === 'link' && postContent === '')) return displayInputError('post');
+    if (post.type === 'images/videos' && isFileTooLarge(editedPostContent.size)) return displayInputError('post', 'too large');
     
     setEditMode(false);
 
@@ -467,10 +469,14 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
     addComment(commentInput, post.uid, subName);
     setCommentInput('');
   }
-  const displayInputError = (type) => {
+  const displayInputError = (type, reason=null) => {
     const errorMsg = document.querySelector(`.${type}-error-msg`);
 
-    errorMsg.textContent = `Error: ${type} cannot be empty`;
+    if (reason === 'too large') {
+      errorMsg.textContent = 'Error: File size too large. Max 20MB';
+    } else {
+      errorMsg.textContent = `Error: ${type} content cannot be empty`;
+    }
 
     setTimeout(() => {
       errorMsg.classList.add('hidden');

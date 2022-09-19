@@ -101,10 +101,14 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
   }
   
   const submitPostHandler = (e) => {
+    const isFileTooLarge = (fileSize) => fileSize > 20971520;
+
     e.preventDefault();
 
     if (postTitle === '') return displayInputError('title');
-    if ((postType === 'images/videos' && postContent === '') || (postType === 'link' && postContent === '')) return displayInputError('post');
+    if ((postType === 'images/videos' && (postContent === '' || postContent === undefined)) || (postType === 'link' && postContent === '')) return displayInputError('post');
+    if (postType === 'images/videos' && isFileTooLarge(postContent.size)) return displayInputError('post', 'too large');
+
     const postUid = uniqid();
 
     if (postType === 'images/videos') {
@@ -119,11 +123,18 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
     setPostTitle('');
     setPostContent('');
   }
-  const displayInputError = (type) => {
+  const displayInputError = (type, reason=null) => {
     const errorMsg = document.querySelector(`.${type}-error-msg`);
 
     if (type === 'title') errorMsg.textContent = 'Error: Post title cannot be empty';
-    if (type === 'post') errorMsg.textContent = 'Error: Post content cannot be empty';
+
+    if (type === 'post') {
+      if (reason === 'too large') {
+        errorMsg.textContent = 'Error: File size too large. Max 20MB';
+      } else {
+        errorMsg.textContent = 'Error: Post content cannot be empty';
+      }
+    }
 
     setTimeout(() => {
       errorMsg.classList.add('hidden');
