@@ -470,11 +470,11 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
       commentsCopy.sort((a, b) => a.votes - b.votes);
     }
     if (e.target.textContent === 'Oldest') {
-      commentsCopy.sort((a, b) => b.creationDateTime.fullDateTime - a.creationDateTime.fullDateTime);
+      commentsCopy.sort((a, b) => a.creationDateTime.fullDateTime - b.creationDateTime.fullDateTime);
       
     }
     if (e.target.textContent === 'Newest') {
-      commentsCopy.sort((a, b) => a.creationDateTime.fullDateTime - b.creationDateTime.fullDateTime);
+      commentsCopy.sort((a, b) => b.creationDateTime.fullDateTime - a.creationDateTime.fullDateTime);
 
     }
 
