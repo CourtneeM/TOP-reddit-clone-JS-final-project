@@ -66,7 +66,6 @@ function All({ loggedIn, signInOut, currentUser, subList, favoritePost, unfavori
 
   const sortPosts = (e) => {
     const postsCopy = [...posts];
-    console.log(postsCopy);
 
     if (e.target.textContent === 'Top') {
       postsCopy.sort((a, b) => b.votes - a.votes);

@@ -26,7 +26,7 @@ class Post {
     return {
       time: { seconds: newDate.getSeconds(), minutes: newDate.getMinutes(), hours: newDate.getHours() },
       date: { day: newDate.getDate(), month: newDate.getMonth() + 1, year: newDate.getFullYear() },
-      // fullDateTime: newDate
+      fullDateTime: newDate
     }
   }
 

@@ -57,7 +57,10 @@ function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePos
     }
     
     if (e.target.textContent === 'New') {
-      postsCopy.sort((a, b) => Object.values(b)[0].creationDateTime.fullDateTime - Object.values(a)[0].creationDateTime.fullDateTime);
+      postsCopy.sort((a, b) => {
+        console.log(Object.values(b)[0].creationDateTime.fullDateTime);
+        return Object.values(b)[0].creationDateTime.fullDateTime - Object.values(a)[0].creationDateTime.fullDateTime;
+      });
     }
 
     setPosts(postsCopy);

@@ -328,7 +328,6 @@ function RouteSwitch() {
     editPostInFirestore();
   }
   const uploadImage = async (storageRef, content) => {
-    console.log(storageRef, content);
     await uploadBytes(storageRef, content)
       .then((snapshot) => console.log('Uploaded image'))
       .catch((err) => console.log('error uploading image', err));
@@ -362,7 +361,6 @@ function RouteSwitch() {
     const deleteFromStorage = () => {
       const imageRef = ref(storage, subListCopy[subName].posts[postUid].content);
       
-      console.log(imageRef);
       deleteObject(imageRef)
         .then(() => console.log('image deleted'))
         .catch((err) => console.log('error', err));
