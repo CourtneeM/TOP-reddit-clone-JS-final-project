@@ -1,7 +1,7 @@
 import Comment from './Comment';
 
 class Post {
-  constructor(uid, title, owner, type, content, subName, creationDateTime=this.getDateTime(), votes=0, upvotes=[], downvotes=[],
+  constructor(uid, title, owner, type, content, subName, creationDateTime=this.getDateTime(), favoritedBy=[], votes=0, upvotes=[], downvotes=[],
               editStatus=this.editStatus(), deleteStatus=this.deleteStatus(), comments={}) {
     this.uid =  uid;
     this.title = title;
@@ -10,6 +10,7 @@ class Post {
     this.content = content;
     this.subName = subName;
     this.creationDateTime = creationDateTime;
+    this.favoritedBy = favoritedBy;
     this.votes = votes;
     this.upvotes = upvotes;
     this.downvotes = downvotes;
@@ -58,8 +59,8 @@ class Post {
     delete postList.uid
   }
 
-  addComment(commentUid, postUid, subName, owner, text, parentUid, creationDateTime, votes, upvotes, downvotes, editStatus, deleteStatus, children) {
-    this.comments[commentUid] = new Comment(commentUid, postUid, subName, owner, text, parentUid, creationDateTime, votes, upvotes, downvotes, editStatus, deleteStatus, children);
+  addComment(commentUid, postUid, subName, owner, text, parentUid, creationDateTime, favoritedBy, votes, upvotes, downvotes, editStatus, deleteStatus, children) {
+    this.comments[commentUid] = new Comment(commentUid, postUid, subName, owner, text, parentUid, creationDateTime, favoritedBy, votes, upvotes, downvotes, editStatus, deleteStatus, children);
   }
 }
 

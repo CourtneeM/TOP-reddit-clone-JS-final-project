@@ -361,6 +361,7 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
     const deletedContent = [];
 
     Object.keys(currentUser.deletedContent.posts).forEach((subName) => {
+      if (subList[subName] === undefined) return;
       currentUser.deletedContent.posts[subName].forEach((postUid) => {
         deletedContent.push({
           type: 'posts',
@@ -370,14 +371,17 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
     });
 
     Object.keys(currentUser.deletedContent.comments).forEach((subName) => {
+      if (!subList[subName]) return;
+
       Object.keys(currentUser.deletedContent.comments[subName]).forEach((postUid) => {
         const commentUid = currentUser.deletedContent.comments[subName][postUid];
         deletedContent.push({
           type: 'comments',
-          data: subList[subName].posts[postUid].comments[commentUid],
+          data: subList[subName] ? subList[subName].posts[postUid].comments[commentUid] : null,
         });
       });
     });
+
 
     setCurrentSelectedData({
       type: 'all',
@@ -427,7 +431,7 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
     if (e.target.textContent === 'Favorite Comments') displayFavoriteComments();
     if (e.target.textContent === 'Upvoted') displayUpvoted();
     if (e.target.textContent === 'Downvoted') displayDownvoted();
-    if (e.target.textContent === 'Deleted') displayDeleted();
+    // if (e.target.textContent === 'Deleted') displayDeleted();
 
     [...document.querySelectorAll('.views-list li')].forEach((li) => li.classList.remove('selected-view'));
     e.target.classList.add('selected-view');
@@ -485,7 +489,7 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
                 <li onClick={(e) => changeSelectedView(e)}>Favorite Comments</li>
                 <li onClick={(e) => changeSelectedView(e)}>Upvoted</li>
                 <li onClick={(e) => changeSelectedView(e)}>Downvoted</li>
-                <li onClick={(e) => changeSelectedView(e)}>Deleted</li>
+                {/* <li onClick={(e) => changeSelectedView(e)}>Deleted</li> */}
               </> :
               null
             }

@@ -1,5 +1,5 @@
 class Comment {
-  constructor(uid, postUid, subName, owner, text, parentUid=null, creationDateTime=this.getDateTime(), votes=0, upvotes=[], downvotes=[],
+  constructor(uid, postUid, subName, owner, text, parentUid=null, creationDateTime=this.getDateTime(), favoritedBy=[], votes=0, upvotes=[], downvotes=[],
               editStatus=this.editStatus(), deleteStatus=this.deleteStatus(), children=[]) {
     this.uid = uid;
     this.postUid = postUid;
@@ -8,6 +8,7 @@ class Comment {
     this.text = text;
     this.parentUid = parentUid;
     this.creationDateTime = creationDateTime;
+    this.favoritedBy = favoritedBy;
     this.votes = votes;
     this.upvotes = upvotes;
     this.downvotes = downvotes;

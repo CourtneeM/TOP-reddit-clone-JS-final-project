@@ -47,8 +47,8 @@ function RouteSwitch() {
           delete existingSub.posts;
           existingSub.posts = {};
           Object.keys(existingPosts).forEach((postUid) => {
-            const { uid, title, owner, type, content, subName, creationDateTime, votes, upvotes, downvotes, editStatus, deleteStatus, comments } = existingPosts[postUid];
-            existingSub.addPost(uid, title, owner, type, content, subName, creationDateTime, votes, upvotes, downvotes, editStatus, deleteStatus, comments);
+            const { uid, title, owner, type, content, subName, creationDateTime, favoritedBy, votes, upvotes, downvotes, editStatus, deleteStatus, comments } = existingPosts[postUid];
+            existingSub.addPost(uid, title, owner, type, content, subName, creationDateTime, favoritedBy, votes, upvotes, downvotes, editStatus, deleteStatus, comments);
 
             const post = existingSub.posts[postUid];
             const existingComments = post.comments;
@@ -56,8 +56,8 @@ function RouteSwitch() {
             post.comments = {};
 
             Object.keys(existingComments).forEach((commentUid) => {
-              const { uid, postUid, subName, owner, text, parentUid, creationDateTime, votes, upvotes, downvotes, editStatus, deleteStatus, children } = existingComments[commentUid];
-              post.addComment(uid, postUid, subName, owner, text, parentUid, creationDateTime, votes, upvotes, downvotes, editStatus, deleteStatus, children);
+              const { uid, postUid, subName, owner, text, parentUid, creationDateTime, favoritedBy, votes, upvotes, downvotes, editStatus, deleteStatus, children } = existingComments[commentUid];
+              post.addComment(uid, postUid, subName, owner, text, parentUid, creationDateTime, favoritedBy, votes, upvotes, downvotes, editStatus, deleteStatus, children);
             });
 
             existingSub.posts[postUid] = post;
@@ -174,6 +174,14 @@ function RouteSwitch() {
     addToFirestore();
   }
   const editSub = (sub, removedMods) => {
+    const editSubInFirestore = async () => {
+      await updateDoc(doc(db, 'subs', editedSub.name), { ...sub });
+      await updateDoc(doc(db, 'users', currentUser.uid), {
+        own: userListCopy[currentUser.uid].own,
+        moderator: userListCopy[currentUser.uid].moderator
+      });
+    }
+
     const subListCopy = {...subList};
 
     const [name, owner, subTitle, moderators, followers, about, creationDateTime, posts] = Object.values(sub);
@@ -196,14 +204,6 @@ function RouteSwitch() {
     });
 
     setUserList(userListCopy);
-
-    const editSubInFirestore = async () => {
-      await updateDoc(doc(db, 'subs', editedSub.name), { ...sub });
-      await updateDoc(doc(db, 'users', currentUser.uid), {
-        own: userListCopy[currentUser.uid].own,
-        moderator: userListCopy[currentUser.uid].moderator
-      });
-    }
     editSubInFirestore();
   }
   const deleteSub = (subName) => {
@@ -213,7 +213,6 @@ function RouteSwitch() {
     }
     const deleteFromStorage = async () => {
       const subRef = ref(storage, `images/posts/${subName}`);
-      console.log(subRef);
       listAll(subRef)
         .then((res) => {
           res.items.forEach(async (item) => {
@@ -222,14 +221,83 @@ function RouteSwitch() {
               .catch((err) => console.log('error deleting image', err));
           });
         });
-      await deleteObject(subRef)
-        .then(() => console.log('Sub image folder deleted'))
-        .catch((err) => console.log('error deleting sub image folder', err));
+    }
+    const editUsersInFirestore = () => {
+      editedUsers.forEach(async (userUid) => {
+        await updateDoc(doc(db, 'users', userUid), {
+          followedSubs: userListCopy[userUid].followedSubs,
+        });
+      })
     }
 
     const userListCopy = {...userList};
     const index = userListCopy[currentUser.uid].own.subs.indexOf(subName);
     userListCopy[currentUser.uid].own.subs.splice(index, 1);
+
+    const removeFollowedSubFromUsers = () => {
+      subList[subName].followers.forEach((followerUid) => {
+        const index = userListCopy[followerUid].followedSubs.indexOf(subName);
+        userListCopy[followerUid].followedSubs.splice(index, 1);
+        editedUsers.push(followerUid);
+      });
+    }
+    const removeFavoritesFromUsers = () => {
+      Object.values(subList[subName].posts).forEach((post) => {
+        Object.values(post.comments).forEach((comment) => {
+          comment.favoritedBy.forEach((userUid) => {
+            const index = userListCopy[userUid].favorite.comments[subName][post.uid].indexOf(comment.uid);
+            userListCopy[userUid].favorite.comments[subName][post.uid].splice(index, 1);
+            
+            if (userListCopy[userUid].favorite.comments[subName][post.uid].length === 0) {
+              delete userListCopy[userUid].favorite.comments[subName][post.uid];
+            }
+            if (Object.values(userListCopy[userUid].favorite.comments[subName]).length === 0) {
+              delete userListCopy[userUid].favorite.comments[subName];
+            }
+
+            editedUsers.push(userUid);
+          });
+        });
+
+        post.favoritedBy.forEach((userUid) => {
+          delete userListCopy[userUid].favorite.posts[subName];
+          if (userListCopy[userUid].favorite.posts[subName].length === 0) {
+            delete userListCopy[userUid].favorite.posts[subName];
+          }
+
+          editedUsers.push(userUid);
+        });
+      })
+    }
+    const removeOwnedFromUsers = () => {
+      Object.values(subList[subName].posts).forEach((post) => {
+        Object.values(post.comments).forEach((comment) => {
+          const commentIndex = userListCopy[comment.owner.uid].own.comments[subName][comment.postUid].indexOf(comment.uid);
+          userListCopy[comment.owner.uid].own.comments[subName][post.uid].splice(commentIndex, 1);
+          if (Object.values(userListCopy[comment.owner.uid].own.comments[subName][post.uid]).length === 0) {
+            delete userListCopy[comment.owner.uid].own.comments[subName][post.uid];
+          }
+          if (Object.values(userListCopy[comment.owner.uid].own.comments[subName]).length === 0) {
+            delete userListCopy[comment.owner.uid].own.comments[subName];
+          }
+
+          editedUsers.push(comment.owner.uid);
+        });
+        
+        const postIndex = userListCopy[post.owner.uid].own.posts[subName].indexOf(post.uid);
+        userListCopy[post.owner.uid].own.posts[subName].splice(postIndex, 1);
+        if (Object.values(userListCopy[post.owner.uid].own.posts[subName]).length === 0) {
+          delete userListCopy[post.owner.uid].own.posts[subName];
+        }
+
+        editedUsers.push(post.owner.uid);
+      });
+    }
+
+    const editedUsers = [];
+    removeFollowedSubFromUsers();
+    removeFavoritesFromUsers();
+    removeOwnedFromUsers();
 
     setUserList(userListCopy);
 
@@ -238,6 +306,7 @@ function RouteSwitch() {
 
     setSubList(subListCopy);
 
+    editUsersInFirestore(editedUsers);
     deleteFromFirestore();
     deleteFromStorage();
   }
@@ -385,11 +454,50 @@ function RouteSwitch() {
         .then(() => console.log('image deleted'))
         .catch((err) => console.log('error deleting image', err));
     }
+    const editUsersInFirestore = () => {
+      editedUsers.forEach(async (userUid) => {
+        await updateDoc(doc(db, 'users', userUid), {
+          favorite: userListCopy[userUid].favorite,
+        });
+      })
+    }
 
     const subListCopy = {...subList};
     const userListCopy = {...userList};
     const postOwnerUid = subListCopy[subName].posts[postUid].owner.uid;
     const index = userListCopy[postOwnerUid].own.posts[subName].indexOf(postUid);
+
+    const removeFavoritesFromUser = () => {
+      Object.values(subList[subName].posts[postUid].comments).forEach((comment) => {
+        comment.favoritedBy.forEach((userUid) => {
+          if (userListCopy[userUid].favorite.comments[subName] &&
+              userListCopy[userUid].favorite.comments[subName][postUid]) {
+            delete userListCopy[userUid].favorite.comments[subName][postUid];
+            
+            if (userListCopy[userUid].favorite.comments[subName][postUid].length === 0) {
+              delete userListCopy[userUid].favorite.comments[subName][postUid];
+            }
+            if (Object.values(userListCopy[userUid].favorite.comments[subName]).length === 0) {
+              delete userListCopy[userUid].favorite.comments[subName];
+            }
+
+            editedUsers.push(userUid);
+          }
+        });
+      });
+      subList[subName].posts[postUid].favoritedBy.forEach((userUid) => {
+        const index = userListCopy[userUid].favorite.posts[subName].indexOf(postUid);
+        userListCopy[userUid].favorite.posts[subName].splice(index, 1);
+          
+        if (userListCopy[userUid].favorite.posts[subName].length === 0) {
+          delete userListCopy[userUid].favorite.posts[subName];
+        }
+
+        editedUsers.push(userUid);
+      });
+    }
+    const editedUsers = [];
+    removeFavoritesFromUser();
 
     if (subListCopy[subName].posts[postUid].type === 'images/videos') deleteFromStorage();
 
@@ -404,6 +512,7 @@ function RouteSwitch() {
     subListCopy[subName].posts[postUid].deleteText();
     setSubList(subListCopy);
 
+    editUsersInFirestore(editedUsers);
     deleteFromFirestore();
   }
   const adjustPostVotes = (num, post, currentUserCopy) => {
@@ -444,17 +553,40 @@ function RouteSwitch() {
     editPostInFirestore();
   }
   const favoritePost = (subName, postUid) => {
+    const editInFirestore = async () => {
+      const allSubPosts = {};
+      Object.keys(subListCopy[subName].posts).forEach((postUid) => {
+        allSubPosts[postUid] = {...subListCopy[subName].posts[postUid]};
+
+        const post = allSubPosts[postUid];
+        const existingComments = post.comments;
+        delete post.comments;
+        post.comments = {};
+
+        Object.keys(existingComments).forEach((commentUid) => {
+          post.comments[commentUid] = {...existingComments[commentUid]};
+        });
+
+        allSubPosts[postUid] = post;
+      });
+      await updateDoc(doc(db, 'subs', subName), {
+        posts: allSubPosts
+      });
+
+      await updateDoc(doc(db, 'users', currentUser.uid), {
+        favorite: userListCopy[currentUser.uid].favorite
+      });
+    }
+
     const userListCopy = {...userList};
     if (!userListCopy[currentUser.uid].favorite.posts[subName]) userListCopy[currentUser.uid].favorite.posts[subName] = [];
     userListCopy[currentUser.uid].favorite.posts[subName].push(postUid);
 
     setUserList(userListCopy);
 
-    const editInFirestore = async () => {
-      await updateDoc(doc(db, 'users', currentUser.uid), {
-        favorite: userListCopy[currentUser.uid].favorite
-      });
-    }
+    const subListCopy = {...subList};
+    subListCopy[subName].posts[postUid].favoritedBy.push(currentUser.uid);
+    
     editInFirestore();
   }
   const unfavoritePost = (subName, postUid) => {
@@ -540,6 +672,46 @@ function RouteSwitch() {
     editCommentInFirestore();
   }
   const deleteComment = (comment) => {
+    const deleteCommentInFirestore = async () => {
+      const allSubPosts = {};
+      Object.keys(subListCopy[comment.subName].posts).forEach((postUid) => {
+        const post = {...subListCopy[comment.subName].posts[postUid]};
+        const comments = {};
+        Object.keys(post.comments).forEach((commentUid) => comments[commentUid] = {...post.comments[commentUid]});
+        post.comments = comments;
+        allSubPosts[postUid] = post;
+      });
+
+      await updateDoc(doc(db, 'subs', comment.subName), {
+        posts: allSubPosts,
+      });
+      await updateDoc(doc(db, 'users', currentUser.uid), {
+        own: userListCopy[currentUser.uid].own,
+      });
+    }
+    const editUsersInFirestore = () => {
+      editedUsers.forEach(async (userUid) => {
+        await updateDoc(doc(db, 'users', userUid), {
+          favorite: userListCopy[userUid].favorite,
+        });
+      })
+    }
+    const removeFavoritesFromUser = () => {
+      comment.favoritedBy.forEach((userUid) => {
+        const index = userListCopy[userUid].favorite.comments[comment.subName][comment.postUid].indexOf(comment.uid);
+        userListCopy[userUid].favorite.comments[comment.subName][comment.postUid].splice(index, 1);
+        
+        if (userListCopy[userUid].favorite.comments[comment.subName][comment.postUid].length === 0) {
+          delete userListCopy[userUid].favorite.comments[comment.subName][comment.postUid];
+        }
+        if (Object.values(userListCopy[userUid].favorite.comments[comment.subName]).length === 0) {
+          delete userListCopy[userUid].favorite.comments[comment.subName];
+        }
+
+        editedUsers.push(userUid);
+      });
+    }
+
     const subListCopy = {...subList};
     const userListCopy = {...userList};
     const commentPath = subListCopy[comment.subName].posts[comment.postUid].comments[comment.uid];
@@ -559,24 +731,10 @@ function RouteSwitch() {
 
     commentPath.deleteText();
     setSubList(subListCopy);
-
-    const deleteCommentInFirestore = async () => {
-      const allSubPosts = {};
-      Object.keys(subListCopy[comment.subName].posts).forEach((postUid) => {
-        const post = {...subListCopy[comment.subName].posts[postUid]};
-        const comments = {};
-        Object.keys(post.comments).forEach((commentUid) => comments[commentUid] = {...post.comments[commentUid]});
-        post.comments = comments;
-        allSubPosts[postUid] = post;
-      });
-
-      await updateDoc(doc(db, 'subs', comment.subName), {
-        posts: allSubPosts,
-      });
-      await updateDoc(doc(db, 'users', currentUser.uid), {
-        own: userListCopy[currentUser.uid].own,
-      });
-    }
+    
+    const editedUsers = [];
+    removeFavoritesFromUser();
+    editUsersInFirestore();
 
     deleteCommentInFirestore();
   }
@@ -613,35 +771,85 @@ function RouteSwitch() {
     editCommentInFirestore();
   }
   const favoriteComment = (subName, postUid, commentUid) => {
+    const editCommentInFirestore = async () => {
+      const allSubPosts = {};
+      Object.keys(subListCopy[subName].posts).forEach((postUid) => {
+        allSubPosts[postUid] = {...subListCopy[subName].posts[postUid]};
+
+        const post = allSubPosts[postUid];
+        const existingComments = post.comments;
+        delete post.comments;
+        post.comments = {};
+
+        Object.keys(existingComments).forEach((commentUid) => {
+          post.comments[commentUid] = {...existingComments[commentUid]};
+        });
+
+        allSubPosts[postUid] = post;
+      });
+      await updateDoc(doc(db, 'subs', subName), {
+        posts: allSubPosts
+      });
+
+      await updateDoc(doc(db, 'users', currentUser.uid), {
+        favorite: userListCopy[currentUser.uid].favorite,
+      });
+    }
+
     const userListCopy = {...userList};
     if (!userListCopy[currentUser.uid].favorite.comments[subName]) userListCopy[currentUser.uid].favorite.comments[subName] = {};
     if (!userListCopy[currentUser.uid].favorite.comments[subName][postUid]) userListCopy[currentUser.uid].favorite.comments[subName][postUid] = [];
     userListCopy[currentUser.uid].favorite.comments[subName][postUid].push(commentUid);
 
     setUserList(userListCopy);
-    
-    const editCommentInFirestore = async () => {
-      await updateDoc(doc(db, 'users', currentUser.uid), {
-        favorite: userListCopy[currentUser.uid].favorite,
-      });
-    }
+
+    const subListCopy = {...subList};
+    subListCopy[subName].posts[postUid].comments[commentUid].favoritedBy.push(currentUser.uid);
 
     editCommentInFirestore();
   }
   const unfavoriteComment = (subName, postUid, commentUid) => {
-    const userListCopy = {...userList};
-    const index = userListCopy[currentUser.uid].favorite.comments[subName][postUid].indexOf(commentUid);
-    userListCopy[currentUser.uid].favorite.comments[subName][postUid].splice(index, 1);
-
-    if (userListCopy[currentUser.uid].favorite.comments[subName][postUid].length === 0) delete userListCopy[currentUser.uid].favorite.comments[subName];
-
-    setUserList(userListCopy);
-
     const editCommentInFirestore = async () => {
+      const allSubPosts = {};
+      Object.keys(subListCopy[subName].posts).forEach((postUid) => {
+        allSubPosts[postUid] = {...subListCopy[subName].posts[postUid]};
+
+        const post = allSubPosts[postUid];
+        const existingComments = post.comments;
+        delete post.comments;
+        post.comments = {};
+
+        Object.keys(existingComments).forEach((commentUid) => {
+          post.comments[commentUid] = {...existingComments[commentUid]};
+        });
+
+        allSubPosts[postUid] = post;
+      });
+      await updateDoc(doc(db, 'subs', subName), {
+        posts: allSubPosts
+      });
+
       await updateDoc(doc(db, 'users', currentUser.uid), {
         favorite: userListCopy[currentUser.uid].favorite,
       });
     }
+
+    const userListCopy = {...userList};
+    const index = userListCopy[currentUser.uid].favorite.comments[subName][postUid].indexOf(commentUid);
+    userListCopy[currentUser.uid].favorite.comments[subName][postUid].splice(index, 1);
+
+    if (userListCopy[currentUser.uid].favorite.comments[subName][postUid].length === 0) {
+      delete userListCopy[currentUser.uid].favorite.comments[subName][postUid];
+    }
+    if (Object.values(userListCopy[currentUser.uid].favorite.comments[subName]).length === 0) {
+      delete userListCopy[currentUser.uid].favorite.comments[subName];
+    }
+
+    setUserList(userListCopy);
+
+    const subListCopy = {...subList};
+    const userUidIndex = subListCopy[subName].posts[postUid].comments[commentUid].favoritedBy.indexOf(currentUser.uid);
+    subListCopy[subName].posts[postUid].comments[commentUid].favoritedBy.splice(userUidIndex, 1);
 
     editCommentInFirestore();
   }

@@ -367,7 +367,6 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
     // display popup confirmation
     if ((post.owner.uid === currentUser.uid) || (subList[post.subName].moderators.includes(currentUser.uid))) {
       deletePost(subName, post.uid);
-      deleteImageFromStorage();
     }
     navigate(`/r/${subName}`);
   }
