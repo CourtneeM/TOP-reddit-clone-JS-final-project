@@ -473,10 +473,7 @@ function RouteSwitch() {
           if (userListCopy[userUid].favorite.comments[subName] &&
               userListCopy[userUid].favorite.comments[subName][postUid]) {
             delete userListCopy[userUid].favorite.comments[subName][postUid];
-            
-            if (userListCopy[userUid].favorite.comments[subName][postUid].length === 0) {
-              delete userListCopy[userUid].favorite.comments[subName][postUid];
-            }
+
             if (Object.values(userListCopy[userUid].favorite.comments[subName]).length === 0) {
               delete userListCopy[userUid].favorite.comments[subName];
             }
@@ -594,7 +591,9 @@ function RouteSwitch() {
     const index = userListCopy[currentUser.uid].favorite.posts[subName].indexOf(postUid);
     userListCopy[currentUser.uid].favorite.posts[subName].splice(index, 1);
 
-    if (userListCopy[currentUser.uid].favorite.posts[subName].length === 0) delete userListCopy[currentUser.uid].favorite.posts[subName];
+    if (userListCopy[currentUser.uid].favorite.posts[subName].length === 0) {
+      delete userListCopy[currentUser.uid].favorite.posts[subName];
+    }
 
     setUserList(userListCopy);
 
