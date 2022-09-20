@@ -70,6 +70,8 @@ function CreateSubPage({ loggedIn, signInOut, currentUser, subList, createSub })
     e.preventDefault();
 
     if (subName === '') return displayInputError('empty');
+    if (subName.split(' ').join('') !== subName ) return displayInputError('space');
+    if (!(/^[a-z\d\-_]+$/i).test(subName)) return displayInputError('non-alphanumeric');
     if (subList[subName]) return displayInputError('exists');
 
     createSub(subName);
@@ -81,6 +83,8 @@ function CreateSubPage({ loggedIn, signInOut, currentUser, subList, createSub })
     const nameErrorMsg = document.querySelector('.name-error-msg');
 
     if (type === 'empty') nameErrorMsg.textContent = 'Error: Sub name cannot be empty';
+    if (type === 'space') nameErrorMsg.textContent = 'Error: Sub name cannot contain spaces';
+    if (type === 'non-alphanumeric') nameErrorMsg.textContent = 'Error: Sub name must be alphanumeric';
     if (type === 'exists') nameErrorMsg.textContent = 'Error: Sub name already exists';
     
     setTimeout(() => {
