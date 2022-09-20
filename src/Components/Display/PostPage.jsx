@@ -328,17 +328,17 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
     const editedPost = {...post};
 
     if (post.type === 'images/videos') {
-      const storageRef = ref(storage, `images/posts/${editedPostContent.name}-${post.uid}`);
+      const storageRef = ref(storage, `images/posts/${subName}/${editedPostContent.name}-${post.uid}`);
       await uploadImage(storageRef, editedPostContent);
       
       getDownloadURL(storageRef).then((url) => {
-        editedPost.content = `images/posts/${editedPostContent.name}-${post.uid}`;
+        editedPost.content = `images/posts/${subName}/${editedPostContent.name}-${post.uid}`;
         setPost(editedPost);
         setPostContent(editedPost.content);
         
         editPost(editedPost);
 
-        updateMetadata(storageRef, { customMetadata: { owner: currentUser.uid } });
+        updateMetadata(storageRef, { customMetadata: { owner: currentUser.uid, subName: subName } });
         deleteImageFromStorage();
       }).catch((err) => {
         if (editedPostContent['type'].split('/')[0] !== 'image') {

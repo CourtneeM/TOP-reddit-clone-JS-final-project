@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, doc, getDocs, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { getStorage, ref, deleteObject, uploadBytes } from 'firebase/storage';
+import { getStorage, ref, deleteObject, uploadBytes, listAll } from 'firebase/storage';
 import { getFirebaseConfig } from './firebase-config';
 import { getAuth, onAuthStateChanged, useAuthState, GoogleAuthProvider,  signInWithPopup, signOut, setPersistence, browserSessionPersistence } from "firebase/auth";
 
@@ -207,6 +207,26 @@ function RouteSwitch() {
     editSubInFirestore();
   }
   const deleteSub = (subName) => {
+    const deleteFromFirestore = async () => {
+      await deleteDoc(doc(db, 'subs', subName));
+      await updateDoc(doc(db, 'users', currentUser.uid), { own: userListCopy[currentUser.uid].own });
+    }
+    const deleteFromStorage = async () => {
+      const subRef = ref(storage, `images/posts/${subName}`);
+      console.log(subRef);
+      listAll(subRef)
+        .then((res) => {
+          res.items.forEach(async (item) => {
+            await deleteObject(item)
+              .then(() => console.log('Image deleted'))
+              .catch((err) => console.log('error deleting image', err));
+          });
+        });
+      await deleteObject(subRef)
+        .then(() => console.log('Sub image folder deleted'))
+        .catch((err) => console.log('error deleting sub image folder', err));
+    }
+
     const userListCopy = {...userList};
     const index = userListCopy[currentUser.uid].own.subs.indexOf(subName);
     userListCopy[currentUser.uid].own.subs.splice(index, 1);
@@ -218,12 +238,8 @@ function RouteSwitch() {
 
     setSubList(subListCopy);
 
-    const deleteFromFirestore = async () => {
-      await deleteDoc(doc(db, 'subs', subName));
-      await updateDoc(doc(db, 'users', currentUser.uid), { own: userListCopy[currentUser.uid].own });
-    }
-
     deleteFromFirestore();
+    deleteFromStorage();
   }
   const followSub = (subName) => {
     const subListCopy = {...subList};
@@ -367,7 +383,7 @@ function RouteSwitch() {
       
       deleteObject(imageRef)
         .then(() => console.log('image deleted'))
-        .catch((err) => console.log('error', err));
+        .catch((err) => console.log('error deleting image', err));
     }
 
     const subListCopy = {...subList};

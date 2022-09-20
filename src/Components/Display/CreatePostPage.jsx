@@ -106,18 +106,18 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
     e.preventDefault();
 
     if (postTitle === '') return displayInputError('title');
-    if ((postType === 'images/videos' && (postContent === '' || postContent === undefined)) || (postType === 'link' && postContent === '')) return displayInputError('post');
+    if ((postType === 'images/videos' && (postContent === '' || postContent === undefined)) || (postType === 'link' && postContent === '')) return displayInputError('post', 'empty');
     if (postType === 'images/videos' && isFileTooLarge(postContent.size)) return displayInputError('post', 'too large');
     if (postType === 'images/videos' && postContent['type'].split('/')[0] !== 'image' ) return displayInputError('post', 'not image');
 
     const postUid = uniqid();
 
     if (postType === 'images/videos') {
-      const storageRef = ref(storage, `images/posts/${postContent.name}-${postUid}`);
+      const storageRef = ref(storage, `images/posts/${params.subName}/${postContent.name}-${postUid}`);
       await uploadImage(storageRef, postContent);
       
       getDownloadURL(storageRef).then((url) => {
-        updateMetadata(storageRef, { customMetadata: { owner: currentUser.uid } });
+        updateMetadata(storageRef, { customMetadata: { owner: currentUser.uid, subName: params.subName } });
         submitPost(params.subName, postUid, postTitle, storageRef._location.path_, postType);
 
         setPostTitle('');
@@ -127,9 +127,12 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
         if (postContent['type'].split('/')[0] !== 'image') {
           displayInputError('post', 'not image');
           console.log('Error: File is not image', err);
-        } else {
+        } else if (isFileTooLarge(postContent.size)) {
           displayInputError('post', 'too large');
           console.log('Error: Image too large', err);
+        } else {
+          displayInputError('post', 'general');
+          console.log('Error uploading image', err);
         }
       });
     } else {
@@ -150,8 +153,10 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
         errorMsg.textContent = 'Error: File size too large. Max 20MB';
       } else if (reason === 'not image') {
         errorMsg.textContent = 'Error: File must be an image';
-      } else {
+      } else if (reason === 'empty') {
         errorMsg.textContent = 'Error: Post content cannot be empty';
+      } else {
+        errorMsg.textContent = 'Error uploading image';
       }
     }
 
