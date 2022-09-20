@@ -285,7 +285,11 @@ function RouteSwitch() {
     const submitPostFirestore = async () => {
       const allSubPosts = {};
       Object.keys(subListCopy[subName].posts).forEach((postUid) => {
-        allSubPosts[postUid] = {...subListCopy[subName].posts[postUid]};
+        const postCopy = {...subListCopy[subName].posts[postUid]};
+        Object.keys(subListCopy[subName].posts[postUid].comments).forEach((commentUid) => {
+          postCopy.comments[commentUid] = {...postCopy.comments[commentUid]};
+        });
+        allSubPosts[postUid] = postCopy;
       });
 
       await updateDoc(doc(db, 'subs', subName), {
