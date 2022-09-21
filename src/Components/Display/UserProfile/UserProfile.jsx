@@ -119,14 +119,19 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
   const [currentSelectedData, setCurrentSelectedData] = useState({});
   const [profileImg, setProfileImg] = useState('');
   const [newProfileImg, setNewProfileImg] = useState({});
+  const [loading, setLoading] = useState(true);
+
   const params = useParams();
 
   useEffect(() => {
+    if (Object.values(subList).length === 0) return;
+
     displayOverview();
   }, [subList]);
-
   useEffect(() => {
-    const pathRef = ref(storage, currentUser.profileImage);
+    if (Object.values(userList).length === 0 || currentUser === undefined || params.userUid === undefined) return;
+    
+    const pathRef = ref(storage, userList[params.userUid].profileImage);
     let attempt = 0;
 
     const getImage = () => {
@@ -142,7 +147,12 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
     }
 
     getImage();
-  }, [storage, currentUser.profileImage]);
+  }, [userList, currentUser, params.userUid, storage]);
+  useEffect(() => {
+    if (Object.values(subList).length === 0 || Object.values(userList).length === 0) return;
+
+    setLoading(false);
+  }, [subList, userList]);
 
   const displayNewProfileImgInput = () => {
     document.querySelector('.new-profile-image-input').style.display = 'block';
@@ -463,55 +473,61 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
       <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} />
 
       <Wrapper>
-        <Header>
-          <div className='user-name-image'>
-            <div>
-              <img src={profileImg} alt="" className='profile-img' />
-              <p className='change-profile-image' onClick={() => displayNewProfileImgInput()}>Change Image</p>
-              <p className='error-msg hidden'></p>
-            </div>
-            <h1>u/{userList[params.userUid].name}</h1>
-          </div>
-          <div className='new-profile-image-input'>
-            <input type="file" name="" id="" onChange={(e) => setNewProfileImg(e.target.files[0])} />
-            <button onClick={cancelNewProfileImg}>Cancel</button>
-            <button onClick={saveNewProfileImg}>Save</button>
-          </div>
-          <ul className='views-list'>
-            <li className='selected-view' onClick={(e) => changeSelectedView(e)}>Overview</li>
-            <li onClick={(e) => changeSelectedView(e)}>Subs</li>
-            <li onClick={(e) => changeSelectedView(e)}>Posts</li>
-            <li onClick={(e) => changeSelectedView(e)}>Comments</li>
-            { currentUser.uid === params.userUid ?
-              <>
-                <li onClick={(e) => changeSelectedView(e)}>Followed Subs</li>
-                <li onClick={(e) => changeSelectedView(e)}>Favorite Posts</li>
-                <li onClick={(e) => changeSelectedView(e)}>Favorite Comments</li>
-                <li onClick={(e) => changeSelectedView(e)}>Upvoted</li>
-                <li onClick={(e) => changeSelectedView(e)}>Downvoted</li>
-                {/* <li onClick={(e) => changeSelectedView(e)}>Deleted</li> */}
-              </> :
-              null
-            }
-          </ul>
-        </Header>
-        <Body>
-          <SortOptions>
-            <ul>
-              <li onClick={(e) => sortContent(e)}>Top</li>
-              <li onClick={(e) => sortContent(e)}>New</li>
-            </ul>
-          </SortOptions>
-          {
-            Object.values(currentSelectedData).length > 0 ?
-            currentSelectedData.data.map((el) => {
-              return currentSelectedData.type === 'all' ?
-              getPreview(el.type, el.data) :
-              getPreview(currentSelectedData.type, el)
-            }) :
-            null
-          }
-        </Body>
+        {
+          loading ?
+          <p>Loading...</p> :
+          <>
+            <Header>
+              <div className='user-name-image'>
+                <div>
+                  <img src={profileImg} alt="" className='profile-img' />
+                  <p className='change-profile-image' onClick={() => displayNewProfileImgInput()}>Change Image</p>
+                  <p className='error-msg hidden'></p>
+                </div>
+                <h1>u/{userList[params.userUid].name}</h1>
+              </div>
+              <div className='new-profile-image-input'>
+                <input type="file" name="" id="" onChange={(e) => setNewProfileImg(e.target.files[0])} />
+                <button onClick={cancelNewProfileImg}>Cancel</button>
+                <button onClick={saveNewProfileImg}>Save</button>
+              </div>
+              <ul className='views-list'>
+                <li className='selected-view' onClick={(e) => changeSelectedView(e)}>Overview</li>
+                <li onClick={(e) => changeSelectedView(e)}>Subs</li>
+                <li onClick={(e) => changeSelectedView(e)}>Posts</li>
+                <li onClick={(e) => changeSelectedView(e)}>Comments</li>
+                { currentUser.uid === params.userUid ?
+                  <>
+                    <li onClick={(e) => changeSelectedView(e)}>Followed Subs</li>
+                    <li onClick={(e) => changeSelectedView(e)}>Favorite Posts</li>
+                    <li onClick={(e) => changeSelectedView(e)}>Favorite Comments</li>
+                    <li onClick={(e) => changeSelectedView(e)}>Upvoted</li>
+                    <li onClick={(e) => changeSelectedView(e)}>Downvoted</li>
+                    {/* <li onClick={(e) => changeSelectedView(e)}>Deleted</li> */}
+                  </> :
+                  null
+                }
+              </ul>
+            </Header>
+            <Body>
+              <SortOptions>
+                <ul>
+                  <li onClick={(e) => sortContent(e)}>Top</li>
+                  <li onClick={(e) => sortContent(e)}>New</li>
+                </ul>
+              </SortOptions>
+              {
+                Object.values(currentSelectedData).length > 0 ?
+                currentSelectedData.data.map((el) => {
+                  return currentSelectedData.type === 'all' ?
+                  getPreview(el.type, el.data) :
+                  getPreview(currentSelectedData.type, el)
+                }) :
+                null
+              }
+            </Body>
+          </>
+        }
       </Wrapper>
     </div>
   );

@@ -150,12 +150,14 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
   const [post, setPost] = useState({});
   const [comments, setComments] = useState([]);
   const [commentInput, setCommentInput] = useState('');
-  const [loaded, setLoaded] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [postContent, setPostContent] = useState('');
   const [editedPostContent, setEditedPostContent] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (Object.values(subList).length === 0) return;
+
     const sub = Object.values(subList).filter((sub) => {
       return sub.name === params.subName;
     })[0];
@@ -167,8 +169,10 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
     setComments(Object.values(currentPost.comments));
   }, [subList]);
   useEffect(() => {
+    if (Object.values(post).length === 0) return;
+
     setPostContent(post.content);
-    setLoaded(true);
+    setLoading(false);
   }, [post]);
   useEffect(() => {
     if (post.type === 'images/videos') document.getElementById('post-image').setAttribute('src', postContent);
@@ -538,7 +542,8 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
 
       <Wrapper id={`post-${post.uid}`}>
         {
-          loaded ?
+          loading ?
+          <p>Loading...</p> :
           <>
             <Header>
               <Link to={`/r/${subName}`}>
@@ -598,8 +603,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
                 }
               </CommentsContainer>
             </CommentSection>
-          </> :
-          <p>Loading...</p>
+          </>
         }
       </Wrapper>
     </div>

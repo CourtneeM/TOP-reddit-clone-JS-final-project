@@ -44,8 +44,6 @@ function AboutSection({ loggedIn, currentUser, userList, sub }) {
     navigate(`/r/${sub.name}/edit_sub`);
   }
 
-  
-
   return (
     <About>
       <h3>About</h3>
