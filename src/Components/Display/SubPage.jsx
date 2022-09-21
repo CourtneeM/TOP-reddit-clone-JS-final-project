@@ -14,7 +14,7 @@ const Wrapper = styled.div`
   max-width: 1200px;
   width: 60%;
   min-width: 800px;
-  margin: 0 auto 80px;
+  margin: 40px auto 80px;
   padding: 40px;
   background-color: #ccc;
 `;
@@ -61,15 +61,26 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSu
 
   const [sub, setSub] = useState({});
   const [posts, setPosts] = useState([]);
+  const [loadingSubInfo, setLoadingSubInfo] = useState(true);
+  const [loadingPosts, setLoadingPosts] = useState(true);
 
   useEffect(() => {
+    if (Object.values(subList).length === 0) return;
+
     const currentSub = Object.values(subList).filter((sub) => {
       return sub.name === params.subName;
     })[0];
 
     setSub(currentSub);
     setPosts(Object.values(currentSub.posts));
-  }, [params.subName, subList, sub.posts]);
+  }, [subList, params.subName, sub.posts]);
+  useEffect(() => {
+    if (Object.values(sub).length === 0) return;
+    setLoadingSubInfo(false);
+  }, [sub]);
+  useEffect(() => {
+    setLoadingPosts(false);
+  }, [posts]);
 
   const sortPosts = (e) => {
     const postsCopy = [...posts];
@@ -77,14 +88,12 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSu
     if (e.target.textContent === 'Top') {
       postsCopy.sort((a, b) => b.votes - a.votes);
     }
-
     if (e.target.textContent === 'New') {
       postsCopy.sort((a, b) => b.creationDateTime.fullDateTime - a.creationDateTime.fullDateTime);
     }
 
     setPosts(postsCopy);
   }
-
   const getPostPreview = () => {
     const existingPosts = Object.values(posts).filter((post) => !post.deleteStatus.deleted);
     return existingPosts.map((post) => {
@@ -103,47 +112,51 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSu
       <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} />
 
       <Wrapper>
-        {
-          Object.values(sub).length > 0 ?
-          <>
-            <Header>
+        <Header>
+          {
+            loadingSubInfo ?
+            <p>Loading...</p> :
+            <>
               <div>
-                {/* <img src="" alt="sub pic" /> */}
                 <p>{sub.subTitle}</p>
                 <p>r/{sub.name}</p>
               </div>
               {
-                loggedIn &&
-                <div>
-                  {
-                    currentUser.followedSubs.includes(sub.name) ?
-                    <button onClick={() => unfollowSub(sub.name)}>Unfollow</button> :
-                    <button onClick={() => followSub(sub.name)}>Follow</button>
-                  }
-                </div>
+              loggedIn &&
+              <div>
+                {
+                  currentUser.followedSubs.includes(sub.name) ?
+                  <button onClick={() => unfollowSub(sub.name)}>Unfollow</button> :
+                  <button onClick={() => followSub(sub.name)}>Follow</button>
+                }
+              </div>
               }
-            </Header>
+            </>
+          }
+        </Header>
 
-            <PostsSection>
-              <SortOptions>
-                <ul>
-                  <li onClick={(e) => sortPosts(e)}>Top</li>
-                  <li onClick={(e) => sortPosts(e)}>New</li>
-                </ul>
-              </SortOptions>
+        <PostsSection>
+          <SortOptions>
+            <ul>
+              <li onClick={(e) => sortPosts(e)}>Top</li>
+              <li onClick={(e) => sortPosts(e)}>New</li>
+            </ul>
+          </SortOptions>
 
-              <PostsContainer>
-                  {
-                    getPostPreview()
-                  }
-              </PostsContainer>
-            </PostsSection>
+          <PostsContainer>
+            {
+              loadingPosts ?
+              <p>Loading...</p> :
+              getPostPreview()
+            }
+          </PostsContainer>
+        </PostsSection>
 
-            <AboutSection loggedIn={loggedIn} currentUser={currentUser} userList={userList} sub={sub} /> 
-          </> :
-          <p>Loading...</p>
+        {
+          loadingSubInfo ?
+          <p>Loading...</p> :  
+          <AboutSection loggedIn={loggedIn} currentUser={currentUser} userList={userList} sub={sub} /> 
         }
-
       </Wrapper>
     </div>
   );

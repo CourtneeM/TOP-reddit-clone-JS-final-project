@@ -41,6 +41,7 @@ const PostsContainer = styled.div`
 
 function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePost, unfavoritePost, adjustPostVotes, storage }) {
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     if (Object.values(topPosts).length !== 0) {
@@ -48,6 +49,9 @@ function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePos
       console.log('Set Posts');
     }
   }, [topPosts]);
+  useEffect(() => {
+    setLoading(false);
+  }, [posts])
 
   const sortPosts = (e) => {
     const postsCopy = [...posts];
@@ -65,7 +69,6 @@ function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePos
 
     setPosts(postsCopy);
   }
-
   const getPostPreview = () => {
     const existingPosts = posts.filter((post) => !Object.values(post)[0].deleteStatus.deleted);
     return existingPosts.map((post) => {
@@ -94,9 +97,9 @@ function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePos
 
           <PostsContainer>
             {
-              posts.length ?
-              getPostPreview() :
-              <p>Loading...</p>
+              loading ?
+              <p>Loading...</p> :
+              getPostPreview()
             }
           </PostsContainer>
         </PostsSection>

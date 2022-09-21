@@ -15,7 +15,7 @@ const Wrapper = styled.div`
   max-width: 1200px;
   width: 60%;
   min-width: 800px;
-  margin: 0 auto 80px;
+  margin: 40px auto 80px;
   padding: 40px;
   background-color: #ccc;
 `;
@@ -59,10 +59,14 @@ const PostsContainer = styled.div`
 
 function All({ loggedIn, signInOut, currentUser, subList, favoritePost, unfavoritePost, adjustPostVotes, storage}) {
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     setPosts([].concat.apply([], Object.values(subList).map((sub) => Object.values(sub.posts))));
-  }, []);
+  }, [subList]);
+  useEffect(() => {
+    setLoading(false);
+  }, [posts]);
 
   const sortPosts = (e) => {
     const postsCopy = [...posts];
@@ -77,7 +81,6 @@ function All({ loggedIn, signInOut, currentUser, subList, favoritePost, unfavori
 
     setPosts(postsCopy);
   }
-
   const getPostPreview = () => {
     const existingPosts = posts.filter((post) => !post.deleteStatus.deleted);
     return existingPosts.map((post) => {
@@ -104,9 +107,9 @@ function All({ loggedIn, signInOut, currentUser, subList, favoritePost, unfavori
 
           <PostsContainer>
             {
-              posts.length ?
-              getPostPreview() :
-              <p>Loading...</p>
+              loading ?
+              <p>Loading...</p> :
+              getPostPreview()
             }
           </PostsContainer>
         </PostsSection>

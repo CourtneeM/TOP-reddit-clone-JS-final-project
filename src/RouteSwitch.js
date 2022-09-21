@@ -5,7 +5,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, doc, getDocs, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { getStorage, ref, deleteObject, uploadBytes, listAll } from 'firebase/storage';
 import { getFirebaseConfig } from './firebase-config';
-import { getAuth, onAuthStateChanged, useAuthState, GoogleAuthProvider,  signInWithPopup, signOut, setPersistence, browserSessionPersistence } from "firebase/auth";
+import { getAuth, onAuthStateChanged, GoogleAuthProvider,  signInWithPopup, signOut, setPersistence, browserSessionPersistence } from "firebase/auth";
 
 import User from './Components/Creation/User';
 import Sub from './Components/Creation/Sub';
