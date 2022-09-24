@@ -6,18 +6,24 @@ import styled from "styled-components";
 
 const Wrapper = styled.div`
   margin-bottom: 20px;
-  padding: 5px 30px;
+  padding: 20px 0 0;
   background-color: #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
 
   .hidden {
     display: none;
   }
 `;
+const CommentContainer = styled.div`
+  position: relative;
+  padding-bottom: 40px;
+`;
 const CommentHeader = styled.div`
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 15px 0;
+  gap: 25px;
+  padding: 0 25px 20px;
 
   p:first-child {
     cursor: pointer;
@@ -33,15 +39,15 @@ const CommentHeader = styled.div`
     align-items: center;
 
     img {
-      width: 40px;
-      height: 40px;
-      margin-right: 10px;
+      width: 48px;
+      height: 48px;
+      margin-right: 15px;
       border-radius: 50%;
     }
   }
 `;
 const CommentText = styled.div`
-  padding: 20px 0;
+  padding: 0 25px 40px 88px;
 
   textarea {
     width: 100%;
@@ -50,13 +56,18 @@ const CommentText = styled.div`
   p:last-child { color: red; }
 `;
 const CommentActions = styled.div`
+  position: absolute;
+  left: 0;
+  bottom: 0;
   display: flex;
-  justify-content: space-between;
-  padding: 15px 0;
+  padding: 7px 25px;
+  gap: 25px;
+  background-color: #fff;
+  border-radius: 0 8px 8px 0;
 
   div {
     display: flex;
-    gap: 20px;
+    gap: 25px;
 
     p { cursor: pointer; }
     
@@ -85,7 +96,17 @@ const CommentReply = styled.div`
   p { color: red; }
 `;
 const Replies = styled.div`
-  border-left: 1px solid #888;
+  margin-top: 20px;
+  margin-left: 25px;
+  border-left: 3px solid #fff;
+
+  > div:first-child {
+    padding-top: 0;
+  }
+
+  .comment-actions {
+    border-radius: 8px 8px 0 0;
+  }
 `;
 
 function Comment({ loggedIn, currentUser, userList, subList, comments, comment, commentReply, favoriteComment, unfavoriteComment, editComment, deleteComment, adjustCommentVotes, storage }) {
@@ -334,46 +355,48 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
 
   return (
     <Wrapper id={comment.uid}>
-      <CommentHeader>
-        <Link to={`/u/${comment.owner.uid}/${comment.owner.uid}`}>
-          <div className='user-name-image'>
-            <img src={profileImg} alt="" />
-            <p>u/{comment.owner.name}</p>
+      <CommentContainer>
+        <CommentHeader>
+          <Link to={`/u/${comment.owner.uid}/${comment.owner.uid}`} className='default-link'>
+            <div className='user-name-image'>
+              <img src={profileImg} alt="" />
+              <p>u/{comment.owner.name}</p>
+            </div>
+          </Link>
+          <p>{comment.creationDateTime.date.month}/{comment.creationDateTime.date.day}/{comment.creationDateTime.date.year}</p>
+          { comment.editStatus.edited ?
+            <p>Edited: {comment.editStatus.editDateTime.date.month}/{comment.editStatus.editDateTime.date.day}/{comment.editStatus.editDateTime.date.year}</p> :
+            null
+          }
+        </CommentHeader>
+
+        <CommentText>
+          { editMode ?
+            <textarea name="comment-text" id="comment-text" cols="30" rows="10" value={commentText} onChange={(e) => setCommentText(e.target.value)}></textarea> :
+            <p>{comment.text}</p>
+          }
+          <p className={`comment-error-msg-${comment.uid} hidden`}></p>
+        </CommentText>
+
+        <CommentActions className='comment-actions'>
+          { editMode ?
+            displayEditActions() :
+            displayCommentActions()
+          }
+        </CommentActions>
+        <CommentReply className={`comment-reply-container-${comment.uid} hidden`}>
+          <textarea name="comment-reply" id="comment-reply" cols="30" rows="10"
+            value={replyText}
+            onChange={(e) => setReplyText(e.target.value)}
+          >
+          </textarea>
+          <div>
+            <button onClick={(e) => cancelReply(e)}>Cancel</button>
+            <button onClick={(e) => commentReplyHandler(e)}>Reply</button>
           </div>
-        </Link>
-        <p>{comment.creationDateTime.date.month}/{comment.creationDateTime.date.day}/{comment.creationDateTime.date.year}</p>
-        { comment.editStatus.edited ?
-          <p>Edited: {comment.editStatus.editDateTime.date.month}/{comment.editStatus.editDateTime.date.day}/{comment.editStatus.editDateTime.date.year}</p> :
-          null
-        }
-      </CommentHeader>
-
-      <CommentText>
-        { editMode ?
-          <textarea name="comment-text" id="comment-text" cols="30" rows="10" value={commentText} onChange={(e) => setCommentText(e.target.value)}></textarea> :
-          <p>{comment.text}</p>
-        }
-        <p className={`comment-error-msg-${comment.uid} hidden`}></p>
-      </CommentText>
-
-      <CommentActions>
-        { editMode ?
-          displayEditActions() :
-          displayCommentActions()
-        }
-      </CommentActions>
-      <CommentReply className={`comment-reply-container-${comment.uid} hidden`}>
-        <textarea name="comment-reply" id="comment-reply" cols="30" rows="10"
-          value={replyText}
-          onChange={(e) => setReplyText(e.target.value)}
-        >
-        </textarea>
-        <div>
-          <button onClick={(e) => cancelReply(e)}>Cancel</button>
-          <button onClick={(e) => commentReplyHandler(e)}>Reply</button>
-        </div>
-        <p className={`comment-error-msg-${comment.uid} hidden`}></p>
-      </CommentReply>
+          <p className={`comment-error-msg-${comment.uid} hidden`}></p>
+        </CommentReply>
+      </CommentContainer>
       <Replies>
         { 
           Object.values(comment.children).length > 0 ?

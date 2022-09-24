@@ -8,7 +8,7 @@ const Wrapper = styled.div`
   position: relative;
   max-height: 425px;
   margin-bottom: 20px;
-  padding: 25px 100px;
+  padding: 25px 100px 72px;
   color: #000;
   background-color: #fff;
   border-radius: 8px;
@@ -36,12 +36,11 @@ const Header = styled.div`
 `;
 const Body = styled.div`
   max-height: 250px;
-  margin-bottom: 30px;
   overflow: hidden;
 
   h4 {
     margin-bottom: 20px;
-    font-size: 1.4rem;
+    font-size: 1.25rem;
   }
 
   img {
@@ -49,8 +48,15 @@ const Body = styled.div`
   }
 `;
 const Options = styled.div`
+  position: absolute;
+  left: 0;
+  bottom: 0;
   display: flex;
   gap: 25px;
+  padding: 9px 25px;
+  font-size: 0.875rem;
+  background-color: #d9d9d9;
+  border-radius: 0 8px 0 8px;
 
   p {
     cursor: pointer;

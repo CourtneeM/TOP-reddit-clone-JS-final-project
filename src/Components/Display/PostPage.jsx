@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { deleteObject, getDownloadURL, getMetadata, ref, updateMetadata } from 'firebase/storage';
+import { deleteObject, getDownloadURL, ref, updateMetadata } from 'firebase/storage';
 
 import Navbar from './Navbar';
 import Comment from './Comment';
@@ -23,37 +23,53 @@ const Wrapper = styled.div`
     display: none;
   }
 `;
+const PostSection = styled.div`
+  position: relative;
+  margin-bottom: 50px;
+  padding: 30px 100px 95px;
+  background-color: #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
+`;
 const Header = styled.div`
   display: flex;
-  gap: 40px;
+  gap: 25px;
   position: relative;
-  padding: 20px 0;
+  margin-bottom: 30px;
+  
+  a { color: #000; }
 
-  p:nth-child(-n+2) {
+  p:nth-child(-n+2) span {
+    margin-left: 5px;
     cursor: pointer;
   }
 `;
 const VoteStatus = styled.div`
   position: absolute;
-  top: 100px;
-  left: 25px;
+  top: 0;
+  left: -100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 40px;
+  font-size: 0.875rem;
+  background-color #fff;
+  border-radius: 0 8px 8px 0;
 
   p:nth-child(2n+1) {
     cursor: pointer;
   }
 `;
 const Body = styled.div`
-  padding: 40px 80px 0;
-  background-color: #ccc;
+  position: relative;
 
   h2 {
     margin-bottom: 40px;
-    font-size: 2.4rem;
+    font-size: 2rem;
   }
 
-  > div p {
-    margin-bottom: 80px;
-  }
+  > div p:nth-child(2) { font-size: 1.25rem; }
 
   input, textarea {
     width: 100%;
@@ -61,9 +77,7 @@ const Body = styled.div`
     padding: 8px;
   }
 
-  img {
-    width: 100%;
-  }
+  img { width: 100%; }
 
   div:first-child {
     position: relative;
@@ -76,18 +90,20 @@ const Body = styled.div`
   }
 `;
 const PostActions = styled.div`
+  position: absolute;
+  left: 0;
+  bottom: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: relative;
+  gap: 25px;
+  padding: 9px 25px;
+  background-color: #fff;
+  border-radius: 0 8px 0 8px;
 
   div {
     display: flex;
-    gap: 20px;
-
-    p {
-      margin-bottom: 40px;
-    }
+    gap: 25px;
 
     &:nth-child(2) p {
       cursor: pointer;
@@ -125,8 +141,6 @@ const CompositionContainer = styled.div`
 
 `;
 const CommentsContainer = styled.div`
-  padding: 0 40px;
-
   > div:first-child {
     display: flex;
     gap: 10px;
@@ -139,6 +153,24 @@ const CommentsContainer = styled.div`
 
       li { cursor: pointer; }
     }
+  }
+`;
+const SortOptions = styled.div`
+  margin-bottom: 20px;
+  border-bottom: 5px solid #d9d9d9;
+
+  ul {
+    display: flex;
+    gap: 25px;
+
+    li {
+      padding: 0 4px 9px;
+      cursor: pointer;
+    }
+  }
+
+  .selected-sort {
+    
   }
 `;
 
@@ -195,18 +227,6 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
             <p>{post.content}</p>
           }
         </div>
-
-        <PostActions>
-          <div>
-            <p>{getNumComments() === 1 ? getNumComments() + ' comment' : getNumComments() + ' comments'}</p>
-          </div>
-          <div>
-            { editMode ?
-              displayEditActions() :
-              displayPostActions()
-            }
-          </div>
-        </PostActions>
       </Body>
     );
   }
@@ -226,18 +246,6 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
           }
           <p className='post-error-msg hidden'></p>
         </div>
-
-        <PostActions>
-          <div>
-            <p>{getNumComments() === 1 ? getNumComments() + ' comment' : getNumComments() + ' comments'}</p>
-          </div>
-          <div>
-            { editMode ?
-              displayEditActions() :
-              displayPostActions()
-            }
-          </div>
-        </PostActions>
       </Body>
     );
   }
@@ -254,18 +262,6 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
           }
           <p className='post-error-msg hidden'></p>
         </div>
-
-        <PostActions>
-          <div>
-            <p>{getNumComments() === 1 ? getNumComments() + ' comment' : getNumComments() + ' comments'}</p>
-          </div>
-          <div>
-            { editMode ?
-              displayEditActions() :
-              displayPostActions()
-            }
-          </div>
-        </PostActions>
       </Body>
     );
   }
@@ -545,35 +541,48 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
           loading ?
           <p>Loading...</p> :
           <>
-            <Header>
-              <Link to={`/r/${subName}`}>
-                <p>/r/{subName}</p>
-              </Link>
-              <p>Posted by
-                <Link to={`/u/${post.owner.uid}/${post.owner.name}`}>
-                  u/{post.owner.name}
+            <PostSection>
+              <Header>
+                <Link to={`/r/${subName}`} className='default-link'>
+                  <p>/r/{subName}</p>
                 </Link>
-              </p>
-              <p>{ post.creationDateTime.date.month}/{post.creationDateTime.date.day}/{post.creationDateTime.date.year }</p>
-              { post.editStatus.edited ?
-                <p>Edited: {post.editStatus.editDateTime.date.month}/{post.editStatus.editDateTime.date.day}/{post.editStatus.editDateTime.date.year}</p> :
-                null
+                <p>Posted by
+                  <Link to={`/u/${post.owner.uid}/${post.owner.name}`} className='default-link'>
+                    <span>u/{post.owner.name}</span>
+                  </Link>
+                </p>
+                <p>{ post.creationDateTime.date.month}/{post.creationDateTime.date.day}/{post.creationDateTime.date.year }</p>
+                { post.editStatus.edited ?
+                  <p>Edited: {post.editStatus.editDateTime.date.month}/{post.editStatus.editDateTime.date.day}/{post.editStatus.editDateTime.date.year}</p> :
+                  null
+                }
+
+                <VoteStatus>
+                  { loggedIn && <p className="upvote-icon" onClick={(e) => adjustPostVotesHandler(e)}>^</p> }
+                  <p>{post.votes}</p>
+                  { loggedIn && <p className="downvote-icon" onClick={(e) => adjustPostVotesHandler(e)}>v</p> }
+                </VoteStatus>
+              </Header>
+
+              { 
+                post.type === 'link' ?
+                displayLinkPost() :
+                post.type === 'images/videos' ?
+                displayImagePost() :
+                displayTextPost()
               }
-
-              <VoteStatus>
-                { loggedIn && <p className="upvote-icon" onClick={(e) => adjustPostVotesHandler(e)}>^</p> }
-                <p>{post.votes}</p>
-                { loggedIn && <p className="downvote-icon" onClick={(e) => adjustPostVotesHandler(e)}>v</p> }
-              </VoteStatus>
-            </Header>
-
-            { 
-              post.type === 'link' ?
-              displayLinkPost() :
-              post.type === 'images/videos' ?
-              displayImagePost() :
-              displayTextPost()
-            }
+              <PostActions>
+                <div>
+                  <p>{getNumComments() === 1 ? getNumComments() + ' Comment' : getNumComments() + ' Comments'}</p>
+                </div>
+                <div>
+                  { editMode ?
+                    displayEditActions() :
+                    displayPostActions()
+                  }
+                </div>
+              </PostActions>
+            </PostSection>
 
             <CommentSection>
               {
@@ -589,15 +598,14 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
               }
               
               <CommentsContainer>
-                <div>
-                  <p>Sort:</p>
+                <SortOptions>
                   <ul>
                     <li onClick={(e) => sortComments(e)}>Highest Rating</li>
                     <li onClick={(e) => sortComments(e)}>Lowest Rating</li>
                     <li onClick={(e) => sortComments(e)}>Oldest</li>
                     <li onClick={(e) => sortComments(e)}>Newest</li>
                   </ul>
-                </div>
+                </SortOptions>
                 {
                   getComments()
                 }

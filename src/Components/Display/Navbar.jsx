@@ -15,6 +15,8 @@ const Wrapper = styled.div`
     padding: 15px 0;
     cursor: pointer;
   }
+
+  a { color: #000; }
 `;
 const SubList = styled.ul`
   display: flex;
