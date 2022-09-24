@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { HashLink as Link } from 'react-router-hash-link';
-import { deleteObject, getDownloadURL, getMetadata, ref, updateMetadata, uploadBytes } from 'firebase/storage';
+import { deleteObject, getDownloadURL, ref, updateMetadata } from 'firebase/storage';
 
 import Navbar from '../Navbar';
 import SubPreview from './SubPreview';
-import PostPreview from './PostPreview';
-import CommentPreview from './CommentPreview';
+import PostPreview from '../PostPreview';
+import Comment from '../Comment';
 
 import styled from 'styled-components';
 
@@ -17,6 +17,8 @@ const Wrapper = styled.div`
   margin: 0 auto;
   padding: 40px 0;
 
+  a { color: #000; }
+
   .hidden {
     display: none;
   }
@@ -26,33 +28,20 @@ const Header = styled.div`
   align-items: center;
   flex-wrap: wrap;
   position: relative;
-  padding: 20px 0;
-
-  h1 {
-    flex: 1 1 100%;
-    text-align: right;
-  }
-
-  ul {
-    display: flex;
-    gap: 40px;
-    
-    li {
-      cursor: pointer;
-    }
-  }
 
   .user-name-image {
+    flex: 1 1 100%;
     display: flex;
+    justify-content: flex-end;
     align-items: center;
-    margin-left: auto;
-    margin-bottom: 40px;
     
     div {
       position: relative;
 
+      h2 { font-size: 1.75rem; }
+
       img {
-        margin-right: 20px;
+        margin-right: 30px;
       }
       
       .profile-img {
@@ -85,6 +74,16 @@ const Header = styled.div`
     position: absolute;
     right: 0;
   }
+`;
+const ViewsList = styled.ul`
+  display: flex;
+  margin-bottom: -22px;
+    
+  li {
+    padding: 8px 20px 30px;
+    border-radius: 15px 15px 0 0;
+    cursor: pointer;
+  }
 
   .selected-view {
     background-color: #ccc;
@@ -93,6 +92,7 @@ const Header = styled.div`
 const Body = styled.div`
   padding: 40px 80px 20px;
   background-color: #ccc;
+  border-radius: 8px;
 
   h2 {
     margin-bottom: 40px;
@@ -100,18 +100,21 @@ const Body = styled.div`
   }
 `;
 const SortOptions = styled.div`
-  margin: 0 80px 20px 0;
-  padding: 10px 20px;
-
-  background-color: #aaa;
+  margin-bottom: 20px;
+  border-bottom: 3px solid #fff;
 
   ul {
     display: flex;
-    gap: 40px;
+    gap: 25px;
 
     li {
+      padding: 0 4px 9px;
       cursor: pointer;
     }
+  }
+
+  .selected-sort {
+    
   }
 `;
 
@@ -411,15 +414,15 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
   }
   const getPreview = (type, el) => {
     return type === 'subs' ?
-      <Link to={`/r/${el.name}`} key={el.uid}>
+      <Link to={`/r/${el.name}`} key={el.uid} className='default-link'>
         <SubPreview sub={el} />
       </Link> :
     type === 'posts' ?
-      <Link to={`/r/${el.subName}/${el.uid}/${el.title.split(' ').join('_').toLowerCase()}`} key={el.uid}>
+      <Link to={`/r/${el.subName}/${el.uid}/${el.title.split(' ').join('_').toLowerCase()}`} key={el.uid} className='default-link'>
         <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={el} adjustPostVotes={adjustPostVotes} storage={storage} />
       </Link> :
-      <Link to={`/r/${el.subName}/${el.postUid}/${subList[el.subName].posts[el.postUid].title.split(' ').join('_').toLowerCase()}/#${el.uid}`} key={el.uid}>
-        <CommentPreview
+      <Link to={`/r/${el.subName}/${el.postUid}/${subList[el.subName].posts[el.postUid].title.split(' ').join('_').toLowerCase()}/#${el.uid}`} key={el.uid} className='default-link'>
+        <Comment
           loggedIn={loggedIn}
           currentUser={currentUser}
           userList={userList}
@@ -484,14 +487,14 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
                   <p className='change-profile-image' onClick={() => displayNewProfileImgInput()}>Change Image</p>
                   <p className='error-msg hidden'></p>
                 </div>
-                <h1>u/{userList[params.userUid].name}</h1>
+                <h2>u/{userList[params.userUid].name}</h2>
               </div>
               <div className='new-profile-image-input'>
                 <input type="file" name="" id="" onChange={(e) => setNewProfileImg(e.target.files[0])} />
                 <button onClick={cancelNewProfileImg}>Cancel</button>
                 <button onClick={saveNewProfileImg}>Save</button>
               </div>
-              <ul className='views-list'>
+              <ViewsList className='views-list'>
                 <li className='selected-view' onClick={(e) => changeSelectedView(e)}>Overview</li>
                 <li onClick={(e) => changeSelectedView(e)}>Subs</li>
                 <li onClick={(e) => changeSelectedView(e)}>Posts</li>
@@ -507,7 +510,7 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
                   </> :
                   null
                 }
-              </ul>
+              </ViewsList>
             </Header>
             <Body>
               <SortOptions>

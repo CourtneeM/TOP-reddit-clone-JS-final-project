@@ -7,7 +7,7 @@ import styled from "styled-components";
 const Wrapper = styled.div`
   margin-bottom: 20px;
   padding: 20px 0 0;
-  background-color: #ccc;
+  background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
 
@@ -62,8 +62,8 @@ const CommentActions = styled.div`
   display: flex;
   padding: 7px 25px;
   gap: 25px;
-  background-color: #fff;
-  border-radius: 0 8px 8px 0;
+  background-color: #d9d9d9;
+  border-radius: 0 8px 8px 8px;
 
   div {
     display: flex;
@@ -98,7 +98,7 @@ const CommentReply = styled.div`
 const Replies = styled.div`
   margin-top: 20px;
   margin-left: 25px;
-  border-left: 3px solid #fff;
+  border-left: 3px solid #d9d9d9;
 
   > div:first-child {
     padding-top: 0;

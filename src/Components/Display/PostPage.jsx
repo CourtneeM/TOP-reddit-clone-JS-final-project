@@ -157,6 +157,7 @@ const CommentsContainer = styled.div`
 `;
 const SortOptions = styled.div`
   margin-bottom: 20px;
+  background-color: #fff;
   border-bottom: 5px solid #d9d9d9;
 
   ul {

@@ -66,6 +66,10 @@ const VoteStatus = styled.div`
   position: absolute;
   top: 25px;
   left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 60px;
   height: 40px;
   text-align: center;
