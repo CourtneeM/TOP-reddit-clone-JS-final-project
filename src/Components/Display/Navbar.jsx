@@ -7,22 +7,34 @@ const Wrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 0 60px;
-  box-shadow: 0 4px 12px 4px #ccc;
+  background-color: #d9d9d9;
+  box-shadow: 0 4px 4px 4px rgba(0,0,0,0.25);
 
-  p {
-    font-size: 1.4rem;
+  h1 {
+    font-size: 1.75rem;
     padding: 15px 0;
     cursor: pointer;
   }
-
-  ul {
-    display: flex;
-    
-    li {
-      padding: 15px 30px;
-      cursor: pointer;
-    }
+`;
+const SubList = styled.ul`
+  display: flex;
+  gap: 46px;
+  
+  li {
+    padding: 4px 4px;
+    cursor: pointer;
   }
+
+  .selected-sub {
+    border-bottom: 3px solid #fff;
+  }
+`;
+const SignInOutBtn = styled.button`
+  padding: 8px 25px;
+  size: 0.875px;
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0px 4px 4px 0 rgba(0,0,0,0.25);
 `;
 
 function Navbar({ loggedIn, signInOut, currentUser, subList }) {
@@ -37,7 +49,7 @@ function Navbar({ loggedIn, signInOut, currentUser, subList }) {
   const getSubNames = () => {
     return Object.values(subList).map((sub) => {
       return (
-        <Link to={`/r/${sub.name}`} key={sub.name} >
+        <Link to={`/r/${sub.name}`} key={sub.name}  className='default-link'>
           <li>{sub.name}</li>
         </Link>
       );
@@ -46,35 +58,35 @@ function Navbar({ loggedIn, signInOut, currentUser, subList }) {
 
   return (
     <Wrapper>
-      <Link to="/">
-        <p>Readdit</p>
+      <Link to="/" className='default-link'>
+        <h1>Readdit</h1>
       </Link>
 
-      <ul>
-        <Link to="/">
-          <li>Home</li>
+      <SubList>
+        <Link to="/" className='default-link'>
+          <li className='selected-sub'>Home</li>
         </Link>
-        <Link to="/r/all">
+        <Link to="/r/all" className='default-link'>
           <li>All</li>
         </Link>
         {
           getSubNames()
         }
-        <Link to="/r/new_sub">
+        <Link to="/r/new_sub" className='default-link'>
           <li>Create Sub</li>
         </Link>
-      </ul>
+      </SubList>
 
       { loggedIn ?
           loading ?
           <p>Loading...</p> :
           <div>
-            <Link to={`/u/${currentUser.uid}/${currentUser.name}`}>
+            <Link to={`/u/${currentUser.uid}/${currentUser.name}`} className='default-link'>
               <p>u/{currentUser.name}</p>
             </Link>
-            <button onClick={signInOut.signUserOut}>Sign Out</button>
+            <SignInOutBtn onClick={signInOut.signUserOut}>Sign Out</SignInOutBtn>
           </div> :
-        <button onClick={signInOut.signUserIn}>Sign In</button>
+        <SignInOutBtn onClick={signInOut.signUserIn}>Sign In</SignInOutBtn>
       }
     </Wrapper>
   );
