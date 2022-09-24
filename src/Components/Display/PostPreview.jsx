@@ -6,15 +6,17 @@ import styled from "styled-components";
 
 const Wrapper = styled.div`
   position: relative;
-  max-height: 350px;
+  max-height: 425px;
   margin: 0 80px 20px 0;
-  padding: 20px 60px;
-  background-color: #bbb;
+  padding: 25px 100px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
 `;
 const Header = styled.div`
   display: flex;
-  gap: 20px;
-  margin-bottom: 15px;
+  gap: 25px;
+  margin-bottom: 20px;
 
   p:first-child span {
     cursor: pointer;
@@ -27,11 +29,11 @@ const Header = styled.div`
 `;
 const Body = styled.div`
   max-height: 250px;
-  margin-bottom: 15px;
+  margin-bottom: 30px;
   overflow: hidden;
 
   h4 {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     font-size: 1.4rem;
   }
 
@@ -41,20 +43,21 @@ const Body = styled.div`
 `;
 const Options = styled.div`
   display: flex;
-  gap: 40px;
+  gap: 25px;
 
   p {
     cursor: pointer;
   }
-
-  p:nth-child(2) {
-    margin-left: auto;
-  }
 `;
 const VoteStatus = styled.div`
   position: absolute;
-  top: 20px;
-  left: 25px;
+  top: 25px;
+  left: 0;
+  width: 60px;
+  height: 40px;
+  text-align: center;
+  background-color: #bbb;
+  border-radius: 0 8px 8px 0;
 
   p:nth-child(2n+1) {
     cursor: pointer;
@@ -186,7 +189,7 @@ function PostPreview({ loggedIn, currentUser, post, favoritePost, unfavoritePost
       <Header>
         <p>r/{post.subName}</p>
         <p>Posted by
-          <Link to={`/u/${post.owner.uid}/${post.owner.name}`}>
+          <Link to={`/u/${post.owner.uid}/${post.owner.name}`} className='default-link'>
             u/{post.owner.name}
           </Link>
           </p>
@@ -200,7 +203,7 @@ function PostPreview({ loggedIn, currentUser, post, favoritePost, unfavoritePost
         }
       </Body>
       <Options>
-        <p>{getNumComments() === 1 ? getNumComments() + ' comment' : getNumComments() + ' comments'}</p>
+        <p>{getNumComments() === 1 ? getNumComments() + ' Comment' : getNumComments() + ' Comments'}</p>
         { loggedIn ?
           currentUser.favorite.posts[post.subName] && currentUser.favorite.posts[post.subName].includes(post.uid) ?
           <p onClick={() => unfavoritePost(post.subName, post.uid)}>Unfavorite</p> :

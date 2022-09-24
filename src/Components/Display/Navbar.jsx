@@ -35,6 +35,7 @@ const SignInOutBtn = styled.button`
   border: none;
   border-radius: 20px;
   box-shadow: 0px 4px 4px 0 rgba(0,0,0,0.25);
+  cursor: pointer;
 `;
 
 function Navbar({ loggedIn, signInOut, currentUser, subList }) {

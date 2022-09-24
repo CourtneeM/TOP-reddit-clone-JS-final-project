@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 
 import Navbar from "./Navbar";
 import PostPreview from "./PostPreview";
-import AboutSection from "./AboutSection";
 
 import styled from "styled-components";
 
@@ -21,18 +20,22 @@ const PostsSection = styled.div`
   flex: 75%
 `;
 const SortOptions = styled.div`
+  position: relative;
   margin: 0 80px 20px 0;
-  padding: 10px 20px;
-
-  background-color: #aaa;
+  border-bottom: 3px solid #fff;
 
   ul {
     display: flex;
-    gap: 40px;
+    gap: 25px;
 
     li {
+      padding: 0 4px 9px;
       cursor: pointer;
     }
+  }
+
+  .selected-sort {
+    
   }
 `;
 const PostsContainer = styled.div`
@@ -76,7 +79,7 @@ function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePos
       const path = `/r/${postDetails.subName}/${postDetails.uid}/${postDetails.title.split(' ').join('_').toLowerCase()}`;
 
       return (
-        <Link to={path} key={postDetails.uid}>
+        <Link to={path} key={postDetails.uid} className='default-link'>
           <PostPreview key={postDetails.uid} loggedIn={loggedIn} currentUser={currentUser} post={postDetails} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage} />
         </Link>
       )
@@ -90,7 +93,7 @@ function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePos
         <PostsSection>
           <SortOptions>
             <ul>
-              <li onClick={(e) => sortPosts(e)}>Top</li>
+              <li onClick={(e) => sortPosts(e)} className='selected-sort'>Top</li>
               <li onClick={(e) => sortPosts(e)}>New</li>
             </ul>
           </SortOptions>
@@ -103,8 +106,6 @@ function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePos
             }
           </PostsContainer>
         </PostsSection>
-
-        {/* <AboutSection /> */}
       </Wrapper>
     </div>
   );
