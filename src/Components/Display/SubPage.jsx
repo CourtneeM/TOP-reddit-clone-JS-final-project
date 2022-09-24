@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 const Wrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
-  max-width: 1200px;
+  max-width: 1080px;
   width: 60%;
   min-width: 800px;
   margin: 40px auto 80px;
@@ -23,37 +23,54 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 60px;
+  margin-bottom: 30px;
 
   p:first-child {
     font-size: 1.4rem;
     font-weight: bold;
   }
 
-  p:last-child {
-    cursor: pointer;
-  }
-`;
-const PostsSection = styled.div`
-  flex: 75%
-`;
-const SortOptions = styled.div`
-  margin: 0 80px 20px 0;
-  padding: 10px 20px;
+  div:first-child {
+    p:first-child {
+      font-size: 1.75rem;
+    }
 
-  background-color: #aaa;
-
-  ul {
-    display: flex;
-    gap: 40px;
-
-    li {
+    p:last-child {
+      font-size: 1.25rem;
       cursor: pointer;
     }
   }
+
+  
+`;
+const ContentSection = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  column-gap: 40px;
+  width: 100%;
+`;
+const SortOptions = styled.div`
+  flex: 100%;
+  margin-bottom: 20px;
+  border-bottom: 3px solid #fff;
+
+  ul {
+    display: flex;
+    gap: 25px;
+
+    li {
+      padding: 0 4px 9px;
+      cursor: pointer;
+    }
+  }
+
+  .selected-sort {
+    
+  }
 `;
 const PostsContainer = styled.div`
-
+  flex: 1 1 45%;
 `;
 
 function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSub, unfollowSub, favoritePost, unfavoritePost, adjustPostVotes, storage }) {
@@ -100,7 +117,7 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSu
       const path = `${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`;
 
       return (
-        <Link to={path} key={post.uid}>
+        <Link to={path} key={post.uid} className='default-link'>
           <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage} />
         </Link>
       )
@@ -135,7 +152,7 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSu
           }
         </Header>
 
-        <PostsSection>
+        <ContentSection>
           <SortOptions>
             <ul>
               <li onClick={(e) => sortPosts(e)}>Top</li>
@@ -150,13 +167,12 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSu
               getPostPreview()
             }
           </PostsContainer>
-        </PostsSection>
-
-        {
-          loadingSubInfo ?
-          <p>Loading...</p> :  
-          <AboutSection loggedIn={loggedIn} currentUser={currentUser} userList={userList} sub={sub} /> 
-        }
+          {
+           loadingSubInfo ?
+            <p>Loading...</p> :  
+            <AboutSection loggedIn={loggedIn} currentUser={currentUser} userList={userList} sub={sub} /> 
+          }
+        </ContentSection>
       </Wrapper>
     </div>
   );

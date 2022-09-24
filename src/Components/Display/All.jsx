@@ -2,12 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import PostPreview from "./PostPreview";
-import AboutSection from "./AboutSection";
 import Navbar from "./Navbar";
 
-import uniqid from 'uniqid';
 import styled from "styled-components";
-
 
 const Wrapper = styled.div`
   display: flex;
@@ -16,41 +13,28 @@ const Wrapper = styled.div`
   width: 60%;
   min-width: 800px;
   margin: 40px auto 80px;
-  padding: 40px;
+  padding: 40px 180px;
   background-color: #ccc;
-`;
-const Header = styled.div`
-  flex: 1 1 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 60px;
-
-  p:first-child {
-    font-size: 1.4rem;
-    font-weight: bold;
-  }
-
-  p:last-child {
-    cursor: pointer;
-  }
 `;
 const PostsSection = styled.div`
   flex: 75%
 `;
 const SortOptions = styled.div`
-  margin: 0 80px 20px 0;
-  padding: 10px 20px;
-
-  background-color: #aaa;
+  margin-bottom: 20px;
+  border-bottom: 3px solid #fff;
 
   ul {
     display: flex;
-    gap: 40px;
+    gap: 25px;
 
     li {
+      padding: 0 4px 9px;
       cursor: pointer;
     }
+  }
+
+  .selected-sort {
+    
   }
 `;
 const PostsContainer = styled.div`
@@ -86,7 +70,7 @@ function All({ loggedIn, signInOut, currentUser, subList, favoritePost, unfavori
     return existingPosts.map((post) => {
       const path = `/r/${post.subName}/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`
       return (
-        <Link to={path} key={post.uid}>
+        <Link to={path} key={post.uid} className='default-link'>
           <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage} />
         </Link>
       );

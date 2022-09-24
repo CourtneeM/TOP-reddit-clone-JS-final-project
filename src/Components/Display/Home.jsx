@@ -13,15 +13,14 @@ const Wrapper = styled.div`
   width: 60%;
   min-width: 800px;
   margin: 40px auto 80px;
-  padding: 40px;
+  padding: 40px 180px;
   background-color: #ccc;
 `;
 const PostsSection = styled.div`
   flex: 75%
 `;
 const SortOptions = styled.div`
-  position: relative;
-  margin: 0 80px 20px 0;
+  margin-bottom: 20px;
   border-bottom: 3px solid #fff;
 
   ul {

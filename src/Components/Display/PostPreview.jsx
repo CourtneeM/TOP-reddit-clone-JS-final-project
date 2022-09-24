@@ -7,19 +7,26 @@ import styled from "styled-components";
 const Wrapper = styled.div`
   position: relative;
   max-height: 425px;
-  margin: 0 80px 20px 0;
+  margin-bottom: 20px;
   padding: 25px 100px;
+  color: #000;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
+
+  a { color: #000; }
 `;
 const Header = styled.div`
   display: flex;
   gap: 25px;
   margin-bottom: 20px;
 
-  p:first-child span {
+  p:first-child {
     cursor: pointer;
+  }
+
+  p:nth-child(2) a {
+    margin-left: 5px;
   }
 
   p:last-child {
