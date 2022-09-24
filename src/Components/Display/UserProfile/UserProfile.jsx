@@ -239,7 +239,7 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
       data: allComments
     });
   }
-  const displayFollowedSubs = () => {
+  const displayFollowed = () => {
     const followedSubs = [];
     currentUser.followedSubs.forEach((subName) => {
       if (subList[subName]) followedSubs.push(subList[subName]);
@@ -250,36 +250,41 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
       data: followedSubs
     });
   }
-  const displayFavoritePosts = () => {
-    const favoritePosts = [];
-    Object.keys(currentUser.favorite.posts).forEach((subName) => {
-      currentUser.favorite.posts[subName].forEach((postUid) => {
-        if (subList[subName] && subList[subName].posts[postUid]) {
-          favoritePosts.push(subList[subName].posts[postUid])
-        };
+  const displayFavorites = () => {
+    const favorites = []
+    const getFavoritePosts = () => {
+      Object.keys(currentUser.favorite.posts).forEach((subName) => {
+        currentUser.favorite.posts[subName].forEach((postUid) => {
+          if (subList[subName] && subList[subName].posts[postUid]) {
+            favorites.push({
+              type: 'posts',
+              data: subList[subName].posts[postUid],
+            });
+          };
+        });
       });
-    });
+    }
+    const getFavoriteComments = () => {
+      Object.keys(currentUser.favorite.comments).forEach((subName) => {
+        Object.keys(currentUser.favorite.comments[subName]).forEach((postUid) => {
+          currentUser.favorite.comments[subName][postUid].forEach((commentUid) => {
+            if (subList[subName] && subList[subName].posts[postUid] && subList[subName].posts[postUid].comments[commentUid]) {
+              favorites.push({
+                type: 'comments',
+                data: subList[subName].posts[postUid].comments[commentUid],
+              });
+            }
+          })
+        });
+      });
+    }
+
+    getFavoritePosts();
+    getFavoriteComments();
 
     setCurrentSelectedData({
-      type: 'posts',
-      data: favoritePosts
-    });
-  }
-  const displayFavoriteComments = () => {
-    const favoriteComments = [];
-    Object.keys(currentUser.favorite.comments).forEach((subName) => {
-      Object.keys(currentUser.favorite.comments[subName]).forEach((postUid) => {
-        currentUser.favorite.comments[subName][postUid].forEach((commentUid) => {
-          if (subList[subName] && subList[subName].posts[postUid] && subList[subName].posts[postUid].comments[commentUid]) {
-            favoriteComments.push(subList[subName].posts[postUid].comments[commentUid]);
-          }
-        })
-      });
-    });
-
-    setCurrentSelectedData({
-      type: 'comments',
-      data: favoriteComments
+      type: 'all',
+      data: favorites
     });
   }
   const displayOverview = () => {
@@ -440,9 +445,8 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
     if (e.target.textContent === 'Subs') displaySubs();
     if (e.target.textContent === 'Posts') displayPosts();
     if (e.target.textContent === 'Comments') displayComments();
-    if (e.target.textContent === 'Followed Subs') displayFollowedSubs();
-    if (e.target.textContent === 'Favorite Posts') displayFavoritePosts();
-    if (e.target.textContent === 'Favorite Comments') displayFavoriteComments();
+    if (e.target.textContent === 'Followed Subs') displayFollowed();
+    if (e.target.textContent === 'Favorites') displayFavorites();
     if (e.target.textContent === 'Upvoted') displayUpvoted();
     if (e.target.textContent === 'Downvoted') displayDownvoted();
     // if (e.target.textContent === 'Deleted') displayDeleted();
@@ -502,9 +506,8 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
                 <li onClick={(e) => changeSelectedView(e)}>Comments</li>
                 { currentUser.uid === params.userUid ?
                   <>
-                    <li onClick={(e) => changeSelectedView(e)}>Followed Subs</li>
-                    <li onClick={(e) => changeSelectedView(e)}>Favorite Posts</li>
-                    <li onClick={(e) => changeSelectedView(e)}>Favorite Comments</li>
+                    <li onClick={(e) => changeSelectedView(e)}>Followed</li>
+                    <li onClick={(e) => changeSelectedView(e)}>Favorites</li>
                     <li onClick={(e) => changeSelectedView(e)}>Upvoted</li>
                     <li onClick={(e) => changeSelectedView(e)}>Downvoted</li>
                     {/* <li onClick={(e) => changeSelectedView(e)}>Deleted</li> */}
