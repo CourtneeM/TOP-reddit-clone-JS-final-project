@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -14,6 +14,15 @@ const Wrapper = styled.div`
     font-size: 1.75rem;
     padding: 15px 0;
     cursor: pointer;
+  }
+
+  div:last-child {
+    display: flex;
+    align-items: center;
+
+    .user-name {
+      margin-right: 40px;
+    }
   }
 
   a { color: #000; }
@@ -85,7 +94,7 @@ function Navbar({ loggedIn, signInOut, currentUser, subList }) {
           <p>Loading...</p> :
           <div>
             <Link to={`/u/${currentUser.uid}/${currentUser.name}`} className='default-link'>
-              <p>u/{currentUser.name}</p>
+              <p className='user-name'>u/{currentUser.name}</p>
             </Link>
             <SignInOutBtn onClick={signInOut.signUserOut}>Sign Out</SignInOutBtn>
           </div> :

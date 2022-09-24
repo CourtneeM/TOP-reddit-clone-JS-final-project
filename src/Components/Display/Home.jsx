@@ -34,7 +34,8 @@ const SortOptions = styled.div`
   }
 
   .selected-sort {
-    
+    margin-bottom: -3px;
+    border-bottom: 3px solid cyan;
   }
 `;
 const PostsContainer = styled.div`
@@ -64,7 +65,6 @@ function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePos
     
     if (e.target.textContent === 'New') {
       postsCopy.sort((a, b) => {
-        console.log(Object.values(b)[0].creationDateTime.fullDateTime);
         return Object.values(b)[0].creationDateTime.fullDateTime - Object.values(a)[0].creationDateTime.fullDateTime;
       });
     }

@@ -34,7 +34,8 @@ const SortOptions = styled.div`
   }
 
   .selected-sort {
-    
+    margin-bottom: -3px;
+    border-bottom: 3px solid cyan;
   }
 `;
 const PostsContainer = styled.div`
@@ -84,7 +85,7 @@ function All({ loggedIn, signInOut, currentUser, subList, favoritePost, unfavori
         <PostsSection>
           <SortOptions>
             <ul>
-              <li onClick={(e) => sortPosts(e)}>Top</li>
+              <li onClick={(e) => sortPosts(e)} className='selected-sort'>Top</li>
               <li onClick={(e) => sortPosts(e)}>New</li>
             </ul>
           </SortOptions>

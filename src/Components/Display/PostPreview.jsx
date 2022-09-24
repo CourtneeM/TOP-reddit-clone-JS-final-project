@@ -71,7 +71,7 @@ const VoteStatus = styled.div`
   align-items: center;
   justify-content: center;
   width: 60px;
-  height: 40px;
+  padding: 5px 0;
   text-align: center;
   background-color: #bbb;
   border-radius: 0 8px 8px 0;

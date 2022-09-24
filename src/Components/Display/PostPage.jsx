@@ -49,12 +49,13 @@ const VoteStatus = styled.div`
   top: 0;
   left: -100px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
   width: 60px;
-  height: 40px;
   font-size: 0.875rem;
-  background-color #fff;
+  padding: 5px 0;
+  background-color: #fff;
   border-radius: 0 8px 8px 0;
 
   p:nth-child(2n+1) {
@@ -120,15 +121,15 @@ const PostActions = styled.div`
   }
 `;
 const CommentSection = styled.div`
-  padding: 20px 0;
+  padding-bottom: 20px;
   
   .comment-error-msg {
     color: red;
   }
 `;
 const CompositionContainer = styled.div`
-  margin: 60px auto 80px;
-  padding: 0 40px;
+  margin: 0 auto 40px;
+  padding: 0 30px;
 
   p {
     margin-bottom: 10px;
@@ -136,9 +137,28 @@ const CompositionContainer = styled.div`
 
   textarea {
     width: 100%;
-    padding: 10px;
+    margin-bottom: -5px;
+    padding: 15px;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px 8px 0 0;
   }
 
+  div {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    padding: 6px 25px;
+    background-color: #d9d9d9;
+    border-radius: 0 0 8px 8px;
+
+    button {
+      padding: 6px 25px;
+      font-size: 0.875rem;
+      background-color: #fff;
+      border: none;
+      border-radius: 20px;
+    }
+  }
 `;
 const CommentsContainer = styled.div`
   > div:first-child {
@@ -171,7 +191,8 @@ const SortOptions = styled.div`
   }
 
   .selected-sort {
-    
+    margin-bottom: -5px;
+    border-bottom: 5px solid cyan;
   }
 `;
 
@@ -591,17 +612,19 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
                 <CompositionContainer>
                   <p>Comment as u/{currentUser.name}</p>
                   <form action="#">
-                    <textarea name="comment-text" id="comment-text" cols="30" rows="10" value={commentInput} onChange={(e) => setCommentInput(e.target.value)}></textarea>
-                    <button onClick={(e) => addCommentHandler(e)}>Submit</button>
+                    <textarea name="comment-text" id="comment-text" cols="30" rows="10" placeholder="What do you think?" value={commentInput} onChange={(e) => setCommentInput(e.target.value)}></textarea>
+                    <div>
+                      <button onClick={(e) => addCommentHandler(e)}>Submit</button>
+                    </div>
                   </form>
-                  <p className='comment-error-msg hidden'></p>
+                    <p className='comment-error-msg hidden'></p>
                 </CompositionContainer>
               }
               
               <CommentsContainer>
                 <SortOptions>
                   <ul>
-                    <li onClick={(e) => sortComments(e)}>Highest Rating</li>
+                    <li onClick={(e) => sortComments(e)} className='selected-sort'>Highest Rating</li>
                     <li onClick={(e) => sortComments(e)}>Lowest Rating</li>
                     <li onClick={(e) => sortComments(e)}>Oldest</li>
                     <li onClick={(e) => sortComments(e)}>Newest</li>

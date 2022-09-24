@@ -7,7 +7,6 @@ import Navbar from "./Navbar";
 import styled from "styled-components";
 import { useEffect, useState } from 'react';
 
-
 const Wrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -66,7 +65,8 @@ const SortOptions = styled.div`
   }
 
   .selected-sort {
-    
+    margin-bottom: -3px;
+    border-bottom: 3px solid cyan;
   }
 `;
 const PostsContainer = styled.div`
@@ -155,7 +155,7 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSu
         <ContentSection>
           <SortOptions>
             <ul>
-              <li onClick={(e) => sortPosts(e)}>Top</li>
+              <li onClick={(e) => sortPosts(e)} className='selected-sort'>Top</li>
               <li onClick={(e) => sortPosts(e)}>New</li>
             </ul>
           </SortOptions>

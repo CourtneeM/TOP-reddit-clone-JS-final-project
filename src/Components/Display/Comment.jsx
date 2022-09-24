@@ -51,6 +51,27 @@ const CommentText = styled.div`
 
   textarea {
     width: 100%;
+    margin-bottom: -5px;
+    padding: 15px;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px 8px 0 0;
+  }
+
+  div {
+    display: flex;
+    justify-content: flex-end;
+    gap: 25px;
+    padding: 6px 25px;
+    background-color: #d9d9d9;
+    border-radius: 0 0 8px 8px;
+
+    button {
+      padding: 6px 25px;
+      font-size: 0.875rem;
+      background-color: #fff;
+      border: none;
+      border-radius: 20px;
+    }
   }
 
   p:last-child { color: red; }
@@ -60,37 +81,55 @@ const CommentActions = styled.div`
   left: 0;
   bottom: 0;
   display: flex;
-  padding: 7px 25px;
-  gap: 25px;
-  background-color: #d9d9d9;
-  border-radius: 0 8px 8px 8px;
+  justify-content: space-between;
+  width: 100%;
 
   div {
     display: flex;
     gap: 25px;
+    padding: 7px 25px;
 
     p { cursor: pointer; }
     
     &:first-child {
+      background-color: #d9d9d9;
+      border-radius: 0 8px 8px 8px;
       p:nth-child(2) { cursor: default; }
+    }
+
+    &:last-child {
+      color: #fff;
+      background-color: red;
+      border-radius: 8px 0 8px 8px;
     }
   }
 `;
 const CommentReply = styled.div`
-  margin: 20px 0;
-  padding: 20px 0;
-  border-top: 1px solid #888;
+  margin: 0 50px 20px;
 
   textarea {
     width: 100%;
-    margin-bottom: 10px;
-    padding: 10px;
+    margin-bottom: -5px;
+    padding: 15px;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px 8px 0 0;
   }
 
   div {
     display: flex;
     justify-content: flex-end;
-    gap: 40px;
+    gap: 25px;
+    padding: 6px 25px;
+    background-color: #d9d9d9;
+    border-radius: 0 0 8px 8px;
+
+    button {
+      padding: 6px 25px;
+      font-size: 0.875rem;
+      background-color: #fff;
+      border: none;
+      border-radius: 20px;
+    }
   }
 
   p { color: red; }
@@ -172,22 +211,26 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
           <p>{comment.votes}</p>
           { displayVoteButton('downvote', 'v') }
 
-          <p onClick={displayReplyContainer}>Reply</p>
-        </div>
-        <div>
+          { loggedIn ? <p onClick={displayReplyContainer}>Reply</p> : null }
+
           { displayFavoriteButtons() }
           <p className='share-btn' onClick={shareCommentHandler}>Share</p>
           { displayEditButton() }
+        </div>
+        <div>
           { displayDeleteButton() }
         </div>
       </>
     );
   }
-  const displayEditActions = () => {
+  const displayEditForm = () => {
     return (
       <>
-        <button onClick={cancelEditCommentHandler}>Cancel</button>
-        <button onClick={editCommentHandler}>Edit</button>
+        <textarea name="comment-text" id="comment-text" cols="30" rows="10" value={commentText} onChange={(e) => setCommentText(e.target.value)}></textarea>    
+        <div>
+          <button onClick={cancelEditCommentHandler}>Cancel</button>
+          <button onClick={editCommentHandler}>Edit</button>
+        </div>
       </>
     )
   }
@@ -372,20 +415,18 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
 
         <CommentText>
           { editMode ?
-            <textarea name="comment-text" id="comment-text" cols="30" rows="10" value={commentText} onChange={(e) => setCommentText(e.target.value)}></textarea> :
+            displayEditForm():
             <p>{comment.text}</p>
           }
           <p className={`comment-error-msg-${comment.uid} hidden`}></p>
         </CommentText>
 
         <CommentActions className='comment-actions'>
-          { editMode ?
-            displayEditActions() :
-            displayCommentActions()
-          }
+          { displayCommentActions() }
         </CommentActions>
         <CommentReply className={`comment-reply-container-${comment.uid} hidden`}>
           <textarea name="comment-reply" id="comment-reply" cols="30" rows="10"
+            placeholder="What do you think?"
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
           >

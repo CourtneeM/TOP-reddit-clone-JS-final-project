@@ -114,7 +114,8 @@ const SortOptions = styled.div`
   }
 
   .selected-sort {
-    
+    margin-bottom: -3px;
+    border-bottom: 3px solid cyan;
   }
 `;
 
@@ -515,7 +516,7 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
             <Body>
               <SortOptions>
                 <ul>
-                  <li onClick={(e) => sortContent(e)}>Top</li>
+                  <li onClick={(e) => sortContent(e)} className='selected-sort'>Top</li>
                   <li onClick={(e) => sortContent(e)}>New</li>
                 </ul>
               </SortOptions>
