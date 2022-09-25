@@ -54,6 +54,16 @@ const SubOptions = styled.div`
     gap: 20px;
     margin-bottom: 20px;
   }
+
+  button {
+    width: 230px;
+    padding: 8px 25px;
+    background-color: #d9d9d9;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
+    cursor: pointer;
+  }
 `;
 const ModeratorList = styled.div`
   > p:first-child {

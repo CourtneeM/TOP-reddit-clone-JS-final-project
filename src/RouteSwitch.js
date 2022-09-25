@@ -40,8 +40,8 @@ function RouteSwitch() {
         const newSubList = {};
         const querySnapshot = await getDocs(collection(db, 'subs'));
         querySnapshot.forEach((doc) => {
-          const {name, owner, subTitle, moderators, followers, about, creationDateTime, posts} = doc.data();
-          const existingSub = new Sub(name, owner, subTitle, moderators, followers, about, creationDateTime, posts);
+          const {name, owner, subTitle, about, moderators, followers, creationDateTime, posts} = doc.data();
+          const existingSub = new Sub(name, owner, subTitle, about, moderators, followers, creationDateTime, posts);
           
           const existingPosts = existingSub.posts;
           delete existingSub.posts;
@@ -153,10 +153,10 @@ function RouteSwitch() {
     return { signUserIn, signUserOut }
   })();
 
-  const createSub = (subName) => {
+  const createSub = (subName, subtitle=null, subAbout=null) => {
     const owner = {uid: currentUser.uid, name: currentUser.name};
     const subListCopy = {...subList};
-    const newSub = new Sub(subName, owner);
+    const newSub = new Sub(subName, owner, subtitle, subAbout);
     subListCopy[newSub.name] = newSub;
 
     setSubList(subListCopy);
@@ -184,8 +184,8 @@ function RouteSwitch() {
 
     const subListCopy = {...subList};
 
-    const [name, owner, subTitle, moderators, followers, about, creationDateTime, posts] = Object.values(sub);
-    const editedSub = new Sub(name, owner, subTitle, moderators, followers, about, creationDateTime, posts);
+    const [name, owner, subTitle, about, moderators, followers, creationDateTime, posts] = Object.values(sub);
+    const editedSub = new Sub(name, owner, subTitle, about, moderators, followers, creationDateTime, posts);
 
     subListCopy[sub.name] = editedSub;
 

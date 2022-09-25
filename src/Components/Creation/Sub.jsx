@@ -1,13 +1,13 @@
 import Post from './Post';
 
 class Sub {
-  constructor(name, owner, subTitle='', moderators=[], followers=[], about='', creationDateTime=this.getDateTime(), posts={}) {
+  constructor(name, owner, subTitle, about, moderators=[], followers=[], creationDateTime=this.getDateTime(), posts={}) {
     this.name = name;
     this.owner = owner;
     this.subTitle = subTitle;
+    this.about = about;
     this.moderators = moderators;
     this.followers = followers;
-    this.about = about;
     this.creationDateTime = creationDateTime;
     this.posts = posts;
   }

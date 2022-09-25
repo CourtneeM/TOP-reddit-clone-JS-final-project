@@ -98,9 +98,13 @@ const CommentActions = styled.div`
     }
 
     &:last-child {
-      color: #fff;
-      background-color: red;
-      border-radius: 8px 0 8px 8px;
+      padding: 0;
+      p {
+        padding: 7px 25px;
+        color: #fff;
+        background-color: red;
+        border-radius: 8px 0 8px 8px;
+      }
     }
   }
 `;

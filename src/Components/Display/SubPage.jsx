@@ -40,6 +40,19 @@ const Header = styled.div`
     }
   }
 `;
+const FollowBtns = styled.div`
+  margin: 0 25px;
+
+  button {
+    width: 230px;
+    padding: 8px 25px;
+    background-color: #fff;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
+    cursor: pointer;
+  }
+`;
 const ContentSection = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -138,13 +151,13 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSu
               </div>
               {
               loggedIn &&
-              <div>
+              <FollowBtns>
                 {
                   currentUser.followedSubs.includes(sub.name) ?
                   <button onClick={() => unfollowSub(sub.name)}>Unfollow</button> :
                   <button onClick={() => followSub(sub.name)}>Follow</button>
                 }
-              </div>
+              </FollowBtns>
               }
             </>
           }

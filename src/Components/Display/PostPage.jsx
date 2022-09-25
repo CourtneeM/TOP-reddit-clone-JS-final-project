@@ -75,10 +75,14 @@ const Body = styled.div`
 
   input, textarea {
     width: 100%;
-    padding: 8px 25px;
     background-color: #fff;
     border: 1px solid #d9d9d9;
     border-radius: 8px 8px 0 0;
+  }
+
+  textarea {
+    margin-bottom: -5px;
+    padding: 15px;
   }
 
   input {
