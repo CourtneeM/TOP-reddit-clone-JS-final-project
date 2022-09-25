@@ -84,17 +84,16 @@ const CommentActions = styled.div`
   justify-content: space-between;
   width: 100%;
 
-  div {
+  > div {
     display: flex;
     gap: 25px;
     padding: 7px 25px;
-
-    p { cursor: pointer; }
     
     &:first-child {
       background-color: #d9d9d9;
       border-radius: 0 8px 8px 8px;
-      p:nth-child(2) { cursor: default; }
+
+      p { cursor: pointer; }
     }
 
     &:last-child {
@@ -105,7 +104,16 @@ const CommentActions = styled.div`
         color: #fff;
         background-color: red;
         border-radius: 8px 0 8px 8px;
+        cursor: pointer;
       }
+    }
+
+    .votes-container {
+      display: flex;
+      gap: 15px;
+
+      p { cursor: default }
+      p:nth-child(2n+1) { cursor: pointer; }
     }
   }
 `;
@@ -212,9 +220,11 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
     return (
       <>
         <div>
-          { displayVoteButton('upvote', '^') }
-          <p>{comment.votes}</p>
-          { displayVoteButton('downvote', 'v') }
+          <div className='votes-container'>
+            { displayVoteButton('upvote', '^') }
+            <p>{comment.votes}</p>
+            { displayVoteButton('downvote', 'v') }
+          </div>
 
           { loggedIn ? <p onClick={displayReplyContainer}>Reply</p> : null }
 

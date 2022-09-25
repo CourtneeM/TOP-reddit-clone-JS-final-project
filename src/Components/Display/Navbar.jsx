@@ -84,9 +84,13 @@ function Navbar({ loggedIn, signInOut, currentUser, subList }) {
         {
           getSubNames()
         }
-        <Link to="/r/new_sub" className='default-link'>
-          <li>Create Sub</li>
-        </Link>
+        {
+          loggedIn ?
+          <Link to="/r/new_sub" className='default-link'>
+            <li>Create Sub</li>
+          </Link> :
+          null
+        }
       </SubList>
 
       { loggedIn ?

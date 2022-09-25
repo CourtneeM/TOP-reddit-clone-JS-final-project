@@ -141,11 +141,13 @@ const PostActions = styled.div`
     }
 
     &:last-child {
-      padding: 9px 25px;
-      color: #fff;
-      background-color: red;
-      border-radius: 8px 0 8px 0;
-      cursor: pointer;
+      p {
+        padding: 9px 25px;
+        color: #fff;
+        background-color: red;
+        border-radius: 8px 0 8px 0;
+        cursor: pointer;
+      }
     }
   }
 
