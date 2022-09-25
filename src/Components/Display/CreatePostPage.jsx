@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
-import { getDownloadURL, getMetadata, ref, updateMetadata, uploadBytes } from "firebase/storage";
+import { getDownloadURL, ref, updateMetadata } from "firebase/storage";
 
 import Navbar from "./Navbar";
 
@@ -8,60 +8,66 @@ import uniqid from 'uniqid';
 import styled from "styled-components";
 
 const Wrapper = styled.div`
-  max-width: 1200px;
+  max-width: 1000px;
   width: 50%;
   min-width: 800px;
   margin: 0 auto;
-  padding: 40px 0;
+  padding: 70px 0;
 `;
 const Header = styled.div`
-  margin-bottom: 20px;
-  padding: 20px 0;
+  margin-bottom: 40px;
+  font-size: 1.5rem;
 
-  p:first-child {
-    margin-bottom: 20px;
-    font-size: 1.4rem;
-    font-weight: bold;
-  }
+  span { font-weight: bold; }
 `;
 const PostTypes = styled.div`
   display: flex;
-  gap: 10px;
+  margin-bottom: -22px;
 
   p {
+    padding: 8px 20px 30px;
+    border-radius: 15px 15px 0 0;
     cursor: pointer;
-    padding: 5px 10px;
   }
 
   #selected-post-type {
-    background-color: #ccc;
+    background-color: #d9d9d9;
   }
 `;
 const PostContent = styled.div`
-  margin: 60px auto 80px;
-  padding: 0 40px;
+  position: relative;
+  padding: 50px 140px;
+  background-color: #d9d9d9;
+  border-radius: 8px;
 
   div:first-child {
-    position: relative;
+    margin-bottom: 30px;
+
     input {
       width: 100%;
-      margin-bottom: 40px;
       padding: 10px;
       font-size: 1rem;
+      border: none;
+      border-radius: 8px;
     }
 
     p {
       position: absolute;
-      bottom: 13px;
+      bottom: 60px;
       color: red;
     }
   }
 
   textarea, input:nth-child(2) {
     width: 100%;
+    margin-bottom: 30px;
     padding: 10px;
     font-size: 1rem;
+    border: none;
+    border-radius: 8px;
   }
+
+  textarea { resize: none; }
 
   .post-error-msg {
     margin-top: 10px;
@@ -77,7 +83,11 @@ const SubmitPost = styled.div`
   justify-content: flex-end;
 
   button {
-    padding: 7px 15px;
+    padding: 7px 25px;
+    background-color: #fff;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
     cursor: pointer;
   }
 `;
@@ -174,8 +184,7 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
         { loggedIn ?
           <>
             <Header>
-              <p>Create a Post</p>
-              <p>/r/{params.subName}</p>
+              <p>Create a Post in <span>r/{params.subName}</span></p>
             </Header>
 
             <PostTypes id='new-post-types'>
@@ -205,11 +214,10 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
                 />
               }
               <p className='post-error-msg hidden'></p>
+              <SubmitPost>
+                <button onClick={(e) => submitPostHandler(e)}>Post</button>
+              </SubmitPost>
             </PostContent>
-
-            <SubmitPost>
-              <button onClick={(e) => submitPostHandler(e)}>Post</button>
-            </SubmitPost>
           </> :
           <p>You must be logged in to create a new post.</p>
         }
