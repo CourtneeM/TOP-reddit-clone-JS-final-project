@@ -15,7 +15,8 @@ const Wrapper = styled.div`
   margin: 40px auto 80px;
   padding: 40px 180px;
   background-color: #ccc;
-`;
+  border-radius: 8px;
+  `;
 const PostsSection = styled.div`
   flex: 75%
 `;

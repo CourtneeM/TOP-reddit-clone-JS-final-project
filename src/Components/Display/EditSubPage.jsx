@@ -6,119 +6,149 @@ import Navbar from "./Navbar";
 import styled from "styled-components";
 
 const Wrapper = styled.div`
-  max-width: 1200px;
+  max-width: 1080px;
   min-width: 800px;
   margin: 0 auto;
-  padding: 40px 0;
+  padding: 70px 0;
 `;
 const Header = styled.div`
   display: flex;  
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding: 20px 0;
+  margin-bottom: 40px;
 
-  p:first-child {
-    margin-bottom: 20px;
-    font-size: 1.4rem;
-    font-weight: bold;
-  }
-`;
-const Submit = styled.div`
-  button {
-    padding: 7px 15px;
-    cursor: pointer;
+  p {
+    font-size: 1.5rem;
   }
 `;
 const SubContent = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 50px;
-  margin: 60px auto 80px;
-  padding: 0 40px;
+  margin-bottom: 100px;
+  padding: 50px 40px;
+  background-color: #d9d9d9;
+  border-radius: 8px;
+  box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
 
   div:first-child {
     flex-basis: 65%;
   }
 
-  div:last-child {
-    flex-basis: 30%;
-  }
-
-  input {
+  input, textarea {
     width: 100%;
     margin-bottom: 20px;
-    padding: 10px 25px;
+    padding: 10px;
     font-size: 1rem;
+    border: none;
+    border-radius: 8px;
   }
 
-  textarea {
-    width: 100%;
-    margin-bottom: 20px;
-    padding: 10px 25px;
-    font-size: 1rem;
-  }
+  textarea { resize: none; }
 `;
 const ModeratorList = styled.div`
-  background-color: #ddd;
+  flex-basis: 30%;
+  max-height: 350px;
+  padding: 20px 40px;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow-y: scroll;
 
-  div:first-child {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 20px;
-
-    p {
-      font-size: 1.2rem;
+  > p {
+    &:first-child {
+      margin-bottom: 10px;
       font-weight: bold;
+      text-align: center;
     }
 
-    button {
-      padding: 7px 15px;
-      cursor: pointer;
+    &:nth-child(2) {
+      font-size: 0.875rem;
+      text-align: center;
     }
   }
 
   ul {
-    display: flex;
-    flex-wrap: wrap;
     margin-bottom: 20px;
     text-align: center;
 
-    li:first-child {
-      flex-basis: 100%;
-      margin-bottom: 30px;
-    }
-
     li {
-      flex-basis: 50%;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
+
+      &:first-child { margin-top: 20px; }
     }
   }
 
   .follower-list {
     height: 100px;
-    width: 80%;
-    margin: 0 auto;
+    margin: 0 auto 20px;
     overflow-y: scroll;
 
     p {
-      padding: 8px;
-      border-bottom: 1px solid #aaa;
+      margin: 2px 0;
+      padding: 3px;
       cursor: pointer;
     }
 
     .moderator {
-      background-color: limegreen;
+      background-color: rgba(208,252,204,0.7);
+      border-left: 4px solid rgb(21,242,2);
     }
   }
 `;
-const DeleteSub = styled.button`
-  padding: 10px 15px;
-  color: #fff;
-  background-color: red;
-  border: none;
-  cursor: pointer;
+const EditModsBtn = styled.div`
+  display: flex;
+  justify-content: center;
+
+  div {
+    display: flex;
+    gap: 20px;
+  }
+
+  button {
+    width: 90%;
+    min-width: 75px;
+    padding: 6px 25px;
+    background-color: #d9d9d9;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
+    cursor: pointer;
+  }
+`;
+const Submit = styled.div`
+  margin: 0 auto;
+
+  button {
+    padding: 8px 25px;
+    background-color: #fff;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
+    cursor: pointer;
+
+    &:first-child { margin-right: 20px; }
+    &:last-child { background-color: limegreen; }
+  }
+`;
+const DeleteSub = styled.div`
+  width: fit-content;
+  margin: 0 auto;
+  text-align: center;
+
+  p {
+    margin-bottom: 30px;
+    font-weight: bold;
+  }
+
+  button {
+    padding: 8px 25px;
+    color: #fff;
+    background-color: red;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
+    cursor: pointer;
+  }
 `;
 
 function EditSubPage({ loggedIn, signInOut, currentUser, userList, subList, editSub, deleteSub }) {
@@ -150,11 +180,16 @@ function EditSubPage({ loggedIn, signInOut, currentUser, userList, subList, edit
 
     navigate(`/r/${sub.name}`);
   }
+  const cancelEditSubHandler = () => navigate(`/r/${sub.name}`);
+  const deleteSubHandler = () =>{
+    if (sub.owner.uid === currentUser.uid) deleteSub(sub.name);
+
+    navigate('/');
+  }
 
   const editModeratorList = () => {
     setEditModList(true);
   }
-
   const saveEditModeratorList = () => {
     const newMods = [];
     [...document.querySelectorAll('.moderator')].forEach((el) => {
@@ -174,17 +209,8 @@ function EditSubPage({ loggedIn, signInOut, currentUser, userList, subList, edit
     setModList(newMods);
     setEditModList(false);
   }
-
-  const cancelEditSubHandler = () => navigate(`/r/${sub.name}`);
-
   const toggleModerator = (e) => {
     e.target.classList.toggle('moderator');
-  }
-
-  const deleteSubHandler = () =>{
-    if (sub.owner.uid === currentUser.uid) deleteSub(sub.name);
-
-    navigate('/');
   }
 
   return (
@@ -196,34 +222,22 @@ function EditSubPage({ loggedIn, signInOut, currentUser, userList, subList, edit
           <>
             <Header>
               <p>Edit r/{sub.name}</p>
-              <Submit>
-                <button onClick={editSubHandler}>Save Changes</button>
-                <button onClick={cancelEditSubHandler}>Cancel Changes</button>
-              </Submit>
             </Header>
 
             <SubContent>
               <div>
                 <div>
-                  <p>Subtitle</p>
-                  <input type="text" name="subtitle" id="subtitle" placeholder='Coolest place on the web' value={subTitle} onChange={(e) => setSubTitle(e.target.value)} />
+                  <input type="text" name="subtitle" id="subtitle" placeholder='Subtitle' value={subTitle} onChange={(e) => setSubTitle(e.target.value)} />
                 </div>
                 <div>
-                  <p>About Section</p>
-                  <textarea name="about" id={`about-${sub.name}`} value={subAbout} onChange={(e) => setSubAbout(e.target.value)}  cols="30" rows="10"></textarea>
+                  <textarea name="about" id={`about-${sub.name}`} placeholder="About (optional)" value={subAbout} onChange={(e) => setSubAbout(e.target.value)}  cols="30" rows="10"></textarea>
                 </div>
               </div>
 
               <ModeratorList>
-                <div>
-                  <p>Moderators</p>
-                  { editModList ?
-                    <button onClick={saveEditModeratorList}>Save</button> :
-                    <button onClick={editModeratorList}>Edit</button>
-                  }
-                </div>
+                <p>Moderators</p>
+                <p>Only displaying sub followers</p>
                 <ul>
-                  <li>Only displaying users who follow the sub</li>
                   {
                     modList.map((modUid) => {
                       return <li>{userList[modUid].name}</li>
@@ -242,9 +256,25 @@ function EditSubPage({ loggedIn, signInOut, currentUser, userList, subList, edit
                   </div> :
                   null
                 }
+                <EditModsBtn>
+                  { editModList ?
+                    <div>
+                      <button onClick={() => setEditModList(false)}>Cancel</button>
+                      <button onClick={saveEditModeratorList}>Save</button>
+                    </div> :
+                    <button onClick={editModeratorList}>Edit</button>
+                  }
+                </EditModsBtn>
               </ModeratorList>
+              <Submit>
+                <button onClick={cancelEditSubHandler}>Cancel</button>
+                <button onClick={editSubHandler}>Save</button>
+              </Submit>
             </SubContent>
-            <DeleteSub onClick={deleteSubHandler}>Delete Sub</DeleteSub>
+            <DeleteSub>
+              <p>Caution: Deleted subs cannot be recovered</p>
+              <button onClick={deleteSubHandler}>Delete Sub</button>
+            </DeleteSub>
           </> :
           <p>You must be logged in and own the sub to edit.</p>
         }

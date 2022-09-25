@@ -16,6 +16,7 @@ const Wrapper = styled.div`
   margin: 40px auto 80px;
   padding: 40px;
   background-color: #ccc;
+  border-radius: 8px;
 `;
 const Header = styled.div`
   flex: 1 1 100%;
