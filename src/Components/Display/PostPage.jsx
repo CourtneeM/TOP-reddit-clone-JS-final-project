@@ -125,16 +125,26 @@ const PostActions = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 25px;
-  padding: 9px 25px;
-  background-color: #fff;
-  border-radius: 0 8px 0 8px;
+  width: 100%;
 
   div {
     display: flex;
+    align-items: center;
     gap: 25px;
 
-    &:nth-child(2) p {
+    &:first-child {
+      padding: 9px 25px;
+      background-color: #fff;
+      border-radius: 0 8px 0 8px;
+
+      p:nth-child(n+2) { cursor: pointer; }
+    }
+
+    &:last-child {
+      padding: 9px 25px;
+      color: #fff;
+      background-color: red;
+      border-radius: 8px 0 8px 0;
       cursor: pointer;
     }
   }
@@ -349,20 +359,17 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
 
     return (
       <>
-        { displayFavoriteButtons() }
-        <p className='share-btn' onClick={sharePostHandler}>Share</p>
-        { displayEditButton() }
-        { displayDeleteButton() }
+        <div>
+          <p>{getNumComments() === 1 ? getNumComments() + ' Comment' : getNumComments() + ' Comments'}</p>
+          { displayFavoriteButtons() }
+          <p className='share-btn' onClick={sharePostHandler}>Share</p>
+          { displayEditButton() }
+        </div>
+        <div>
+          { displayDeleteButton() }
+        </div>
       </>
     );
-  }
-  const displayEditActions = () => {
-    return (
-      <>
-        <button onClick={cancelEditPostHandler}>Cancel</button>
-        <button onClick={editPostHandler}>Edit</button>
-      </>
-    )
   }
   const displayEditForm = (type) => {
     return (
@@ -639,12 +646,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
                 displayTextPost()
               }
               <PostActions>
-                <div>
-                  <p>{getNumComments() === 1 ? getNumComments() + ' Comment' : getNumComments() + ' Comments'}</p>
-                </div>
-                <div>
-                  { displayPostActions() }
-                </div>
+                { displayPostActions() }
               </PostActions>
             </PostSection>
 

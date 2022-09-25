@@ -99,6 +99,7 @@ const CommentActions = styled.div`
 
     &:last-child {
       padding: 0;
+      
       p {
         padding: 7px 25px;
         color: #fff;
