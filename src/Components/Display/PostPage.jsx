@@ -536,6 +536,9 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
 
   const sortComments = (e) => {
     const commentsCopy = [...comments];
+    if (document.querySelector('.selected-sort')) document.querySelector('.selected-sort').classList.remove('selected-sort');
+    e.target.classList.add('selected-sort');
+
     if (e.target.textContent === 'Highest Rating') {
       commentsCopy.sort((a, b) => b.votes - a.votes);
     }
@@ -618,7 +621,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
             <PostSection>
               <Header>
                 <Link to={`/r/${subName}`} className='default-link'>
-                  <p>/r/{subName}</p>
+                  <p>r/{subName}</p>
                 </Link>
                 <p>Posted by
                   <Link to={`/u/${post.owner.uid}/${post.owner.name}`} className='default-link'>
@@ -668,7 +671,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
               <CommentsContainer>
                 <SortOptions>
                   <ul>
-                    <li onClick={(e) => sortComments(e)} className='selected-sort'>Highest Rating</li>
+                    <li onClick={(e) => sortComments(e)}>Highest Rating</li>
                     <li onClick={(e) => sortComments(e)}>Lowest Rating</li>
                     <li onClick={(e) => sortComments(e)}>Oldest</li>
                     <li onClick={(e) => sortComments(e)}>Newest</li>

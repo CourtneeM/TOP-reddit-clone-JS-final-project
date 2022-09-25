@@ -56,6 +56,8 @@ function All({ loggedIn, signInOut, currentUser, subList, favoritePost, unfavori
 
   const sortPosts = (e) => {
     const postsCopy = [...posts];
+    if (document.querySelector('.selected-sort')) document.querySelector('.selected-sort').classList.remove('selected-sort');
+    e.target.classList.add('selected-sort');
 
     if (e.target.textContent === 'Top') {
       postsCopy.sort((a, b) => b.votes - a.votes);
@@ -86,7 +88,7 @@ function All({ loggedIn, signInOut, currentUser, subList, favoritePost, unfavori
         <PostsSection>
           <SortOptions>
             <ul>
-              <li onClick={(e) => sortPosts(e)} className='selected-sort'>Top</li>
+              <li onClick={(e) => sortPosts(e)}>Top</li>
               <li onClick={(e) => sortPosts(e)}>New</li>
             </ul>
           </SortOptions>

@@ -113,6 +113,8 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSu
 
   const sortPosts = (e) => {
     const postsCopy = [...posts];
+    document.querySelector('.selected-sort').classList.remove('selected-sort');
+    e.target.classList.add('selected-sort');
 
     if (e.target.textContent === 'Top') {
       postsCopy.sort((a, b) => b.votes - a.votes);
@@ -167,8 +169,8 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSu
         <ContentSection>
           <SortOptions>
             <ul>
-              <li onClick={(e) => sortPosts(e)} className='selected-sort'>Top</li>
-              <li onClick={(e) => sortPosts(e)}>New</li>
+              <li onClick={(e) => sortPosts(e)}>Top</li>
+              <li onClick={(e) => sortPosts(e)} className='selected-sort'>New</li>
             </ul>
           </SortOptions>
 

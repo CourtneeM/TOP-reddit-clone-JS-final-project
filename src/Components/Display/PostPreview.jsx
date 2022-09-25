@@ -21,11 +21,7 @@ const Header = styled.div`
   gap: 25px;
   margin-bottom: 20px;
 
-  p:first-child {
-    cursor: pointer;
-  }
-
-  p:nth-child(2) a {
+  p a {
     margin-left: 5px;
   }
 
@@ -204,7 +200,6 @@ function PostPreview({ loggedIn, currentUser, post, favoritePost, unfavoritePost
   return (
     <Wrapper id={`post-${post.uid}`}>
       <Header>
-        <p>r/{post.subName}</p>
         <p>Posted by
           <Link to={`/u/${post.owner.uid}/${post.owner.name}`} className='default-link'>
             u/{post.owner.name}

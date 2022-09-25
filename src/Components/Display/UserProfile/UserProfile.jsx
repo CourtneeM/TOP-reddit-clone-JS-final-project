@@ -456,6 +456,8 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
   }
   const sortContent = (e) => {
     const currentSelectedDataCopy = {...currentSelectedData};
+    if (document.querySelector('.selected-sort')) document.querySelector('.selected-sort').classList.remove('selected-sort');
+    e.target.classList.add('selected-sort');
 
     if (e.target.textContent === 'Top') {
       if (currentSelectedDataCopy.type === 'all') {
@@ -519,7 +521,7 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
             <Body>
               <SortOptions>
                 <ul>
-                  <li onClick={(e) => sortContent(e)} className='selected-sort'>Top</li>
+                  <li onClick={(e) => sortContent(e)}>Top</li>
                   <li onClick={(e) => sortContent(e)}>New</li>
                 </ul>
               </SortOptions>

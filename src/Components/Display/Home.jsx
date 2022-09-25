@@ -59,6 +59,8 @@ function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePos
 
   const sortPosts = (e) => {
     const postsCopy = [...posts];
+    document.querySelector('.selected-sort').classList.remove('selected-sort');
+    e.target.classList.add('selected-sort');
 
     if (e.target.textContent === 'Top') {
       postsCopy.sort((a, b) => Object.values(b)[0].votes - Object.values(a)[0].votes);
