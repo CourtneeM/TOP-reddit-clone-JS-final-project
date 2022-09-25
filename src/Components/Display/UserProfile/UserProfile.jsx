@@ -289,13 +289,6 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
   }
   const displayOverview = () => {
     const allContent = [];
-    
-    userList[params.userUid].own.subs.forEach((subName) => {
-      allContent.push({
-        type: 'subs',
-        data: subList[subName]
-      });
-    });
 
     Object.keys(userList[params.userUid].own.posts).forEach((subName) => {
       userList[params.userUid].own.posts[subName].forEach((postUid) => {
@@ -442,14 +435,20 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
   }
   const changeSelectedView = (e) => {
     if (e.target.textContent === 'Overview') displayOverview();
-    if (e.target.textContent === 'Subs') displaySubs();
+    if (e.target.textContent === 'Subs') displaySubs(); 
     if (e.target.textContent === 'Posts') displayPosts();
     if (e.target.textContent === 'Comments') displayComments();
-    if (e.target.textContent === 'Followed Subs') displayFollowed();
+    if (e.target.textContent === 'Followed') displayFollowed();
     if (e.target.textContent === 'Favorites') displayFavorites();
     if (e.target.textContent === 'Upvoted') displayUpvoted();
     if (e.target.textContent === 'Downvoted') displayDownvoted();
     // if (e.target.textContent === 'Deleted') displayDeleted();
+
+    if (e.target.textContent === 'Subs' || e.target.textContent === 'Followed')  {
+      document.querySelector('.sort-options').style.display = 'none';
+    } else {
+      document.querySelector('.sort-options').style.display = 'block';
+    }
 
     [...document.querySelectorAll('.views-list li')].forEach((li) => li.classList.remove('selected-view'));
     e.target.classList.add('selected-view');
@@ -519,7 +518,7 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
               </ViewsList>
             </Header>
             <Body>
-              <SortOptions>
+              <SortOptions className='sort-options'>
                 <ul>
                   <li onClick={(e) => sortContent(e)}>Top</li>
                   <li onClick={(e) => sortContent(e)}>New</li>
