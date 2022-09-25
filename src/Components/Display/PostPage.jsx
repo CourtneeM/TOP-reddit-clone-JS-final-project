@@ -64,6 +64,7 @@ const VoteStatus = styled.div`
 `;
 const Body = styled.div`
   position: relative;
+  margin-bottom: 80px;
 
   h2 {
     margin-bottom: 40px;
@@ -74,8 +75,31 @@ const Body = styled.div`
 
   input, textarea {
     width: 100%;
-    margin-bottom: 80px;
-    padding: 8px;
+    padding: 8px 25px;
+    background-color: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px 8px 0 0;
+  }
+
+  input {
+    padding: 12px 25px;
+  }
+
+  .edit-form-btns {
+    display: flex;
+    justify-content: flex-end;
+    gap: 25px;
+    padding: 6px 25px;
+    background-color: #d9d9d9;
+    border-radius: 0 0 8px 8px;
+
+    button {
+      padding: 6px 25px;
+      font-size: 0.875rem;
+      background-color: #fff;
+      border: none;
+      border-radius: 20px;
+    }
   }
 
   img { width: 100%; }
@@ -245,7 +269,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
         <div>
           <h2>{post.title}</h2>
           { editMode ?
-            <textarea name="new-post-content" id="new-post-content" cols="30" rows="10" value={postContent} onChange={(e) => setPostContent(e.target.value)}></textarea> :
+            displayEditForm('text') :
             <p>{post.content}</p>
           }
         </div>
@@ -263,7 +287,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
         <div>
           <h2>{post.title}</h2>
           { editMode ?
-            <input type="file" name="new-post-content" id="new-post-content" onChange={(e) => setEditedPostContent(e.target.files[0])} /> :
+            displayEditForm('image') :
             <img src={''} alt="" id='post-image' />
           }
           <p className='post-error-msg hidden'></p>
@@ -277,7 +301,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
         <div>
           <h2>{post.title}</h2>
           { editMode ?
-            <input type="url"name="new-post-content" id="new-post-content" value={postContent} onChange={(e) => setPostContent(e.target.value)} /> :
+            displayEditForm('link') :
             <Link to={post.content}>
               <p>{post.content}</p>
             </Link>
@@ -333,6 +357,23 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
       <>
         <button onClick={cancelEditPostHandler}>Cancel</button>
         <button onClick={editPostHandler}>Edit</button>
+      </>
+    )
+  }
+  const displayEditForm = (type) => {
+    return (
+      <>
+        {
+          type === 'image' ?
+          <input type="file" name="new-post-content" id="new-post-content" onChange={(e) => setEditedPostContent(e.target.files[0])} /> :
+          type === 'link' ?
+          <input type="url"name="new-post-content" id="new-post-content" value={postContent} onChange={(e) => setPostContent(e.target.value)} /> :
+          <textarea name="new-post-content" id="new-post-content" cols="30" rows="10" value={postContent} onChange={(e) => setPostContent(e.target.value)}></textarea>
+        }
+        <div className='edit-form-btns'>
+          <button onClick={cancelEditPostHandler}>Cancel</button>
+          <button onClick={editPostHandler}>Edit</button>
+        </div>
       </>
     )
   }
@@ -598,10 +639,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
                   <p>{getNumComments() === 1 ? getNumComments() + ' Comment' : getNumComments() + ' Comments'}</p>
                 </div>
                 <div>
-                  { editMode ?
-                    displayEditActions() :
-                    displayPostActions()
-                  }
+                  { displayPostActions() }
                 </div>
               </PostActions>
             </PostSection>

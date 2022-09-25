@@ -39,8 +39,6 @@ const Header = styled.div`
       cursor: pointer;
     }
   }
-
-  
 `;
 const ContentSection = styled.div`
   display: flex;
