@@ -5,7 +5,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, doc, getDocs, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { getStorage, ref, deleteObject, uploadBytes, listAll } from 'firebase/storage';
 import { getFirebaseConfig } from './firebase-config';
-import { getAuth, onAuthStateChanged, GoogleAuthProvider,  signInWithPopup, signOut, setPersistence, browserSessionPersistence } from "firebase/auth";
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence } from "firebase/auth";
 
 import User from './Components/Creation/User';
 import Sub from './Components/Creation/Sub';
@@ -15,7 +15,7 @@ import All from './Components/Display/All/All';
 import SubPage from './Components/Display/Sub/SubPage';
 import CreateSubPage from "./Components/Display/CreateSubPage/CreateSubPage";
 import EditSubPage from "./Components/Display/EditSubPage/EditSubPage";
-import PostPage from './Components/Display/Post/PostPage';
+import PostPage from './Components/Display/PostPage/PostPage';
 import CreatePostPage from "./Components/Display/CreatePostPage/CreatePostPage";
 import UserProfile from './Components/Display/UserProfile/UserProfilePage/UserProfilePage';
 
