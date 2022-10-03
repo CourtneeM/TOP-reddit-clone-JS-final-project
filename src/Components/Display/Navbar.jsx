@@ -49,7 +49,7 @@ const SignInOutBtn = styled.button`
   cursor: pointer;
 `;
 
-function Navbar({ loggedIn, signInOut, currentUser, subList }) {
+function Navbar({ loggedIn, signInOut, currentUser, subList, currentSub }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -59,10 +59,12 @@ function Navbar({ loggedIn, signInOut, currentUser, subList }) {
   }, [currentUser]);
 
   const getSubNames = () => {
-    return Object.values(subList).map((sub) => {
+    return ['Home', 'All', ...Object.values(subList)].map((sub) => {
+      const subName = sub.name ? sub.name : sub;
+
       return (
-        <Link to={`/r/${sub.name}`} key={sub.name}  className='default-link'>
-          <li>{sub.name}</li>
+        <Link to={subName === 'Home' ? '/' : `/r/${subName}`} key={subName} className='default-link'>
+          <li className={subName === currentSub ? 'selected-sub' : null}>{subName}</li>
         </Link>
       );
     });
@@ -75,15 +77,7 @@ function Navbar({ loggedIn, signInOut, currentUser, subList }) {
       </Link>
 
       <SubList>
-        <Link to="/" className='default-link'>
-          <li className='selected-sub'>Home</li>
-        </Link>
-        <Link to="/r/all" className='default-link'>
-          <li>All</li>
-        </Link>
-        {
-          getSubNames()
-        }
+        { getSubNames() }
         {
           loggedIn ?
           <Link to="/r/new_sub" className='default-link'>

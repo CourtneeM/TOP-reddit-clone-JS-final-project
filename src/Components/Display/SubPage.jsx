@@ -140,7 +140,7 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSu
 
   return (
     <div>
-      <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} />
+      <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} currentSub={sub.name} />
 
       <Wrapper>
         <Header>

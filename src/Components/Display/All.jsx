@@ -83,7 +83,7 @@ function All({ loggedIn, signInOut, currentUser, subList, favoritePost, unfavori
 
   return (
     <div>
-      <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} />
+      <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} currentSub={'All'} />
       <Wrapper>
         <PostsSection>
           <SortOptions>

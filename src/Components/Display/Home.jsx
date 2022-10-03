@@ -90,7 +90,7 @@ function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePos
 
   return (
     <div>
-      <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} />
+      <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} currentSub={'Home'} />
       <Wrapper>
         <PostsSection>
           <SortOptions>
