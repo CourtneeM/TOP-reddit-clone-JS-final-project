@@ -1,0 +1,228 @@
+.wrapper {
+  max-width: 1200px;
+  width: 50%;
+  min-width: 800px;
+  margin: 0 auto;
+  padding: 40px 0;
+
+  button {
+    padding: 7px 15px;
+    cursor: pointer;
+  }
+
+  .hidden {
+    display: none;
+  }
+}
+
+.postSection {
+  position: relative;
+  margin-bottom: 50px;
+  padding: 30px 100px 95px;
+  background-color: #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
+  
+  header {
+    display: flex;
+    gap: 25px;
+    position: relative;
+    margin-bottom: 30px;
+    
+    a { color: #000; }
+  
+    p:nth-child(-n+2) span {
+      margin-left: 5px;
+      cursor: pointer;
+    }
+  }
+
+  body {
+    position: relative;
+    margin-bottom: 80px;
+  
+    h2 {
+      margin-bottom: 40px;
+      font-size: 2rem;
+    }
+  
+    > div p:nth-child(2) { font-size: 1.25rem; }
+  
+    input, textarea {
+      width: 100%;
+      background-color: #fff;
+      border: 1px solid #d9d9d9;
+      border-radius: 8px 8px 0 0;
+    }
+  
+    textarea {
+      margin-bottom: -5px;
+      padding: 15px;
+    }
+  
+    input {
+      padding: 12px 25px;
+    }
+  
+    .editFormBtns {
+      display: flex;
+      justify-content: flex-end;
+      gap: 25px;
+      padding: 6px 25px;
+      background-color: #d9d9d9;
+      border-radius: 0 0 8px 8px;
+  
+      button {
+        padding: 6px 25px;
+        font-size: 0.875rem;
+        background-color: #fff;
+        border: none;
+        border-radius: 20px;
+      }
+    }
+  
+    img { width: 100%; }
+  
+    div:first-child {
+      position: relative;
+  
+      .postErrorMsg {
+        position: absolute;
+        bottom: -20px;
+        color: red;
+      }
+    }
+  }
+}
+
+.voteStatus {
+  position: absolute;
+  top: 0;
+  left: -100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  font-size: 0.875rem;
+  padding: 5px 0;
+  background-color: #fff;
+  border-radius: 0 8px 8px 0;
+
+  p:nth-child(2n+1) {
+    cursor: pointer;
+  }
+}
+
+.postActions {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+
+  div {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+
+    &:first-child {
+      padding: 9px 25px;
+      background-color: #fff;
+      border-radius: 0 8px 0 8px;
+
+      p:nth-child(n+2) { cursor: pointer; }
+    }
+
+    &:last-child {
+      p {
+        padding: 9px 25px;
+        color: #fff;
+        background-color: red;
+        border-radius: 8px 0 8px 0;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.commentSection {
+  padding-bottom: 20px;
+  
+  .commentErrorMsg {
+    color: red;
+  }
+}
+
+.compositionContainer {
+  margin: 0 auto 40px;
+  padding: 0 30px;
+
+  p {
+    margin-bottom: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    margin-bottom: -5px;
+    padding: 15px;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px 8px 0 0;
+  }
+
+  div {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    padding: 6px 25px;
+    background-color: #d9d9d9;
+    border-radius: 0 0 8px 8px;
+
+    button {
+      padding: 6px 25px;
+      font-size: 0.875rem;
+      background-color: #fff;
+      border: none;
+      border-radius: 20px;
+    }
+  }
+}
+
+.commentsContainer {
+  > div:first-child {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+
+    ul {
+      display: flex;
+      gap: 15px;
+
+      li { cursor: pointer; }
+    }
+  }
+}
+
+.sortOptions {
+  margin-bottom: 20px;
+  background-color: #fff;
+  border-bottom: 5px solid #d9d9d9;
+
+  ul {
+    display: flex;
+    gap: 25px;
+
+    li {
+      padding: 0 4px 9px;
+      cursor: pointer;
+    }
+  }
+
+  .selectedSort {
+    margin-bottom: -5px;
+    border-bottom: 5px solid cyan;
+  }
+}

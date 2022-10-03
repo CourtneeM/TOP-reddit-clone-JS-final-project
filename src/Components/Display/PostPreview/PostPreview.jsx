@@ -1,67 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ref, getDownloadURL} from 'firebase/storage';
+import { ref, getDownloadURL } from 'firebase/storage';
 
-import styled from "styled-components";
+import styles from './PostPreview.module.css';
 
-const Wrapper = styled.div`
-  position: relative;
-  margin-right: 80px;
-  margin-bottom: 20px;
-  padding: 20px 60px;
-  background-color: #bbb;
-`;
-const Header = styled.div`
-  display: flex;
-  gap: 20px;
-  margin-bottom: 15px;
 
-  p:first-child span {
-    cursor: pointer;
-  }
 
-  p:last-child {
-    font-style: italic;
-    color: #555;
-  }
-`;
-const Body = styled.div`
-  max-height: 250px;
-  margin-bottom: 15px;
-  overflow: hidden;
-
-  h4 {
-    margin-bottom: 15px;
-    font-size: 1.4rem;
-  }
-
-  img {
-    width: 100%;
-  }
-`;
-const Options = styled.div`
-  display: flex;
-  gap: 40px;
-
-  p {
-    cursor: pointer;
-  }
-
-  p:nth-child(2) {
-    margin-left: auto;
-  }
-`;
-const VoteStatus = styled.div`
-  position: absolute;
-  top: 20px;
-  left: 25px;
-
-  p:nth-child(2n+1) {
-    cursor: pointer;
-  }
-`;
-
-function PostPreview({ loggedIn, currentUser, post, adjustPostVotes, storage }) {
+function PostPreview({ loggedIn, currentUser, post, favoritePost, unfavoritePost, adjustPostVotes, storage }) {
   const [postContent, setPostContent] = useState('');
 
   useEffect(() => {
@@ -173,44 +118,47 @@ function PostPreview({ loggedIn, currentUser, post, adjustPostVotes, storage }) 
     e.target.className === "upvote-icon" ? upvoteHandler() : downvoteHandler();
   }
   const sharePostHandler = () => {
-    const url = window.location.href.slice(0, window.location.href.lastIndexOf('/u/'));
-    navigator.clipboard.writeText(`${url}/r/${post.subName}/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`);
+    navigator.clipboard.writeText(`${window.location.href}/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`);
 
     const shareBtn = document.getElementById(`post-${post.uid}`).querySelector('.share-btn');
     shareBtn.textContent = 'Link copied';
     setTimeout(() => shareBtn.textContent = 'Share', 5000);
   }
-
   const getNumComments = () => Object.keys(post.comments).length;
 
   return (
-    <Wrapper id={`post-${post.uid}`}>
-      <Header>
-        <p>r/{post.subName}</p>
+    <div id={`post-${post.uid}`} className={styles.wrapper}>
+      <header>
         <p>Posted by
-          <Link to={`/u/${post.owner.uid}/${post.owner.name}`}>
+          <Link to={`/u/${post.owner.uid}/${post.owner.name}`} className='default-link'>
             u/{post.owner.name}
           </Link>
-        </p>
+          </p>
         <p>{`${post.creationDateTime.date.month}/${post.creationDateTime.date.day}/${post.creationDateTime.date.year}`}</p>
-      </Header>
-      <Body>
+      </header>
+      <body>
         <h4>{post.title}</h4>
         { post.type === 'images/videos' ?
           <img src={postContent} alt="" /> :
           <p>{postContent}</p>
         }
-      </Body>
-      <Options>
-        <p>{getNumComments() === 1 ? getNumComments() + ' comment' : getNumComments() + ' comments'}</p>
+      </body>
+      <div className={styles.options}>
+        <p>{getNumComments() === 1 ? getNumComments() + ' Comment' : getNumComments() + ' Comments'}</p>
+        { loggedIn ?
+          currentUser.favorite.posts[post.subName] && currentUser.favorite.posts[post.subName].includes(post.uid) ?
+          <p onClick={() => unfavoritePost(post.subName, post.uid)}>Unfavorite</p> :
+          <p onClick={() => favoritePost(post.subName, post.uid)}>Favorite</p> :
+          null
+        }
         <p className='share-btn' onClick={sharePostHandler}>Share</p>
-      </Options>
-      <VoteStatus>
+      </div>
+      <div className={styles.voteStatus}>
         { loggedIn && <p className="upvote-icon" onClick={(e) => adjustPostVotesHandler(e)}>^</p> }
         <p>{post.votes}</p>
         { loggedIn && <p className="downvote-icon" onClick={(e) => adjustPostVotesHandler(e)}>v</p> }
-      </VoteStatus>
-    </Wrapper>
+      </div>
+    </div>
   );
 };
 

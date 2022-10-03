@@ -1,0 +1,33 @@
+.wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  width: 60%;
+  min-width: 800px;
+  margin: 40px auto 80px;
+  padding: 40px 180px;
+  background-color: #ccc;
+  border-radius: 8px;
+}
+
+.postsSection { flex: 75% }
+
+.sortOptions {
+  margin-bottom: 20px;
+  border-bottom: 3px solid #fff;
+
+  ul {
+    display: flex;
+    gap: 25px;
+
+    li {
+      padding: 0 4px 9px;
+      cursor: pointer;
+    }
+  }
+
+  .selectedSort {
+    margin-bottom: -3px;
+    border-bottom: 3px solid cyan;
+  }
+}

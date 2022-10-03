@@ -1,89 +1,13 @@
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
-import PostPreview from "./PostPreview";
-import AboutSection from "./AboutSection";
-import Navbar from "./Navbar";
+import PostPreview from "../PostPreview/PostPreview";
+import AboutSection from "../About/AboutSection";
+import Navbar from "../Navbar/Navbar";
 
-import styled from "styled-components";
-import { useEffect, useState } from 'react';
+import styles from './SubPage.module.css';
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  max-width: 1080px;
-  width: 60%;
-  min-width: 800px;
-  margin: 40px auto 80px;
-  padding: 40px;
-  background-color: #ccc;
-  border-radius: 8px;
-`;
-const Header = styled.div`
-  flex: 1 1 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
 
-  p:first-child {
-    font-size: 1.4rem;
-    font-weight: bold;
-  }
-
-  div:first-child {
-    p:first-child {
-      font-size: 1.75rem;
-    }
-
-    p:last-child {
-      font-size: 1.25rem;
-      cursor: pointer;
-    }
-  }
-`;
-const FollowBtns = styled.div`
-  margin: 0 25px;
-
-  button {
-    width: 230px;
-    padding: 8px 25px;
-    background-color: #fff;
-    border: none;
-    border-radius: 20px;
-    box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
-    cursor: pointer;
-  }
-`;
-const ContentSection = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  column-gap: 40px;
-  width: 100%;
-`;
-const SortOptions = styled.div`
-  flex: 100%;
-  margin-bottom: 20px;
-  border-bottom: 3px solid #fff;
-
-  ul {
-    display: flex;
-    gap: 25px;
-
-    li {
-      padding: 0 4px 9px;
-      cursor: pointer;
-    }
-  }
-
-  .selected-sort {
-    margin-bottom: -3px;
-    border-bottom: 3px solid cyan;
-  }
-`;
-const PostsContainer = styled.div`
-  flex: 1 1 45%;
-`;
 
 function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSub, unfollowSub, favoritePost, unfavoritePost, adjustPostVotes, storage }) {
   const params = useParams();
@@ -113,8 +37,8 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSu
 
   const sortPosts = (e) => {
     const postsCopy = [...posts];
-    document.querySelector('.selected-sort').classList.remove('selected-sort');
-    e.target.classList.add('selected-sort');
+    document.querySelector('.selected-sort').classList.remove('selected-sort', styles.selectedSort);
+    e.target.classList.add('selected-sort', styles.selectedSort);
 
     if (e.target.textContent === 'Top') {
       postsCopy.sort((a, b) => b.votes - a.votes);
@@ -142,8 +66,8 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSu
     <div>
       <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} currentSub={sub.name} />
 
-      <Wrapper>
-        <Header>
+      <div className={styles.wrapper}>
+        <header>
           {
             loadingSubInfo ?
             <p>Loading...</p> :
@@ -154,40 +78,40 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSu
               </div>
               {
               loggedIn &&
-              <FollowBtns>
+              <div className={styles.followBtns}>
                 {
                   currentUser.followedSubs.includes(sub.name) ?
                   <button onClick={() => unfollowSub(sub.name)}>Unfollow</button> :
                   <button onClick={() => followSub(sub.name)}>Follow</button>
                 }
-              </FollowBtns>
+              </div>
               }
             </>
           }
-        </Header>
+        </header>
 
-        <ContentSection>
-          <SortOptions>
+        <div className={styles.contentSection}>
+          <div className={styles.sortOptions}>
             <ul>
               <li onClick={(e) => sortPosts(e)}>Top</li>
               <li onClick={(e) => sortPosts(e)} className='selected-sort'>New</li>
             </ul>
-          </SortOptions>
+          </div>
 
-          <PostsContainer>
+          <div className={styles.postsContainer}>
             {
               loadingPosts ?
               <p>Loading...</p> :
               getPostPreview()
             }
-          </PostsContainer>
+          </div>
           {
            loadingSubInfo ?
             <p>Loading...</p> :  
             <AboutSection loggedIn={loggedIn} currentUser={currentUser} userList={userList} sub={sub} /> 
           }
-        </ContentSection>
-      </Wrapper>
+        </div>
+      </div>
     </div>
   );
 };

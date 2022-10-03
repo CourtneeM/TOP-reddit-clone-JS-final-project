@@ -3,121 +3,12 @@ import { useParams } from 'react-router-dom';
 import { HashLink as Link } from 'react-router-hash-link';
 import { deleteObject, getDownloadURL, ref, updateMetadata } from 'firebase/storage';
 
-import Navbar from '../Navbar';
-import SubPreview from './SubPreview';
-import PostPreview from '../PostPreview';
-import Comment from '../Comment';
+import Navbar from '../../Navbar/Navbar';
+import SubPreview from '../SubPreview/SubPreview';
+import PostPreview from '../../PostPreview/PostPreview';
+import Comment from '../../Comment/Comment';
 
-import styled from 'styled-components';
-
-const Wrapper = styled.div`
-  max-width: 1200px;
-  width: 50%;
-  min-width: 800px;
-  margin: 0 auto;
-  padding: 40px 0;
-
-  a { color: #000; }
-
-  .hidden {
-    display: none;
-  }
-`;
-const Header = styled.div`
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  position: relative;
-
-  .user-name-image {
-    flex: 1 1 100%;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    
-    div {
-      position: relative;
-
-      h2 { font-size: 1.75rem; }
-
-      img {
-        margin-right: 30px;
-      }
-      
-      .profile-img {
-        width: 75px;
-        height: 75px;
-        border-radius: 50%;
-      }
-
-      .change-profile-image {
-        display: none;
-        position: absolute;
-        top: 30px;
-        left: 0px;
-        font-size: 0.8rem;
-        text-align: center;
-        background: #fff;
-        cursor: pointer;
-      }
-
-      &:hover {
-        .change-profile-image {
-          display: block;
-        }
-      }
-    }
-  }
-
-  .new-profile-image-input {
-    display: none;
-    position: absolute;
-    right: 0;
-  }
-`;
-const ViewsList = styled.ul`
-  display: flex;
-  margin-bottom: -22px;
-    
-  li {
-    padding: 8px 20px 30px;
-    border-radius: 15px 15px 0 0;
-    cursor: pointer;
-  }
-
-  .selected-view {
-    background-color: #ccc;
-  }
-`;
-const Body = styled.div`
-  padding: 40px 80px 20px;
-  background-color: #ccc;
-  border-radius: 8px;
-
-  h2 {
-    margin-bottom: 40px;
-    font-size: 2.4rem;
-  }
-`;
-const SortOptions = styled.div`
-  margin-bottom: 20px;
-  border-bottom: 3px solid #fff;
-
-  ul {
-    display: flex;
-    gap: 25px;
-
-    li {
-      padding: 0 4px 9px;
-      cursor: pointer;
-    }
-  }
-
-  .selected-sort {
-    margin-bottom: -3px;
-    border-bottom: 3px solid cyan;
-  }
-`;
+import styles from './UserProfilePage.module.css';
 
 function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adjustPostVotes, adjustCommentVotes, editUser, uploadImage, storage }) {
   const [currentSelectedData, setCurrentSelectedData] = useState({});
@@ -450,13 +341,13 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
       document.querySelector('.sort-options').style.display = 'block';
     }
 
-    [...document.querySelectorAll('.views-list li')].forEach((li) => li.classList.remove('selected-view'));
-    e.target.classList.add('selected-view');
+    [...document.querySelectorAll('.views-list li')].forEach((li) => li.classList.remove('selected-view', styles.selectedView));
+    e.target.classList.add('selected-view', styles.selectedView);
   }
   const sortContent = (e) => {
     const currentSelectedDataCopy = {...currentSelectedData};
-    if (document.querySelector('.selected-sort')) document.querySelector('.selected-sort').classList.remove('selected-sort');
-    e.target.classList.add('selected-sort');
+    if (document.querySelector('.selected-sort')) document.querySelector('.selected-sort').classList.remove('selected-sort', styles.selectedSort);
+    e.target.classList.add('selected-sort', styles.selectedSort);
 
     if (e.target.textContent === 'Top') {
       if (currentSelectedDataCopy.type === 'all') {
@@ -481,27 +372,28 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
     <div>
       <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} />
 
-      <Wrapper>
+      <div className={styles.wrapper}>
         {
           loading ?
           <p>Loading...</p> :
           <>
-            <Header>
-              <div className='user-name-image'>
+            <header>
+              <div className={styles.userNameImage}>
                 <div>
-                  <img src={profileImg} alt="" className='profile-img' />
-                  <p className='change-profile-image' onClick={() => displayNewProfileImgInput()}>Change Image</p>
-                  <p className='error-msg hidden'></p>
+                  <img src={profileImg} alt="" className={styles.profileImg} />
+                  <p className={styles.changeProfileImage} onClick={() => displayNewProfileImgInput()}>Change Image</p>
+                  <p className={`error-msg ${styles.hidden}`}></p>
                 </div>
                 <h2>u/{userList[params.userUid].name}</h2>
               </div>
-              <div className='new-profile-image-input'>
+              <div className={`new-profile-image-input ${styles.newProfileImageInput}`}>
                 <input type="file" name="" id="" onChange={(e) => setNewProfileImg(e.target.files[0])} />
                 <button onClick={cancelNewProfileImg}>Cancel</button>
                 <button onClick={saveNewProfileImg}>Save</button>
               </div>
-              <ViewsList className='views-list'>
-                <li className='selected-view' onClick={(e) => changeSelectedView(e)}>Overview</li>
+
+              <div className={`views-list ${styles.viewsList}`}>
+                <li className={`selected-view ${styles.selectedView}`} onClick={(e) => changeSelectedView(e)}>Overview</li>
                 <li onClick={(e) => changeSelectedView(e)}>Subs</li>
                 <li onClick={(e) => changeSelectedView(e)}>Posts</li>
                 <li onClick={(e) => changeSelectedView(e)}>Comments</li>
@@ -515,15 +407,15 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
                   </> :
                   null
                 }
-              </ViewsList>
-            </Header>
-            <Body>
-              <SortOptions className='sort-options'>
+              </div>
+            </header>
+            <body>
+              <div className={`sort-options ${styles.sortOptions}`}>
                 <ul>
                   <li onClick={(e) => sortContent(e)}>Top</li>
                   <li onClick={(e) => sortContent(e)}>New</li>
                 </ul>
-              </SortOptions>
+              </div>
               {
                 Object.values(currentSelectedData).length > 0 ?
                 currentSelectedData.data.map((el) => {
@@ -533,10 +425,10 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, adju
                 }) :
                 null
               }
-            </Body>
+            </body>
           </>
         }
-      </Wrapper>
+      </div>
     </div>
   );
 };

@@ -2,95 +2,10 @@ import { useState } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
 import { getDownloadURL, ref, updateMetadata } from "firebase/storage";
 
-import Navbar from "./Navbar";
+import Navbar from "../Navbar/Navbar";
 
 import uniqid from 'uniqid';
-import styled from "styled-components";
-
-const Wrapper = styled.div`
-  max-width: 1000px;
-  width: 50%;
-  min-width: 800px;
-  margin: 0 auto;
-  padding: 70px 0;
-`;
-const Header = styled.div`
-  margin-bottom: 40px;
-  font-size: 1.5rem;
-
-  span { font-weight: bold; }
-`;
-const PostTypes = styled.div`
-  display: flex;
-  margin-bottom: -22px;
-
-  p {
-    padding: 8px 20px 30px;
-    border-radius: 15px 15px 0 0;
-    cursor: pointer;
-  }
-
-  #selected-post-type {
-    background-color: #d9d9d9;
-  }
-`;
-const PostContent = styled.div`
-  position: relative;
-  padding: 50px 140px;
-  background-color: #d9d9d9;
-  border-radius: 8px;
-
-  div:first-child {
-    margin-bottom: 30px;
-
-    input {
-      width: 100%;
-      padding: 10px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-    }
-
-    p {
-      position: absolute;
-      bottom: 60px;
-      color: red;
-    }
-  }
-
-  textarea, input:nth-child(2) {
-    width: 100%;
-    margin-bottom: 30px;
-    padding: 10px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 8px;
-  }
-
-  textarea { resize: none; }
-
-  .post-error-msg {
-    margin-top: 10px;
-    color: red;
-  }
-
-  .hidden {
-    display: none;
-  }
-`;
-const SubmitPost = styled.div`
-  display: flex;
-  justify-content: flex-end;
-
-  button {
-    padding: 7px 25px;
-    background-color: #fff;
-    border: none;
-    border-radius: 20px;
-    box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
-    cursor: pointer;
-  }
-`;
+import styles from './CreatePostPage.module.css';
 
 function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost, uploadImage, storage }) {
   const [postTitle, setPostTitle] = useState('');
@@ -105,9 +20,14 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
     setPostContent('');
 
     const prevSelectedTypeEl = document.querySelector('#new-post-types #selected-post-type');
-    if (prevSelectedTypeEl) prevSelectedTypeEl.removeAttribute('id');
+    if (prevSelectedTypeEl) {
+      prevSelectedTypeEl.removeAttribute('id');
+      prevSelectedTypeEl.classList.remove(styles.selectedPostType);
+    }
 
+    console.log(e.target);
     e.target.id = 'selected-post-type';
+    e.target.className = styles.selectedPostType;
   }
   
   const submitPostHandler = async (e) => {
@@ -180,20 +100,20 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
     <div>
       <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} />
 
-      <Wrapper>
+      <div className={styles.wrapper}>
         { loggedIn ?
           <>
-            <Header>
+            <header>
               <p>Create a Post in <span>r/{params.subName}</span></p>
-            </Header>
+            </header>
 
-            <PostTypes id='new-post-types'>
-              <p id='selected-post-type' onClick={(e) => changePostType(e)}>Text</p>
+            <div id='new-post-types' className={styles.postTypes}>
+              <p id={`selected-post-type`} className={styles.selectedPostType} onClick={(e) => changePostType(e)}>Text</p>
               <p onClick={(e) => changePostType(e)}>Images/Videos</p>
               <p onClick={(e) => changePostType(e)}>Link</p>
-            </PostTypes>
+            </div>
 
-            <PostContent>
+            <div className={styles.postContent}>
               <div>
                 <input type="text" placeholder="Title" value={postTitle} onChange={(e) => setPostTitle(e.target.value)} />
                 <p className='title-error-msg hidden'></p>
@@ -213,16 +133,16 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
                   onChange={(e) => setPostContent(e.target.value)}
                 />
               }
-              <p className='post-error-msg hidden'></p>
-              <SubmitPost>
+              <p className={`${styles.postErrorMsg} ${styles.hidden}`}></p>
+              <div className={styles.submitPost}>
                 <button onClick={(e) => submitPostHandler(e)}>Post</button>
-              </SubmitPost>
-            </PostContent>
+              </div>
+            </div>
           </> :
           <p>You must be logged in to create a new post.</p>
         }
           
-      </Wrapper>
+      </div>
     </div>
   );
 };

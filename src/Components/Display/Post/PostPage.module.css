@@ -1,0 +1,205 @@
+.wrapper {
+  max-width: 1200px;
+  width: 50%;
+  min-width: 800px;
+  margin: 0 auto;
+  padding: 40px 0;
+}
+.wrapper button {
+  padding: 7px 15px;
+  cursor: pointer;
+}
+.wrapper .hidden {
+  display: none;
+}
+
+.postSection {
+  position: relative;
+  margin-bottom: 50px;
+  padding: 30px 100px 95px;
+  background-color: #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+}
+.postSection header {
+  display: flex;
+  gap: 25px;
+  position: relative;
+  margin-bottom: 30px;
+}
+.postSection header a {
+  color: #000;
+}
+.postSection header p:nth-child(-n+2) span {
+  margin-left: 5px;
+  cursor: pointer;
+}
+.postSection body {
+  position: relative;
+  margin-bottom: 80px;
+}
+.postSection body h2 {
+  margin-bottom: 40px;
+  font-size: 2rem;
+}
+.postSection body > div p:nth-child(2) {
+  font-size: 1.25rem;
+}
+.postSection body input, .postSection body textarea {
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px 8px 0 0;
+}
+.postSection body textarea {
+  margin-bottom: -5px;
+  padding: 15px;
+}
+.postSection body input {
+  padding: 12px 25px;
+}
+.postSection body .editFormBtns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 25px;
+  padding: 6px 25px;
+  background-color: #d9d9d9;
+  border-radius: 0 0 8px 8px;
+}
+.postSection body .editFormBtns button {
+  padding: 6px 25px;
+  font-size: 0.875rem;
+  background-color: #fff;
+  border: none;
+  border-radius: 20px;
+}
+.postSection body img {
+  width: 100%;
+}
+.postSection body div:first-child {
+  position: relative;
+}
+.postSection body div:first-child .postErrorMsg {
+  position: absolute;
+  bottom: -20px;
+  color: red;
+}
+
+.voteStatus {
+  position: absolute;
+  top: 0;
+  left: -100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  font-size: 0.875rem;
+  padding: 5px 0;
+  background-color: #fff;
+  border-radius: 0 8px 8px 0;
+}
+.voteStatus p:nth-child(2n+1) {
+  cursor: pointer;
+}
+
+.postActions {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+.postActions div {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+.postActions div:first-child {
+  padding: 9px 25px;
+  background-color: #fff;
+  border-radius: 0 8px 0 8px;
+}
+.postActions div:first-child p:nth-child(n+2) {
+  cursor: pointer;
+}
+.postActions div:last-child p {
+  padding: 9px 25px;
+  color: #fff;
+  background-color: red;
+  border-radius: 8px 0 8px 0;
+  cursor: pointer;
+}
+
+.commentSection {
+  padding-bottom: 20px;
+}
+.commentSection .commentErrorMsg {
+  color: red;
+}
+
+.compositionContainer {
+  margin: 0 auto 40px;
+  padding: 0 30px;
+}
+.compositionContainer p {
+  margin-bottom: 10px;
+}
+.compositionContainer textarea {
+  width: 100%;
+  margin-bottom: -5px;
+  padding: 15px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px 8px 0 0;
+}
+.compositionContainer div {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  padding: 6px 25px;
+  background-color: #d9d9d9;
+  border-radius: 0 0 8px 8px;
+}
+.compositionContainer div button {
+  padding: 6px 25px;
+  font-size: 0.875rem;
+  background-color: #fff;
+  border: none;
+  border-radius: 20px;
+}
+
+.commentsContainer > div:first-child {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+.commentsContainer > div:first-child ul {
+  display: flex;
+  gap: 15px;
+}
+.commentsContainer > div:first-child ul li {
+  cursor: pointer;
+}
+
+.sortOptions {
+  margin-bottom: 20px;
+  background-color: #fff;
+  border-bottom: 5px solid #d9d9d9;
+}
+.sortOptions ul {
+  display: flex;
+  gap: 25px;
+}
+.sortOptions ul li {
+  padding: 0 4px 9px;
+  cursor: pointer;
+}
+.sortOptions .selectedSort {
+  margin-bottom: -5px;
+  border-bottom: 5px solid cyan;
+}
+
+/*# sourceMappingURL=PostPage.module.css.map */

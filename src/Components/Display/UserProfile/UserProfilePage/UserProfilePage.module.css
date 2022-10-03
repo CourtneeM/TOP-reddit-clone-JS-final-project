@@ -1,0 +1,98 @@
+.wrapper {
+  max-width: 1200px;
+  width: 50%;
+  min-width: 800px;
+  margin: 0 auto;
+  padding: 40px 0;
+}
+.wrapper a {
+  color: #000;
+}
+.wrapper .hidden {
+  display: none;
+}
+.wrapper > header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  position: relative;
+}
+.wrapper > header .userNameImage {
+  flex: 1 1 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.wrapper > header .userNameImage div {
+  position: relative;
+}
+.wrapper > header .userNameImage div h2 {
+  font-size: 1.75rem;
+}
+.wrapper > header .userNameImage div img {
+  margin-right: 30px;
+}
+.wrapper > header .userNameImage div .profileImg {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+}
+.wrapper > header .userNameImage div .changeProfileImage {
+  display: none;
+  position: absolute;
+  top: 30px;
+  left: 0px;
+  font-size: 0.8rem;
+  text-align: center;
+  background: #fff;
+  cursor: pointer;
+}
+.wrapper > header .userNameImage div:hover .changeProfileImage {
+  display: block;
+}
+.wrapper > header .newProfileImageInput {
+  display: none;
+  position: absolute;
+  right: 0;
+}
+.wrapper > body {
+  padding: 40px 80px 20px;
+  background-color: #ccc;
+  border-radius: 8px;
+}
+.wrapper > body h2 {
+  margin-bottom: 40px;
+  font-size: 2.4rem;
+}
+
+.viewsList {
+  display: flex;
+  margin-bottom: -22px;
+}
+.viewsList li {
+  padding: 8px 20px 30px;
+  border-radius: 15px 15px 0 0;
+  cursor: pointer;
+}
+.viewsList .selectedView {
+  background-color: #ccc;
+}
+
+.sortOptions {
+  margin-bottom: 20px;
+  border-bottom: 3px solid #fff;
+}
+.sortOptions ul {
+  display: flex;
+  gap: 25px;
+}
+.sortOptions ul li {
+  padding: 0 4px 9px;
+  cursor: pointer;
+}
+.sortOptions .selectedSort {
+  margin-bottom: -3px;
+  border-bottom: 3px solid cyan;
+}
+
+/*# sourceMappingURL=UserProfilePage.module.css.map */

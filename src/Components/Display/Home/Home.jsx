@@ -1,47 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
 
-import Navbar from "./Navbar";
-import PostPreview from "./PostPreview";
+import Navbar from "../Navbar/Navbar";
+import PostPreview from "../PostPreview/PostPreview";
 
-import styled from "styled-components";
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  max-width: 1200px;
-  width: 60%;
-  min-width: 800px;
-  margin: 40px auto 80px;
-  padding: 40px 180px;
-  background-color: #ccc;
-  border-radius: 8px;
-  `;
-const PostsSection = styled.div`
-  flex: 75%
-`;
-const SortOptions = styled.div`
-  margin-bottom: 20px;
-  border-bottom: 3px solid #fff;
-
-  ul {
-    display: flex;
-    gap: 25px;
-
-    li {
-      padding: 0 4px 9px;
-      cursor: pointer;
-    }
-  }
-
-  .selected-sort {
-    margin-bottom: -3px;
-    border-bottom: 3px solid cyan;
-  }
-`;
-const PostsContainer = styled.div`
-
-`;
+import styles from './Home.module.css';
 
 function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePost, unfavoritePost, adjustPostVotes, storage }) {
   const [posts, setPosts] = useState([]);
@@ -59,8 +22,8 @@ function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePos
 
   const sortPosts = (e) => {
     const postsCopy = [...posts];
-    document.querySelector('.selected-sort').classList.remove('selected-sort');
-    e.target.classList.add('selected-sort');
+    document.querySelector('.selected-sort').classList.remove('selected-sort', styles.selectedSort);
+    e.target.classList.add('selected-sort', styles.selectedSort);
 
     if (e.target.textContent === 'Top') {
       postsCopy.sort((a, b) => Object.values(b)[0].votes - Object.values(a)[0].votes);
@@ -91,24 +54,24 @@ function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePos
   return (
     <div>
       <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} currentSub={'Home'} />
-      <Wrapper>
-        <PostsSection>
-          <SortOptions>
+      <div className={styles.wrapper}>
+        <div className={styles.postsSection}>
+          <div className={styles.sortOptions}>
             <ul>
-              <li onClick={(e) => sortPosts(e)} className='selected-sort'>Top</li>
+              <li onClick={(e) => sortPosts(e)} className={`selected-sort ${styles.selectedSort}`}>Top</li>
               <li onClick={(e) => sortPosts(e)}>New</li>
             </ul>
-          </SortOptions>
+          </div>
 
-          <PostsContainer>
+          <div>
             {
               loading ?
               <p>Loading...</p> :
               getPostPreview()
             }
-          </PostsContainer>
-        </PostsSection>
-      </Wrapper>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

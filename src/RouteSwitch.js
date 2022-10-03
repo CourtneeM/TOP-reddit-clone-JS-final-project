@@ -10,14 +10,14 @@ import { getAuth, onAuthStateChanged, GoogleAuthProvider,  signInWithPopup, sign
 import User from './Components/Creation/User';
 import Sub from './Components/Creation/Sub';
 
-import Home from "./Components/Display/Home";
-import All from './Components/Display/All';
-import SubPage from './Components/Display/SubPage';
-import CreateSubPage from "./Components/Display/CreateSubPage";
-import EditSubPage from "./Components/Display/EditSubPage";
-import PostPage from './Components/Display/PostPage';
-import CreatePostPage from "./Components/Display/CreatePostPage";
-import UserProfile from './Components/Display/UserProfile/UserProfile';
+import Home from "./Components/Display/Home/Home";
+import All from './Components/Display/All/All';
+import SubPage from './Components/Display/Sub/SubPage';
+import CreateSubPage from "./Components/Display/CreateSubPage/CreateSubPage";
+import EditSubPage from "./Components/Display/EditSubPage/EditSubPage";
+import PostPage from './Components/Display/Post/PostPage';
+import CreatePostPage from "./Components/Display/CreatePostPage/CreatePostPage";
+import UserProfile from './Components/Display/UserProfile/UserProfilePage/UserProfilePage';
 
 import uniqid from 'uniqid';
 

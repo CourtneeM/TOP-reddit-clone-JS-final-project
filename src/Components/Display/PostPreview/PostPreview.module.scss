@@ -1,0 +1,76 @@
+.wrapper {
+  position: relative;
+  max-height: 425px;
+  margin-bottom: 20px;
+  padding: 25px 100px 72px;
+  color: #000;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
+
+  a { color: #000; }
+
+  header {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 20px;
+  
+    p a {
+      margin-left: 5px;
+    }
+  
+    p:last-child {
+      font-style: italic;
+      color: #555;
+    }
+  }
+  
+  body {
+    max-height: 250px;
+    overflow: hidden;
+  
+    h4 {
+      margin-bottom: 20px;
+      font-size: 1.25rem;
+    }
+  
+    img {
+      width: 100%;
+    }
+  }
+}
+
+.options {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  gap: 25px;
+  padding: 9px 25px;
+  font-size: 0.875rem;
+  background-color: #d9d9d9;
+  border-radius: 0 8px 0 8px;
+
+  p {
+    cursor: pointer;
+  }
+}
+
+.voteStatus {
+  position: absolute;
+  top: 25px;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  padding: 5px 0;
+  text-align: center;
+  background-color: #bbb;
+  border-radius: 0 8px 8px 0;
+
+  p:nth-child(2n+1) {
+    cursor: pointer;
+  }
+}

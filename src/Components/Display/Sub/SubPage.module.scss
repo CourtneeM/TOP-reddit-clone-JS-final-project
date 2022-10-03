@@ -1,0 +1,82 @@
+.wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 1080px;
+  width: 60%;
+  min-width: 800px;
+  margin: 40px auto 80px;
+  padding: 40px;
+  background-color: #ccc;
+  border-radius: 8px;
+
+  > header {
+    flex: 1 1 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  
+    p:first-child {
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+  
+    div:first-child {
+      p:first-child {
+        font-size: 1.75rem;
+      }
+  
+      p:last-child {
+        font-size: 1.25rem;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.followBtns {
+  margin: 0 25px;
+
+  button {
+    width: 230px;
+    padding: 8px 25px;
+    background-color: #fff;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
+    cursor: pointer;
+  }
+}
+
+.contentSection {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  column-gap: 40px;
+  width: 100%;
+}
+
+.sortOptions {
+  flex: 100%;
+  margin-bottom: 20px;
+  border-bottom: 3px solid #fff;
+
+  ul {
+    display: flex;
+    gap: 25px;
+
+    li {
+      padding: 0 4px 9px;
+      cursor: pointer;
+    }
+  }
+
+  .selectedSort {
+    margin-bottom: -3px;
+    border-bottom: 3px solid cyan;
+  }
+}
+
+.postsContainer {
+  flex: 1 1 45%;
+}

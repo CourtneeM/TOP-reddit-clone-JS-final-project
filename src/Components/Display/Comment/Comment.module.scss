@@ -1,0 +1,162 @@
+.wrapper {
+  margin-bottom: 20px;
+  padding: 20px 0 0;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
+
+  .hidden {
+    display: none;
+  }
+}
+
+.commentContainer {
+  position: relative;
+  padding-bottom: 40px;
+}
+
+.commentHeader {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  padding: 0 25px 20px;
+
+  p:first-child {
+    cursor: pointer;
+  }
+  
+  p:nth-child(2) {
+    font-style: italic;
+    color: #555;
+  }
+
+  .userNameImage {
+    display: flex;
+    align-items: center;
+
+    img {
+      width: 48px;
+      height: 48px;
+      margin-right: 15px;
+      border-radius: 50%;
+    }
+  }
+}
+
+.commentText {
+  padding: 0 25px 40px 88px;
+
+  textarea {
+    width: 100%;
+    margin-bottom: -5px;
+    padding: 15px;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px 8px 0 0;
+  }
+
+  div {
+    display: flex;
+    justify-content: flex-end;
+    gap: 25px;
+    padding: 6px 25px;
+    background-color: #d9d9d9;
+    border-radius: 0 0 8px 8px;
+
+    button {
+      padding: 6px 25px;
+      font-size: 0.875rem;
+      background-color: #fff;
+      border: none;
+      border-radius: 20px;
+    }
+  }
+
+  p:last-child { color: red; }
+}
+
+.commentActions {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+
+  > div {
+    display: flex;
+    gap: 25px;
+    padding: 7px 25px;
+    
+    &:first-child {
+      background-color: #d9d9d9;
+      border-radius: 0 8px 8px 8px;
+
+      p { cursor: pointer; }
+    }
+
+    &:last-child {
+      padding: 0;
+      
+      p {
+        padding: 7px 25px;
+        color: #fff;
+        background-color: red;
+        border-radius: 8px 0 8px 8px;
+        cursor: pointer;
+      }
+    }
+
+    .votesContainer {
+      display: flex;
+      gap: 15px;
+
+      p { cursor: default }
+      p:nth-child(2n+1) { cursor: pointer; }
+    }
+  }
+}
+
+.commentReply {
+  margin: 0 50px 20px;
+
+  textarea {
+    width: 100%;
+    margin-bottom: -5px;
+    padding: 15px;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px 8px 0 0;
+  }
+
+  div {
+    display: flex;
+    justify-content: flex-end;
+    gap: 25px;
+    padding: 6px 25px;
+    background-color: #d9d9d9;
+    border-radius: 0 0 8px 8px;
+
+    button {
+      padding: 6px 25px;
+      font-size: 0.875rem;
+      background-color: #fff;
+      border: none;
+      border-radius: 20px;
+    }
+  }
+
+  p { color: red; }
+}
+
+.replies {
+  margin-top: 20px;
+  margin-left: 25px;
+  border-left: 3px solid #d9d9d9;
+
+  > div:first-child {
+    padding-top: 0;
+  }
+
+  .commentActions {
+    border-radius: 8px 8px 0 0;
+  }
+}

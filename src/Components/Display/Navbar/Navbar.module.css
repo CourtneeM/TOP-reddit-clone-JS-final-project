@@ -1,0 +1,46 @@
+.wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 60px;
+  background-color: #d9d9d9;
+  box-shadow: 0 4px 4px 4px rgba(0, 0, 0, 0.25);
+}
+.wrapper h1 {
+  font-size: 1.75rem;
+  padding: 15px 0;
+  cursor: pointer;
+}
+.wrapper div:last-child {
+  display: flex;
+  align-items: center;
+}
+.wrapper div:last-child .userName {
+  margin-right: 40px;
+}
+.wrapper a {
+  color: #000;
+}
+
+.subList {
+  display: flex;
+  gap: 46px;
+}
+.subList li {
+  padding: 4px 4px;
+  cursor: pointer;
+}
+.subList .selectedSub {
+  border-bottom: 3px solid #fff;
+}
+
+.signInOutBtn {
+  padding: 8px 25px;
+  size: 0.875px;
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0px 4px 4px 0 rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+/*# sourceMappingURL=Navbar.module.css.map */

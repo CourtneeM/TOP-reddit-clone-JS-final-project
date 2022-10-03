@@ -2,164 +2,7 @@ import { getDownloadURL, ref } from "firebase/storage";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import styled from "styled-components";
-
-const Wrapper = styled.div`
-  margin-bottom: 20px;
-  padding: 20px 0 0;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
-
-  .hidden {
-    display: none;
-  }
-`;
-const CommentContainer = styled.div`
-  position: relative;
-  padding-bottom: 40px;
-`;
-const CommentHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 25px;
-  padding: 0 25px 20px;
-
-  p:first-child {
-    cursor: pointer;
-  }
-  
-  p:nth-child(2) {
-    font-style: italic;
-    color: #555;
-  }
-
-  .user-name-image {
-    display: flex;
-    align-items: center;
-
-    img {
-      width: 48px;
-      height: 48px;
-      margin-right: 15px;
-      border-radius: 50%;
-    }
-  }
-`;
-const CommentText = styled.div`
-  padding: 0 25px 40px 88px;
-
-  textarea {
-    width: 100%;
-    margin-bottom: -5px;
-    padding: 15px;
-    border: 1px solid #d9d9d9;
-    border-radius: 8px 8px 0 0;
-  }
-
-  div {
-    display: flex;
-    justify-content: flex-end;
-    gap: 25px;
-    padding: 6px 25px;
-    background-color: #d9d9d9;
-    border-radius: 0 0 8px 8px;
-
-    button {
-      padding: 6px 25px;
-      font-size: 0.875rem;
-      background-color: #fff;
-      border: none;
-      border-radius: 20px;
-    }
-  }
-
-  p:last-child { color: red; }
-`;
-const CommentActions = styled.div`
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-
-  > div {
-    display: flex;
-    gap: 25px;
-    padding: 7px 25px;
-    
-    &:first-child {
-      background-color: #d9d9d9;
-      border-radius: 0 8px 8px 8px;
-
-      p { cursor: pointer; }
-    }
-
-    &:last-child {
-      padding: 0;
-      
-      p {
-        padding: 7px 25px;
-        color: #fff;
-        background-color: red;
-        border-radius: 8px 0 8px 8px;
-        cursor: pointer;
-      }
-    }
-
-    .votes-container {
-      display: flex;
-      gap: 15px;
-
-      p { cursor: default }
-      p:nth-child(2n+1) { cursor: pointer; }
-    }
-  }
-`;
-const CommentReply = styled.div`
-  margin: 0 50px 20px;
-
-  textarea {
-    width: 100%;
-    margin-bottom: -5px;
-    padding: 15px;
-    border: 1px solid #d9d9d9;
-    border-radius: 8px 8px 0 0;
-  }
-
-  div {
-    display: flex;
-    justify-content: flex-end;
-    gap: 25px;
-    padding: 6px 25px;
-    background-color: #d9d9d9;
-    border-radius: 0 0 8px 8px;
-
-    button {
-      padding: 6px 25px;
-      font-size: 0.875rem;
-      background-color: #fff;
-      border: none;
-      border-radius: 20px;
-    }
-  }
-
-  p { color: red; }
-`;
-const Replies = styled.div`
-  margin-top: 20px;
-  margin-left: 25px;
-  border-left: 3px solid #d9d9d9;
-
-  > div:first-child {
-    padding-top: 0;
-  }
-
-  .comment-actions {
-    border-radius: 8px 8px 0 0;
-  }
-`;
+import styles from './Comment.module.css';
 
 function Comment({ loggedIn, currentUser, userList, subList, comments, comment, commentReply, favoriteComment, unfavoriteComment, editComment, deleteComment, adjustCommentVotes, storage }) {
   const [replyText, setReplyText] = useState('');
@@ -220,7 +63,7 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
     return (
       <>
         <div>
-          <div className='votes-container'>
+          <div className={`votes-container ${styles.votesContainer}`}>
             { displayVoteButton('upvote', '^') }
             <p>{comment.votes}</p>
             { displayVoteButton('downvote', 'v') }
@@ -412,11 +255,11 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
   }
 
   return (
-    <Wrapper id={comment.uid}>
-      <CommentContainer>
-        <CommentHeader>
+    <div id={comment.uid} className={styles.wrapper}>
+      <div className={styles.commentContainer}>
+        <header className={styles.commentHeader}>
           <Link to={`/u/${comment.owner.uid}/${comment.owner.uid}`} className='default-link'>
-            <div className='user-name-image'>
+            <div className={styles.userNameImage}>
               <img src={profileImg} alt="" />
               <p>u/{comment.owner.name}</p>
             </div>
@@ -426,20 +269,21 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
             <p>Edited: {comment.editStatus.editDateTime.date.month}/{comment.editStatus.editDateTime.date.day}/{comment.editStatus.editDateTime.date.year}</p> :
             null
           }
-        </CommentHeader>
+        </header>
 
-        <CommentText>
+        <div className={styles.commentText}>
           { editMode ?
             displayEditForm():
             <p>{comment.text}</p>
           }
           <p className={`comment-error-msg-${comment.uid} hidden`}></p>
-        </CommentText>
+        </div>
 
-        <CommentActions className='comment-actions'>
+        <div className={`comment-actions ${styles.commentActions}`}>
           { displayCommentActions() }
-        </CommentActions>
-        <CommentReply className={`comment-reply-container-${comment.uid} hidden`}>
+        </div>
+
+        <div className={`comment-reply-container-${comment.uid} ${styles.hidden} ${styles.commentReply}`}>
           <textarea name="comment-reply" id="comment-reply" cols="30" rows="10"
             placeholder="What do you think?"
             value={replyText}
@@ -451,9 +295,10 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
             <button onClick={(e) => commentReplyHandler(e)}>Reply</button>
           </div>
           <p className={`comment-error-msg-${comment.uid} hidden`}></p>
-        </CommentReply>
-      </CommentContainer>
-      <Replies>
+        </div>
+      </div>
+      
+      <div className={styles.replies}>
         { 
           Object.values(comment.children).length > 0 ?
           Object.values(comments).map((nextComment) => {
@@ -479,8 +324,8 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
           }) :
           null
         }
-      </Replies>
-    </Wrapper>
+      </div>
+    </div>
   );
 };
 

@@ -1,0 +1,39 @@
+.wrapper {
+  position: relative;
+  margin-bottom: 20px;
+  padding: 25px 50px 65px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
+
+  body {
+    margin-bottom: 15px;
+  
+    h4 {
+      margin-bottom: 20px;
+      font-size: 1.25rem;
+    }
+  }
+}
+
+.subActions {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 25px;
+  padding: 9px 25px;
+  background-color: #d9d9d9;
+  border-radius: 0 8px 0 8px;
+
+  div {
+    display: flex;
+    gap: 25px;
+
+    &:nth-child(2) p {
+      cursor: pointer;
+    }
+  }
+}

@@ -2,239 +2,10 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { deleteObject, getDownloadURL, ref, updateMetadata } from 'firebase/storage';
 
-import Navbar from './Navbar';
-import Comment from './Comment';
+import Navbar from '../Navbar/Navbar';
+import Comment from '../Comment/Comment';
 
-import styled from "styled-components";
-
-const Wrapper = styled.div`
-  max-width: 1200px;
-  width: 50%;
-  min-width: 800px;
-  margin: 0 auto;
-  padding: 40px 0;
-
-  button {
-    padding: 7px 15px;
-    cursor: pointer;
-  }
-
-  .hidden {
-    display: none;
-  }
-`;
-const PostSection = styled.div`
-  position: relative;
-  margin-bottom: 50px;
-  padding: 30px 100px 95px;
-  background-color: #ccc;
-  border-radius: 8px;
-  box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
-`;
-const Header = styled.div`
-  display: flex;
-  gap: 25px;
-  position: relative;
-  margin-bottom: 30px;
-  
-  a { color: #000; }
-
-  p:nth-child(-n+2) span {
-    margin-left: 5px;
-    cursor: pointer;
-  }
-`;
-const VoteStatus = styled.div`
-  position: absolute;
-  top: 0;
-  left: -100px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 60px;
-  font-size: 0.875rem;
-  padding: 5px 0;
-  background-color: #fff;
-  border-radius: 0 8px 8px 0;
-
-  p:nth-child(2n+1) {
-    cursor: pointer;
-  }
-`;
-const Body = styled.div`
-  position: relative;
-  margin-bottom: 80px;
-
-  h2 {
-    margin-bottom: 40px;
-    font-size: 2rem;
-  }
-
-  > div p:nth-child(2) { font-size: 1.25rem; }
-
-  input, textarea {
-    width: 100%;
-    background-color: #fff;
-    border: 1px solid #d9d9d9;
-    border-radius: 8px 8px 0 0;
-  }
-
-  textarea {
-    margin-bottom: -5px;
-    padding: 15px;
-  }
-
-  input {
-    padding: 12px 25px;
-  }
-
-  .edit-form-btns {
-    display: flex;
-    justify-content: flex-end;
-    gap: 25px;
-    padding: 6px 25px;
-    background-color: #d9d9d9;
-    border-radius: 0 0 8px 8px;
-
-    button {
-      padding: 6px 25px;
-      font-size: 0.875rem;
-      background-color: #fff;
-      border: none;
-      border-radius: 20px;
-    }
-  }
-
-  img { width: 100%; }
-
-  div:first-child {
-    position: relative;
-
-    .post-error-msg {
-      position: absolute;
-      bottom: -20px;
-      color: red;
-    }
-  }
-`;
-const PostActions = styled.div`
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-
-  div {
-    display: flex;
-    align-items: center;
-    gap: 25px;
-
-    &:first-child {
-      padding: 9px 25px;
-      background-color: #fff;
-      border-radius: 0 8px 0 8px;
-
-      p:nth-child(n+2) { cursor: pointer; }
-    }
-
-    &:last-child {
-      p {
-        padding: 9px 25px;
-        color: #fff;
-        background-color: red;
-        border-radius: 8px 0 8px 0;
-        cursor: pointer;
-      }
-    }
-  }
-
-  .link-copied-msg {
-    position: absolute;
-    top: -30px;
-    right: -60px;
-    text-align: center;
-    font-size: 0.9rem;
-    background-color: #fff;
-  }
-`;
-const CommentSection = styled.div`
-  padding-bottom: 20px;
-  
-  .comment-error-msg {
-    color: red;
-  }
-`;
-const CompositionContainer = styled.div`
-  margin: 0 auto 40px;
-  padding: 0 30px;
-
-  p {
-    margin-bottom: 10px;
-  }
-
-  textarea {
-    width: 100%;
-    margin-bottom: -5px;
-    padding: 15px;
-    border: 1px solid #d9d9d9;
-    border-radius: 8px 8px 0 0;
-  }
-
-  div {
-    display: flex;
-    justify-content: flex-end;
-    width: 100%;
-    padding: 6px 25px;
-    background-color: #d9d9d9;
-    border-radius: 0 0 8px 8px;
-
-    button {
-      padding: 6px 25px;
-      font-size: 0.875rem;
-      background-color: #fff;
-      border: none;
-      border-radius: 20px;
-    }
-  }
-`;
-const CommentsContainer = styled.div`
-  > div:first-child {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    font-size: 0.9rem;
-
-    ul {
-      display: flex;
-      gap: 15px;
-
-      li { cursor: pointer; }
-    }
-  }
-`;
-const SortOptions = styled.div`
-  margin-bottom: 20px;
-  background-color: #fff;
-  border-bottom: 5px solid #d9d9d9;
-
-  ul {
-    display: flex;
-    gap: 25px;
-
-    li {
-      padding: 0 4px 9px;
-      cursor: pointer;
-    }
-  }
-
-  .selected-sort {
-    margin-bottom: -5px;
-    border-bottom: 5px solid cyan;
-  }
-`;
+import styles from './PostPage.module.css';
 
 function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favoritePost, unfavoritePost, editPost, deletePost, addComment, favoriteComment, unfavoriteComment, editComment, deleteComment, adjustPostVotes, adjustCommentVotes, uploadImage, storage }) {
   const params = useParams();
@@ -281,7 +52,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
   }
   const displayTextPost = () => {
     return (
-      <Body>
+      <body>
         <div>
           <h2>{post.title}</h2>
           { editMode ?
@@ -289,7 +60,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
             <p>{post.content}</p>
           }
         </div>
-      </Body>
+      </body>
     );
   }
   const displayImagePost = () => {
@@ -299,7 +70,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
     });
 
     return (
-      <Body>
+      <body>
         <div>
           <h2>{post.title}</h2>
           { editMode ?
@@ -308,12 +79,12 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
           }
           <p className='post-error-msg hidden'></p>
         </div>
-      </Body>
+      </body>
     );
   }
   const displayLinkPost = () => {
     return (
-      <Body>
+      <body>
         <div>
           <h2>{post.title}</h2>
           { editMode ?
@@ -324,7 +95,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
           }
           <p className='post-error-msg hidden'></p>
         </div>
-      </Body>
+      </body>
     );
   }
   const displayPostActions = () => {
@@ -383,7 +154,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
           <input type="url"name="new-post-content" id="new-post-content" value={postContent} onChange={(e) => setPostContent(e.target.value)} /> :
           <textarea name="new-post-content" id="new-post-content" cols="30" rows="10" value={postContent} onChange={(e) => setPostContent(e.target.value)}></textarea>
         }
-        <div className='edit-form-btns'>
+        <div className={styles.editFormBtns}>
           <button onClick={cancelEditPostHandler}>Cancel</button>
           <button onClick={editPostHandler}>Edit</button>
         </div>
@@ -538,8 +309,8 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
 
   const sortComments = (e) => {
     const commentsCopy = [...comments];
-    if (document.querySelector('.selected-sort')) document.querySelector('.selected-sort').classList.remove('selected-sort');
-    e.target.classList.add('selected-sort');
+    if (document.querySelector('.selected-sort')) document.querySelector('.selected-sort').classList.remove('selected-sort', styles.selectedSort);
+    e.target.classList.add(`selected-sort`, styles.selectedSort);
 
     if (e.target.textContent === 'Highest Rating') {
       commentsCopy.sort((a, b) => b.votes - a.votes);
@@ -567,7 +338,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
     setCommentInput('');
   }
   const displayInputError = (type, reason=null) => {
-    const errorMsg = document.querySelector(`.${type}-error-msg`);
+    const errorMsg = document.querySelector(`.${type}ErrorMsg`);
 
     if (reason === 'too large') {
       errorMsg.textContent = 'Error: File size too large. Max 20MB';
@@ -615,13 +386,13 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
     <div>
       <Navbar loggedIn={loggedIn} signInOut={signInOut}currentUser={currentUser} subList={subList} />
 
-      <Wrapper id={`post-${post.uid}`}>
+      <div id={`post-${post.uid}`} className={styles.wrapper}>
         {
           loading ?
           <p>Loading...</p> :
           <>
-            <PostSection>
-              <Header>
+            <div className={styles.postSection}>
+              <header>
                 <Link to={`/r/${subName}`} className='default-link'>
                   <p>r/{subName}</p>
                 </Link>
@@ -636,12 +407,12 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
                   null
                 }
 
-                <VoteStatus>
+                <div className={styles.voteStatus}>
                   { loggedIn && <p className="upvote-icon" onClick={(e) => adjustPostVotesHandler(e)}>^</p> }
                   <p>{post.votes}</p>
                   { loggedIn && <p className="downvote-icon" onClick={(e) => adjustPostVotesHandler(e)}>v</p> }
-                </VoteStatus>
-              </Header>
+                </div>
+              </header>
 
               { 
                 post.type === 'link' ?
@@ -650,15 +421,15 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
                 displayImagePost() :
                 displayTextPost()
               }
-              <PostActions>
+              <div className={styles.postActions}>
                 { displayPostActions() }
-              </PostActions>
-            </PostSection>
+              </div>
+            </div>
 
-            <CommentSection>
+            <div className={styles.commentSection}>
               {
                 loggedIn &&
-                <CompositionContainer>
+                <div className={styles.compositionContainer}>
                   <p>Comment as u/{currentUser.name}</p>
                   <form action="#">
                     <textarea name="comment-text" id="comment-text" cols="30" rows="10" placeholder="What do you think?" value={commentInput} onChange={(e) => setCommentInput(e.target.value)}></textarea>
@@ -667,26 +438,26 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
                     </div>
                   </form>
                     <p className='comment-error-msg hidden'></p>
-                </CompositionContainer>
+                </div>
               }
               
-              <CommentsContainer>
-                <SortOptions>
+              <div className={styles.commentsContainer}>
+                <div className={styles.sortOptions}>
                   <ul>
                     <li onClick={(e) => sortComments(e)}>Highest Rating</li>
                     <li onClick={(e) => sortComments(e)}>Lowest Rating</li>
                     <li onClick={(e) => sortComments(e)}>Oldest</li>
                     <li onClick={(e) => sortComments(e)}>Newest</li>
                   </ul>
-                </SortOptions>
+                </div>
                 {
                   getComments()
                 }
-              </CommentsContainer>
-            </CommentSection>
+              </div>
+            </div>
           </>
         }
-      </Wrapper>
+      </div>
     </div>
   );
 };

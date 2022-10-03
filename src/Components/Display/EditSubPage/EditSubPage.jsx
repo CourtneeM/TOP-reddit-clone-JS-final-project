@@ -1,155 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
 
-import Navbar from "./Navbar";
+import Navbar from "../Navbar/Navbar";
 
-import styled from "styled-components";
-
-const Wrapper = styled.div`
-  max-width: 1080px;
-  min-width: 800px;
-  margin: 0 auto;
-  padding: 70px 0;
-`;
-const Header = styled.div`
-  display: flex;  
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 40px;
-
-  p {
-    font-size: 1.5rem;
-  }
-`;
-const SubContent = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 50px;
-  margin-bottom: 100px;
-  padding: 50px 40px;
-  background-color: #d9d9d9;
-  border-radius: 8px;
-  box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
-
-  div:first-child {
-    flex-basis: 65%;
-  }
-
-  input, textarea {
-    width: 100%;
-    margin-bottom: 20px;
-    padding: 10px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 8px;
-  }
-
-  textarea { resize: none; }
-`;
-const ModeratorList = styled.div`
-  flex-basis: 30%;
-  max-height: 350px;
-  padding: 20px 40px;
-  background-color: #fff;
-  border-radius: 8px;
-  overflow-y: scroll;
-
-  > p {
-    &:first-child {
-      margin-bottom: 10px;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    &:nth-child(2) {
-      font-size: 0.875rem;
-      text-align: center;
-    }
-  }
-
-  ul {
-    margin-bottom: 20px;
-    text-align: center;
-
-    li {
-      margin-bottom: 15px;
-
-      &:first-child { margin-top: 20px; }
-    }
-  }
-
-  .follower-list {
-    height: 100px;
-    margin: 0 auto 20px;
-    overflow-y: scroll;
-
-    p {
-      margin: 2px 0;
-      padding: 3px;
-      cursor: pointer;
-    }
-
-    .moderator {
-      background-color: rgba(208,252,204,0.7);
-      border-left: 4px solid rgb(21,242,2);
-    }
-  }
-`;
-const EditModsBtn = styled.div`
-  display: flex;
-  justify-content: center;
-
-  div {
-    display: flex;
-    gap: 20px;
-  }
-
-  button {
-    width: 90%;
-    min-width: 75px;
-    padding: 6px 25px;
-    background-color: #d9d9d9;
-    border: none;
-    border-radius: 20px;
-    box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
-    cursor: pointer;
-  }
-`;
-const Submit = styled.div`
-  margin: 0 auto;
-
-  button {
-    padding: 8px 25px;
-    background-color: #fff;
-    border: none;
-    border-radius: 20px;
-    box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
-    cursor: pointer;
-
-    &:first-child { margin-right: 20px; }
-    &:last-child { background-color: limegreen; }
-  }
-`;
-const DeleteSub = styled.div`
-  width: fit-content;
-  margin: 0 auto;
-  text-align: center;
-
-  p {
-    margin-bottom: 30px;
-    font-weight: bold;
-  }
-
-  button {
-    padding: 8px 25px;
-    color: #fff;
-    background-color: red;
-    border: none;
-    border-radius: 20px;
-    box-shadow: 0 4px 4px 0 rgba(0,0,0,0.25);
-    cursor: pointer;
-  }
-`;
+import styles from './EditSubPage.module.css';
 
 function EditSubPage({ loggedIn, signInOut, currentUser, userList, subList, editSub, deleteSub }) {
   const [sub, setSub] = useState({});
@@ -211,20 +65,21 @@ function EditSubPage({ loggedIn, signInOut, currentUser, userList, subList, edit
   }
   const toggleModerator = (e) => {
     e.target.classList.toggle('moderator');
+    e.target.classList.toggle(styles.moderator);
   }
 
   return (
     <div>
       <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} />
 
-      <Wrapper>
+      <div className={styles.wrapper}>
         { loggedIn ?
           <>
-            <Header>
+            <header>
               <p>Edit r/{sub.name}</p>
-            </Header>
+            </header>
 
-            <SubContent>
+            <div className={styles.subContent}>
               <div>
                 <div>
                   <input type="text" name="subtitle" id="subtitle" placeholder='Subtitle' value={subTitle} onChange={(e) => setSubTitle(e.target.value)} />
@@ -234,7 +89,7 @@ function EditSubPage({ loggedIn, signInOut, currentUser, userList, subList, edit
                 </div>
               </div>
 
-              <ModeratorList>
+              <div className={styles.moderatorList}>
                 <p>Moderators</p>
                 <p>Only displaying sub followers</p>
                 <ul>
@@ -245,10 +100,10 @@ function EditSubPage({ loggedIn, signInOut, currentUser, userList, subList, edit
                   }
                 </ul>
                 { editModList ?
-                  <div className='follower-list'>
+                  <div className={styles.followerList}>
                     {
                       sub.followers.map((followerUid) => {
-                        return <p id={followerUid} className={modList.includes(followerUid) ? 'moderator' : null} onClick={
+                        return <p id={followerUid} className={modList.includes(followerUid) ? `moderator ${styles.moderator}` : null} onClick={
                           (e) => toggleModerator(e)}>{userList[followerUid].name
                         }</p>
                       })
@@ -256,7 +111,7 @@ function EditSubPage({ loggedIn, signInOut, currentUser, userList, subList, edit
                   </div> :
                   null
                 }
-                <EditModsBtn>
+                <div className={styles.editModsBtn}>
                   { editModList ?
                     <div>
                       <button onClick={() => setEditModList(false)}>Cancel</button>
@@ -264,22 +119,22 @@ function EditSubPage({ loggedIn, signInOut, currentUser, userList, subList, edit
                     </div> :
                     <button onClick={editModeratorList}>Edit</button>
                   }
-                </EditModsBtn>
-              </ModeratorList>
-              <Submit>
+                </div>
+              </div>
+              <div className={styles.submit}>
                 <button onClick={cancelEditSubHandler}>Cancel</button>
                 <button onClick={editSubHandler}>Save</button>
-              </Submit>
-            </SubContent>
-            <DeleteSub>
+              </div>
+            </div>
+            <div className={styles.deleteSub}>
               <p>Caution: Deleted subs cannot be recovered</p>
               <button onClick={deleteSubHandler}>Delete Sub</button>
-            </DeleteSub>
+            </div>
           </> :
           <p>You must be logged in and own the sub to edit.</p>
         }
           
-      </Wrapper>
+      </div>
     </div>
   );
 };

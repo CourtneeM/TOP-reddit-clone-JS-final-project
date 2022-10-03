@@ -1,0 +1,82 @@
+.wrapper {
+  max-width: 1000px;
+  width: 50%;
+  min-width: 800px;
+  margin: 0 auto;
+  padding: 70px 0;
+}
+.wrapper header {
+  margin-bottom: 40px;
+  font-size: 1.5rem;
+}
+.wrapper header span {
+  font-weight: bold;
+}
+
+.postTypes {
+  display: flex;
+  margin-bottom: -22px;
+}
+.postTypes p {
+  padding: 8px 20px 30px;
+  border-radius: 15px 15px 0 0;
+  cursor: pointer;
+}
+.postTypes .selectedPostType {
+  background-color: #d9d9d9;
+}
+
+.postContent {
+  position: relative;
+  padding: 50px 140px;
+  background-color: #d9d9d9;
+  border-radius: 8px;
+}
+.postContent div:first-child {
+  margin-bottom: 30px;
+}
+.postContent div:first-child input {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+}
+.postContent div:first-child p {
+  position: absolute;
+  bottom: 60px;
+  color: red;
+}
+.postContent textarea, .postContent input:nth-child(2) {
+  width: 100%;
+  margin-bottom: 30px;
+  padding: 10px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+}
+.postContent textarea {
+  resize: none;
+}
+.postContent .postErrorMsg {
+  margin-top: 10px;
+  color: red;
+}
+.postContent .hidden {
+  display: none;
+}
+
+.submitPost {
+  display: flex;
+  justify-content: flex-end;
+}
+.submitPost button {
+  padding: 7px 25px;
+  background-color: #fff;
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+/*# sourceMappingURL=CreatePostPage.module.css.map */
