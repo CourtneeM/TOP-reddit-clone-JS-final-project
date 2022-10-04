@@ -5,7 +5,7 @@ import PostPreview from "../PostPreview/PostPreview";
 
 import styles from './Home.module.css';
 
-function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePost, unfavoritePost, adjustPostVotes, storage }) {
+function Home({ loggedIn, signInOut, currentUser, subList, topPosts, postActions, storage }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -37,7 +37,7 @@ function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePos
   
         return (
           <PostPreview key={postDetails.uid} loggedIn={loggedIn} currentUser={currentUser} post={postDetails}
-            favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage}
+            favoritePost={postActions.favoritePost} unfavoritePost={postActions.unfavoritePost} adjustPostVotes={postActions.adjustPostVotes} storage={storage}
           />
         )
       });

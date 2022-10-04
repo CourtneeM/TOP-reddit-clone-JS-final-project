@@ -6,11 +6,11 @@ import { deleteObject, getDownloadURL, ref, updateMetadata } from 'firebase/stor
 import Navbar from '../../Navbar/Navbar';
 import SubPreview from '../SubPreview/SubPreview';
 import PostPreview from '../../PostPreview/PostPreview';
-import Comment from '../CommentPreview/CommentPreview';
+import CommentPreview from '../CommentPreview/CommentPreview';
 
 import styles from './UserProfilePage.module.css';
 
-function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, favoritePost, unfavoritePost, adjustPostVotes, favoriteComment, unfavoriteComment, adjustCommentVotes, editUser, uploadImage, storage }) {
+function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, postActions, commentActions, editUser, uploadImage, storage }) {
   const [currentSelectedData, setCurrentSelectedData] = useState({});
   const [profileImg, setProfileImg] = useState('');
   const [newProfileImg, setNewProfileImg] = useState({});
@@ -380,17 +380,15 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, favo
           <SubPreview sub={el} />
         </Link> :
       type === 'posts' ?
-        <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={el} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage} /> :
-        <Comment
+        <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={el} postActions={postActions} storage={storage} /> :
+        <CommentPreview
           loggedIn={loggedIn}
           currentUser={currentUser}
           userList={userList}
           subList={subList}
           comments={Object.values(subList[el.subName].posts[el.postUid].comments)}
           comment={el}
-          favoriteComment={favoriteComment}
-          unfavoriteComment={unfavoriteComment}
-          adjustCommentVotes={adjustCommentVotes}
+          commentActions={commentActions}
           storage={storage}
         />
     }

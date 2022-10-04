@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import PostPreview from "../PostPreview/PostPreview";
 import AboutSection from "../About/AboutSection";
@@ -7,9 +7,7 @@ import Navbar from "../Navbar/Navbar";
 
 import styles from './SubPage.module.css';
 
-
-
-function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSub, unfollowSub, favoritePost, unfavoritePost, adjustPostVotes, storage }) {
+function SubPage({ loggedIn, signInOut, currentUser, userList, subList, subActions, postActions, storage }) {
   const params = useParams();
 
   const [sub, setSub] = useState({});
@@ -48,8 +46,8 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSu
           <div className={styles.followBtns}>
             {
               currentUser.followedSubs.includes(sub.name) ?
-              <button onClick={() => unfollowSub(sub.name)}>Unfollow</button> :
-              <button onClick={() => followSub(sub.name)}>Follow</button>
+              <button onClick={() => subActions.unfollowSub(sub.name)}>Unfollow</button> :
+              <button onClick={() => subActions.followSub(sub.name)}>Follow</button>
             }
           </div>
           }
@@ -90,8 +88,8 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSu
       return existingPosts.map((post) => {
   
         return (
-          <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={favoritePost}
-            unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage}
+          <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={postActions.favoritePost}
+            unfavoritePost={postActions.unfavoritePost} adjustPostVotes={postActions.adjustPostVotes} storage={storage}
           />
         );
       });

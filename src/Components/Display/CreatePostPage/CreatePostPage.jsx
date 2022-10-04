@@ -7,7 +7,7 @@ import Navbar from "../Navbar/Navbar";
 import uniqid from 'uniqid';
 import styles from './CreatePostPage.module.css';
 
-function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost, uploadImage, storage }) {
+function CreatePostPage({ loggedIn, signInOut, currentUser, subList, postActions, uploadImage, storage }) {
   const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
   const [postType, setPostType] = useState('text');
@@ -46,7 +46,7 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
       
       getDownloadURL(storageRef).then((url) => {
         updateMetadata(storageRef, { customMetadata: { owner: currentUser.uid, subName: params.subName } });
-        submitPost(params.subName, postUid, postTitle, storageRef._location.path_, postType);
+        postActions.submitPost(params.subName, postUid, postTitle, storageRef._location.path_, postType);
 
         setPostTitle('');
         setPostContent('');
@@ -64,7 +64,7 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
         }
       });
     } else {
-      submitPost(params.subName, postUid, postTitle, postContent, postType);
+      postActions.submitPost(params.subName, postUid, postTitle, postContent, postType);
       
       setPostTitle('');
       setPostContent('');

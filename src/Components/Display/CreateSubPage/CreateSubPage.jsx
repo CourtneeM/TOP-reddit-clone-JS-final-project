@@ -5,8 +5,6 @@ import Navbar from "../Navbar/Navbar";
 
 import styles from './CreateSubPage.module.css';
 
-
-
 function CreateSubPage({ loggedIn, signInOut, currentUser, subList, createSub }) {
   const [subName, setSubName] = useState('');
   const [subtitle, setSubtitle] = useState('');

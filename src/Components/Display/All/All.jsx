@@ -6,7 +6,7 @@ import Navbar from "../Navbar/Navbar";
 
 import styles from './All.module.css';
 
-function All({ loggedIn, signInOut, currentUser, subList, favoritePost, unfavoritePost, adjustPostVotes, storage}) {
+function All({ loggedIn, signInOut, currentUser, subList, postActions, storage}) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -31,8 +31,8 @@ function All({ loggedIn, signInOut, currentUser, subList, favoritePost, unfavori
       return existingPosts.map((post) => {
 
         return (
-          <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={favoritePost}
-            unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage}
+          <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={postActions.favoritePost}
+            unfavoritePost={postActions.unfavoritePost} adjustPostVotes={postActions.adjustPostVotes} storage={storage}
           />
         );
       });

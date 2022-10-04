@@ -7,7 +7,7 @@ import Comment from '../Comment/Comment';
 
 import styles from './PostPage.module.css';
 
-function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favoritePost, unfavoritePost, editPost, deletePost, addComment, favoriteComment, unfavoriteComment, editComment, deleteComment, adjustPostVotes, adjustCommentVotes, uploadImage, storage }) {
+function PostPage({ loggedIn, signInOut, currentUser, userList, subList, postActions, commentActions, storage }) {
   const params = useParams();
   const navigate = useNavigate();
 
@@ -68,7 +68,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
 
           removeEmptySubOrPost('upvotes');
 
-          adjustPostVotes(-1, post, currentUserCopy);
+          postActions.adjustPostVotes(-1, post, currentUserCopy);
         }
         const removeDownvote = () => {
           const userUidIndex = post.downvotes.indexOf(currentUser.uid);
@@ -79,7 +79,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
 
           removeEmptySubOrPost('downvotes');
           
-          adjustPostVotes(1, post, currentUserCopy);
+          postActions.adjustPostVotes(1, post, currentUserCopy);
         }
         
         initialSetup('upvotes');
@@ -90,7 +90,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
         post.upvotes.push(currentUser.uid);
         currentUserCopy.votes.upvotes.posts[post.subName].push(post.uid);
 
-        adjustPostVotes(1, post, currentUserCopy);
+        postActions.adjustPostVotes(1, post, currentUserCopy);
       }
       const downvoteHandler = () => {
         const removeDownvote = () => {
@@ -102,7 +102,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
 
           removeEmptySubOrPost('downvotes');
 
-          adjustPostVotes(1, post, currentUserCopy);
+          postActions.adjustPostVotes(1, post, currentUserCopy);
         }
         const removeUpvote = () => {
           const userUidIndex = post.upvotes.indexOf(currentUser.uid);
@@ -113,7 +113,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
 
           removeEmptySubOrPost('upvotes');
           
-          adjustPostVotes(-1, post, currentUserCopy);
+          postActions.adjustPostVotes(-1, post, currentUserCopy);
         }
 
         initialSetup('downvotes');
@@ -124,15 +124,12 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
         post.downvotes.push(currentUser.uid);
         currentUserCopy.votes.downvotes.posts[post.subName].push(post.uid);
 
-        adjustPostVotes(-1, post, currentUserCopy);
+        postActions.adjustPostVotes(-1, post, currentUserCopy);
       }
 
       e.target.className === "upvote-icon" ? upvoteHandler() : downvoteHandler();
     }
     
-    const adjustCommentVotesHandler = (num, comment, currentUserCopy) => {
-      adjustCommentVotes(num, comment, currentUserCopy);
-    }
     const sortComments = (e) => {
       const commentsCopy = [...comments];
       if (document.querySelector('.selected-sort')) document.querySelector('.selected-sort').classList.remove('selected-sort', styles.selectedSort);
@@ -160,14 +157,14 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
 
       if (commentInput === '') return display.inputError('comment');
 
-      addComment(commentInput, post.uid, subName);
+      commentActions.addComment(commentInput, post.uid, subName);
       setCommentInput('');
     }
     const commentReplyHandler = (replyText, parentComment) => {
-      addComment(replyText, post.uid, subName, parentComment);
+      commentActions.addComment(replyText, post.uid, subName, parentComment);
     }
 
-    return { adjustPostVotesHandler, adjustCommentVotesHandler, sortComments, addCommentHandler, commentReplyHandler }
+    return { adjustPostVotesHandler, sortComments, addCommentHandler, commentReplyHandler }
   })();
 
   const display = (() => {
@@ -298,14 +295,14 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
         
             if (post.type === 'images/videos') {
               const storageRef = ref(storage, `images/posts/${subName}/${editedPostContent.name}-${post.uid}`);
-              await uploadImage(storageRef, editedPostContent);
+              await postActions.uploadImage(storageRef, editedPostContent);
               
               getDownloadURL(storageRef).then((url) => {
                 editedPost.content = `images/posts/${subName}/${editedPostContent.name}-${post.uid}`;
                 setPost(editedPost);
                 setPostContent(editedPost.content);
                 
-                editPost(editedPost);
+                postActions.editPost(editedPost);
         
                 updateMetadata(storageRef, { customMetadata: { owner: currentUser.uid, subName: subName } });
                 deleteImageFromStorage();
@@ -323,7 +320,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
               setPost(editedPost);
               setPostContent(editedPost.content);
         
-              editPost(editedPost);
+              postActions.editPost(editedPost);
             }
         
             setEditMode(false);
@@ -358,7 +355,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
           textPost()
         );
       };
-      const postActions = () => {
+      const postActionsContainer = () => {
         const sharePostHandler = () => {
           navigator.clipboard.writeText(window.location.href);
     
@@ -373,8 +370,8 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
             return (
               loggedIn ?
               currentUser.favorite.posts[subName] && currentUser.favorite.posts[subName].includes(post.uid) ?
-              <p onClick={() => unfavoritePost(subName, post.uid)}>Unfavorite</p> :
-              <p onClick={() => favoritePost(subName, post.uid)}>Favorite</p> :
+              <p onClick={() => postActions.unfavoritePost(subName, post.uid)}>Unfavorite</p> :
+              <p onClick={() => postActions.favoritePost(subName, post.uid)}>Favorite</p> :
               null
             );
           };
@@ -388,7 +385,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
             const deletePostHandler = () => {
               // display popup confirmation
               if ((post.owner.uid === currentUser.uid) || (subList[post.subName].moderators.includes(currentUser.uid))) {
-                deletePost(subName, post.uid);
+                postActions.deletePost(subName, post.uid);
               }
               navigate(`/r/${subName}`);
             }
@@ -423,7 +420,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
         <div className={styles.postSection}>
           { header() }
           { body() }
-          { postActions() }
+          { postActionsContainer() }
         </div>
       );
     };
@@ -441,11 +438,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, favorit
               comments={post.comments}
               comment={comment}
               commentReply={actions.commentReplyHandler}
-              favoriteComment={favoriteComment}
-              unfavoriteComment={unfavoriteComment}
-              editComment={editComment}
-              deleteComment={deleteComment}
-              adjustCommentVotes={actions.adjustCommentVotesHandler}
+              commentActions={commentActions}
               storage={storage}
             /> :
             null

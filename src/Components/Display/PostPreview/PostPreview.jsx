@@ -4,7 +4,7 @@ import { ref, getDownloadURL } from 'firebase/storage';
 
 import styles from './PostPreview.module.css';
 
-function PostPreview({ loggedIn, currentUser, post, favoritePost, unfavoritePost, adjustPostVotes, storage }) {
+function PostPreview({ loggedIn, currentUser, post, postActions, storage }) {
   const [postContent, setPostContent] = useState('');
 
   useEffect(() => {
@@ -55,7 +55,7 @@ function PostPreview({ loggedIn, currentUser, post, favoritePost, unfavoritePost
   
           removeEmptySubOrPost('upvotes');
   
-          adjustPostVotes(-1, post, currentUserCopy);
+          postActions.adjustPostVotes(-1, post, currentUserCopy);
         }
         const removeDownvote = () => {
           const userUidIndex = post.downvotes.indexOf(currentUser.uid);
@@ -66,7 +66,7 @@ function PostPreview({ loggedIn, currentUser, post, favoritePost, unfavoritePost
   
           removeEmptySubOrPost('downvotes');
           
-          adjustPostVotes(1, post, currentUserCopy);
+          postActions.adjustPostVotes(1, post, currentUserCopy);
         }
         
         initialSetup('upvotes');
@@ -77,7 +77,7 @@ function PostPreview({ loggedIn, currentUser, post, favoritePost, unfavoritePost
         post.upvotes.push(currentUser.uid);
         currentUserCopy.votes.upvotes.posts[post.subName].push(post.uid);
   
-        adjustPostVotes(1, post, currentUserCopy);
+        postActions.adjustPostVotes(1, post, currentUserCopy);
       }
       const downvoteHandler = () => {
         const removeDownvote = () => {
@@ -89,7 +89,7 @@ function PostPreview({ loggedIn, currentUser, post, favoritePost, unfavoritePost
   
           removeEmptySubOrPost('downvotes');
   
-          adjustPostVotes(1, post, currentUserCopy);
+          postActions.adjustPostVotes(1, post, currentUserCopy);
         }
         const removeUpvote = () => {
           const userUidIndex = post.upvotes.indexOf(currentUser.uid);
@@ -100,7 +100,7 @@ function PostPreview({ loggedIn, currentUser, post, favoritePost, unfavoritePost
   
           removeEmptySubOrPost('upvotes');
           
-          adjustPostVotes(-1, post, currentUserCopy);
+          postActions.adjustPostVotes(-1, post, currentUserCopy);
         }
   
         initialSetup('downvotes');
@@ -111,7 +111,7 @@ function PostPreview({ loggedIn, currentUser, post, favoritePost, unfavoritePost
         post.downvotes.push(currentUser.uid);
         currentUserCopy.votes.downvotes.posts[post.subName].push(post.uid);
   
-        adjustPostVotes(-1, post, currentUserCopy);
+        postActions.adjustPostVotes(-1, post, currentUserCopy);
       }
   
       e.target.className === "upvote-icon" ? upvoteHandler() : downvoteHandler();
@@ -165,8 +165,8 @@ function PostPreview({ loggedIn, currentUser, post, favoritePost, unfavoritePost
 
             { loggedIn ?
               currentUser.favorite.posts[post.subName] && currentUser.favorite.posts[post.subName].includes(post.uid) ?
-              <p onClick={() => unfavoritePost(post.subName, post.uid)}>Unfavorite</p> :
-              <p onClick={() => favoritePost(post.subName, post.uid)}>Favorite</p> :
+              <p onClick={() => postActions.unfavoritePost(post.subName, post.uid)}>Unfavorite</p> :
+              <p onClick={() => postActions.favoritePost(post.subName, post.uid)}>Favorite</p> :
               null
             }
             <p className='share-btn' onClick={actions.sharePostHandler}>Share</p>

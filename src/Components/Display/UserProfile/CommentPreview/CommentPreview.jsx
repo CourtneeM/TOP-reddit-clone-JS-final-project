@@ -4,7 +4,7 @@ import { HashLink as Link } from "react-router-hash-link";
 
 import styles from './CommentPreview.module.css';
 
-function Comment({ loggedIn, currentUser, userList, subList, comments, comment, favoriteComment, unfavoriteComment, adjustCommentVotes, storage }) {
+function CommentPreview({ loggedIn, currentUser, userList, subList, comments, comment, commentActions, storage }) {
   const [profileImg, setProfileImg] = useState('');
 
   useEffect(() => {
@@ -47,7 +47,7 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
             if (commentEl.upvotes.includes(currentUser.uid)) {
               const index = commentEl.upvotes.indexOf(currentUser.uid);
               commentEl.upvotes.splice(index, 1);
-              adjustCommentVotes(-1, commentEl, currentUserCopy);
+              commentActions.adjustCommentVotes(-1, commentEl, currentUserCopy);
             }
           });
         }
@@ -59,7 +59,7 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
 
           removeEmptySubOrPost('upvotes');
 
-          adjustCommentVotes(-1, comment, currentUserCopy);
+          commentActions.adjustCommentVotes(-1, comment, currentUserCopy);
         }
         const removeDownvote = () => {
           const userUidIndex = comment.downvotes.indexOf(currentUser.uid);
@@ -70,7 +70,7 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
 
           removeEmptySubOrPost('downvotes');
           
-          adjustCommentVotes(1, comment, currentUserCopy);
+          commentActions.adjustCommentVotes(1, comment, currentUserCopy);
         }
         
         initialSetup();
@@ -82,7 +82,7 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
         comment.upvotes.push(currentUser.uid);
         currentUserCopy.votes.upvotes.comments[comment.subName][comment.postUid] = comment.uid;
 
-        adjustCommentVotes(1, comment, currentUserCopy);
+        commentActions.adjustCommentVotes(1, comment, currentUserCopy);
       }
       const downvoteHandler = () => {
         const initialSetup = () => {
@@ -103,7 +103,7 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
 
           removeEmptySubOrPost('downvotes');
 
-          adjustCommentVotes(1, comment, currentUserCopy);
+          commentActions.adjustCommentVotes(1, comment, currentUserCopy);
         }
         const removeUpvote = () => {
           const userUidIndex = comment.upvotes.indexOf(currentUser.uid);
@@ -113,7 +113,7 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
 
           removeEmptySubOrPost('upvotes');
           
-          adjustCommentVotes(-1, comment, currentUserCopy);
+          commentActions.adjustCommentVotes(-1, comment, currentUserCopy);
         }
 
         initialSetup();
@@ -123,7 +123,7 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
         comment.downvotes.push(currentUser.uid);
         currentUserCopy.votes.downvotes.comments[comment.subName][comment.postUid].push(comment.uid);
 
-        adjustCommentVotes(-1, comment, currentUserCopy);
+        commentActions.adjustCommentVotes(-1, comment, currentUserCopy);
       }
 
       e.target.className === 'upvote-icon' ? upvoteHandler() : downvoteHandler();
@@ -149,7 +149,7 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
         </>
       );
     }
-    const commentActions = () => {
+    const commentActionsContainer = () => {
       const displayVoteButton = (type, symbol) => {
         return loggedIn && <p className={`${type}-icon`} onClick={(e) => actions.adjustVotesHandler(e)}>{symbol}</p>
       };
@@ -159,8 +159,8 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
           currentUser.favorite.comments[comment.subName] &&
           currentUser.favorite.comments[comment.subName][comment.postUid] &&
           currentUser.favorite.comments[comment.subName][comment.postUid].includes(comment.uid) ?
-          <p onClick={() => unfavoriteComment(comment.subName, comment.postUid, comment.uid)}>Unfavorite</p> :
-          <p onClick={() => favoriteComment(comment.subName, comment.postUid, comment.uid)}>Favorite</p> :
+          <p onClick={() => commentActions.unfavoriteComment(comment.subName, comment.postUid, comment.uid)}>Unfavorite</p> :
+          <p onClick={() => commentActions.favoriteComment(comment.subName, comment.postUid, comment.uid)}>Favorite</p> :
           null
         );
       };
@@ -189,7 +189,7 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
       );
     }
    
-    return { header, commentActions }
+    return { header, commentActionsContainer }
   })();
 
   return (
@@ -206,7 +206,7 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
         </div>
 
         <div className={`comment-actions ${styles.commentActions}`}>
-          { display.commentActions() }
+          { display.commentActionsContainer() }
         </div>
       </div>
       
@@ -216,7 +216,7 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
           Object.values(comments).map((nextComment) => {
             return comment.children.map((child) => {
               return nextComment.uid === child ?
-              <Comment
+              <CommentPreview
               key={Object.values(nextComment).uid}
               loggedIn={loggedIn}
               currentUser={currentUser}
@@ -224,9 +224,7 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
               subList={subList}
               comments={comments}
               comment={nextComment}
-              favoriteComment={favoriteComment}
-              unfavoriteComment={unfavoriteComment}
-              adjustCommentVotes={adjustCommentVotes}
+              commentActions={commentActions}
               storage={storage}
               /> :
               null
@@ -239,4 +237,4 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
   );
 };
 
-export default Comment;
+export default CommentPreview;
