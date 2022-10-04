@@ -35,31 +35,87 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSu
     setLoadingPosts(false);
   }, [posts]);
 
-  const sortPosts = (e) => {
-    const postsCopy = [...posts];
-    document.querySelector('.selected-sort').classList.remove('selected-sort', styles.selectedSort);
-    e.target.classList.add('selected-sort', styles.selectedSort);
-
-    if (e.target.textContent === 'Top') {
-      postsCopy.sort((a, b) => b.votes - a.votes);
-    }
-    if (e.target.textContent === 'New') {
-      postsCopy.sort((a, b) => b.creationDateTime.fullDateTime - a.creationDateTime.fullDateTime);
-    }
-
-    setPosts(postsCopy);
-  }
-  const getPostPreview = () => {
-    const existingPosts = Object.values(posts).filter((post) => !post.deleteStatus.deleted);
-    return existingPosts.map((post) => {
-      const path = `${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`;
-
+  const display = (() => {
+    const subInfo = () => {
       return (
-        <Link to={path} key={post.uid} className='default-link'>
-          <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage} />
-        </Link>
-      )
-    });
+        <>
+          <div>
+            <p>{sub.subTitle}</p>
+            <p>r/{sub.name}</p>
+          </div>
+          {
+          loggedIn &&
+          <div className={styles.followBtns}>
+            {
+              currentUser.followedSubs.includes(sub.name) ?
+              <button onClick={() => unfollowSub(sub.name)}>Unfollow</button> :
+              <button onClick={() => followSub(sub.name)}>Follow</button>
+            }
+          </div>
+          }
+        </>
+      );
+    }
+
+    return { subInfo }
+  })();
+
+  const contentSection = () => {
+    const displaySortOptions = () => {
+      return (
+        <div className={styles.sortOptions}>
+          <ul>
+            <li onClick={(e) => sortPosts(e)}>Top</li>
+            <li onClick={(e) => sortPosts(e)} className='selected-sort'>New</li>
+          </ul>
+        </div>
+      );
+    }
+    const sortPosts = (e) => {
+      const postsCopy = [...posts];
+      document.querySelector('.selected-sort').classList.remove('selected-sort', styles.selectedSort);
+      e.target.classList.add('selected-sort', styles.selectedSort);
+  
+      if (e.target.textContent === 'Top') {
+        postsCopy.sort((a, b) => b.votes - a.votes);
+      }
+      if (e.target.textContent === 'New') {
+        postsCopy.sort((a, b) => b.creationDateTime.fullDateTime - a.creationDateTime.fullDateTime);
+      }
+  
+      setPosts(postsCopy);
+    }
+    const getPostPreview = () => {
+      const existingPosts = Object.values(posts).filter((post) => !post.deleteStatus.deleted);
+      return existingPosts.map((post) => {
+        const path = `${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`;
+  
+        return (
+          <Link to={path} key={post.uid} className='default-link'>
+            <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage} />
+          </Link>
+        )
+      });
+    }
+
+    return (
+      <div className={styles.contentSection}>
+        { displaySortOptions() }
+
+        <div className={styles.postsContainer}>
+          {
+            loadingPosts ?
+            <p>Loading...</p> :
+            getPostPreview()
+          }
+        </div>
+        {
+          loadingSubInfo ?
+          <p>Loading...</p> :  
+          <AboutSection loggedIn={loggedIn} currentUser={currentUser} userList={userList} sub={sub} /> 
+        }
+      </div>
+    );
   }
 
   return (
@@ -71,46 +127,11 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSu
           {
             loadingSubInfo ?
             <p>Loading...</p> :
-            <>
-              <div>
-                <p>{sub.subTitle}</p>
-                <p>r/{sub.name}</p>
-              </div>
-              {
-              loggedIn &&
-              <div className={styles.followBtns}>
-                {
-                  currentUser.followedSubs.includes(sub.name) ?
-                  <button onClick={() => unfollowSub(sub.name)}>Unfollow</button> :
-                  <button onClick={() => followSub(sub.name)}>Follow</button>
-                }
-              </div>
-              }
-            </>
+            display.subInfo()
           }
         </header>
 
-        <div className={styles.contentSection}>
-          <div className={styles.sortOptions}>
-            <ul>
-              <li onClick={(e) => sortPosts(e)}>Top</li>
-              <li onClick={(e) => sortPosts(e)} className='selected-sort'>New</li>
-            </ul>
-          </div>
-
-          <div className={styles.postsContainer}>
-            {
-              loadingPosts ?
-              <p>Loading...</p> :
-              getPostPreview()
-            }
-          </div>
-          {
-           loadingSubInfo ?
-            <p>Loading...</p> :  
-            <AboutSection loggedIn={loggedIn} currentUser={currentUser} userList={userList} sub={sub} /> 
-          }
-        </div>
+        { contentSection() }
       </div>
     </div>
   );

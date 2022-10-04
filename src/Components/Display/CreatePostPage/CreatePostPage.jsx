@@ -25,20 +25,18 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
       prevSelectedTypeEl.classList.remove(styles.selectedPostType);
     }
 
-    console.log(e.target);
     e.target.id = 'selected-post-type';
     e.target.className = styles.selectedPostType;
   }
-  
   const submitPostHandler = async (e) => {
     const isFileTooLarge = (fileSize) => fileSize > (20 * 1024 * 1024);
 
     e.preventDefault();
 
-    if (postTitle === '') return displayInputError('title');
-    if ((postType === 'images/videos' && (postContent === '' || postContent === undefined)) || (postType === 'link' && postContent === '')) return displayInputError('post', 'empty');
-    if (postType === 'images/videos' && isFileTooLarge(postContent.size)) return displayInputError('post', 'too large');
-    if (postType === 'images/videos' && postContent['type'].split('/')[0] !== 'image' ) return displayInputError('post', 'not image');
+    if (postTitle === '') return display.inputError('title');
+    if ((postType === 'images/videos' && (postContent === '' || postContent === undefined)) || (postType === 'link' && postContent === '')) return display.inputError('post', 'empty');
+    if (postType === 'images/videos' && isFileTooLarge(postContent.size)) return display.inputError('post', 'too large');
+    if (postType === 'images/videos' && postContent['type'].split('/')[0] !== 'image' ) return display.inputError('post', 'not image');
 
     const postUid = uniqid();
 
@@ -55,13 +53,13 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
         navigate(`/r/${params.subName}`);
       }).catch((err) => {
         if (postContent['type'].split('/')[0] !== 'image') {
-          displayInputError('post', 'not image');
+          display.inputError('post', 'not image');
           console.log('Error: File is not image', err);
         } else if (isFileTooLarge(postContent.size)) {
-          displayInputError('post', 'too large');
+          display.inputError('post', 'too large');
           console.log('Error: Image too large', err);
         } else {
-          displayInputError('post', 'general');
+          display.inputError('post', 'general');
           console.log('Error uploading image', err);
         }
       });
@@ -73,28 +71,62 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
       navigate(`/r/${params.subName}`);
     }
   }
-  const displayInputError = (type, reason=null) => {
-    const errorMsg = document.querySelector(`.${type}-error-msg`);
-
-    if (type === 'title') errorMsg.textContent = 'Error: Post title cannot be empty';
-
-    if (type === 'post') {
-      if (reason === 'too large') {
-        errorMsg.textContent = 'Error: File size too large. Max 20MB';
-      } else if (reason === 'not image') {
-        errorMsg.textContent = 'Error: File must be an image';
-      } else if (reason === 'empty') {
-        errorMsg.textContent = 'Error: Post content cannot be empty';
-      } else {
-        errorMsg.textContent = 'Error uploading image';
-      }
+  const display = (() => {
+    const postContainer = () => {
+      return (
+        <>
+          <div>
+            <input type="text" placeholder="Title" value={postTitle} onChange={(e) => setPostTitle(e.target.value)} />
+            <p className='title-error-msg hidden'></p>
+          </div>
+          {
+            postType === 'text' ? 
+            <textarea name="post-content" id="post-content" cols="30" rows="10" placeholder="Text (optional)"
+              value={postContent}
+              onChange={(e) => setPostContent(e.target.value)}>
+            </textarea> :
+            postType === 'images/videos' ?
+            <input type="file" name="post-content" id="file-upload"
+              onChange={(e) => setPostContent(e.target.files[0])}
+            /> :
+            <input type="url" name="post-content" id="post-content" placeholder="URL"
+              value={postContent}
+              onChange={(e) => setPostContent(e.target.value)}
+            />
+          }
+          <p className={`${styles.postErrorMsg} ${styles.hidden}`}></p>
+          <div className={styles.submitPost}>
+            <button onClick={(e) => submitPostHandler(e)}>Post</button>
+          </div>
+        </>
+      );
     }
 
-    setTimeout(() => {
-      errorMsg.classList.add('hidden');
-    }, 5000);
-    errorMsg.classList.remove('hidden');
-  }
+    const inputError = (type, reason=null) => {
+      const errorMsg = document.querySelector(`.${type}-error-msg`);
+  
+      if (type === 'title') errorMsg.textContent = 'Error: Post title cannot be empty';
+  
+      if (type === 'post') {
+        if (reason === 'too large') {
+          errorMsg.textContent = 'Error: File size too large. Max 20MB';
+        } else if (reason === 'not image') {
+          errorMsg.textContent = 'Error: File must be an image';
+        } else if (reason === 'empty') {
+          errorMsg.textContent = 'Error: Post content cannot be empty';
+        } else {
+          errorMsg.textContent = 'Error uploading image';
+        }
+      }
+  
+      setTimeout(() => {
+        errorMsg.classList.add('hidden');
+      }, 5000);
+      errorMsg.classList.remove('hidden');
+    }
+
+    return { postContainer, inputError }
+  })();
 
   return (
     <div>
@@ -114,29 +146,7 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, submitPost,
             </div>
 
             <div className={styles.postContent}>
-              <div>
-                <input type="text" placeholder="Title" value={postTitle} onChange={(e) => setPostTitle(e.target.value)} />
-                <p className='title-error-msg hidden'></p>
-              </div>
-              {
-                postType === 'text' ? 
-                <textarea name="post-content" id="post-content" cols="30" rows="10" placeholder="Text (optional)"
-                  value={postContent}
-                  onChange={(e) => setPostContent(e.target.value)}>
-                </textarea> :
-                postType === 'images/videos' ?
-                <input type="file" name="post-content" id="file-upload"
-                  onChange={(e) => setPostContent(e.target.files[0])}
-                /> :
-                <input type="url" name="post-content" id="post-content" placeholder="URL"
-                  value={postContent}
-                  onChange={(e) => setPostContent(e.target.value)}
-                />
-              }
-              <p className={`${styles.postErrorMsg} ${styles.hidden}`}></p>
-              <div className={styles.submitPost}>
-                <button onClick={(e) => submitPostHandler(e)}>Post</button>
-              </div>
+              { display.postContainer() }
             </div>
           </> :
           <p>You must be logged in to create a new post.</p>

@@ -17,6 +17,31 @@ function All({ loggedIn, signInOut, currentUser, subList, favoritePost, unfavori
     setLoading(false);
   }, [posts]);
 
+  const display = (() => {
+    const sortOptions = () => {
+      return (
+        <ul>
+          <li onClick={(e) => sortPosts(e)}>Top</li>
+          <li onClick={(e) => sortPosts(e)}>New</li>
+        </ul>
+      );
+    }
+    const postPreview = () => {
+      const existingPosts = posts.filter((post) => !post.deleteStatus.deleted);
+      return existingPosts.map((post) => {
+        const path = `/r/${post.subName}/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`
+
+        return (
+          <Link to={path} key={post.uid} className='default-link'>
+            <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage} />
+          </Link>
+        );
+      });
+    }
+
+    return { sortOptions, postPreview }
+  })();
+  
   const sortPosts = (e) => {
     const postsCopy = [...posts];
     if (document.querySelector('.selected-sort')) document.querySelector('.selected-sort').classList.remove('selected-sort', styles.selectedSort);
@@ -32,17 +57,6 @@ function All({ loggedIn, signInOut, currentUser, subList, favoritePost, unfavori
 
     setPosts(postsCopy);
   }
-  const getPostPreview = () => {
-    const existingPosts = posts.filter((post) => !post.deleteStatus.deleted);
-    return existingPosts.map((post) => {
-      const path = `/r/${post.subName}/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`
-      return (
-        <Link to={path} key={post.uid} className='default-link'>
-          <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage} />
-        </Link>
-      );
-    });
-  }
 
   return (
     <div>
@@ -51,17 +65,15 @@ function All({ loggedIn, signInOut, currentUser, subList, favoritePost, unfavori
         
         <div className={styles.postsSection}>
           <div className={styles.sortOptions}>
-            <ul>
-              <li onClick={(e) => sortPosts(e)}>Top</li>
-              <li onClick={(e) => sortPosts(e)}>New</li>
-            </ul>
+            { display.sortOptions() }
           </div>
+
 
           <div>
             {
               loading ?
               <p>Loading...</p> :
-              getPostPreview()
+              display.postPreview()
             }
           </div>
         </div>

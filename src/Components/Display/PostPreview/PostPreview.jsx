@@ -30,29 +30,33 @@ function PostPreview({ loggedIn, currentUser, post, favoritePost, unfavoritePost
     }
   }, [storage]);
 
-  const displayHeader = () => {
-    return (
-      <header>
-        <p>Posted by
-          <Link to={`/u/${post.owner.uid}/${post.owner.name}`} className='default-link'>
-            u/{post.owner.name}
-          </Link>
-          </p>
-        <p>{`${post.creationDateTime.date.month}/${post.creationDateTime.date.day}/${post.creationDateTime.date.year}`}</p>
-      </header>
-    );
-  }
-  const displayBody = () => {
-    return (
-      <body>
-        <h4>{post.title}</h4>
-        { post.type === 'images/videos' ?
-          <img src={postContent} alt="" /> :
-          <p>{postContent}</p>
-        }
-      </body>
-    );
-  }
+  const display = (() => {
+    const header = () => {
+      return (
+        <header>
+          <p>Posted by
+            <Link to={`/u/${post.owner.uid}/${post.owner.name}`} className='default-link'>
+              u/{post.owner.name}
+            </Link>
+            </p>
+          <p>{`${post.creationDateTime.date.month}/${post.creationDateTime.date.day}/${post.creationDateTime.date.year}`}</p>
+        </header>
+      );
+    }
+    const body = () => {
+      return (
+        <body>
+          <h4>{post.title}</h4>
+          { post.type === 'images/videos' ?
+            <img src={postContent} alt="" /> :
+            <p>{postContent}</p>
+          }
+        </body>
+      );
+    }
+
+    return { header, body } 
+  })();
 
   const postActions = (() => {
     const adjustPostVotesHandler = (e) => {
@@ -176,8 +180,8 @@ function PostPreview({ loggedIn, currentUser, post, favoritePost, unfavoritePost
 
   return (
     <div id={`post-${post.uid}`} className={styles.wrapper}>
-      { displayHeader() }
-      { displayBody() }
+      { display.header() }
+      { display.body() }
       { postActions.display() }
     </div>
   );

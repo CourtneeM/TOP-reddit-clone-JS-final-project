@@ -20,6 +20,34 @@ function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePos
     setLoading(false);
   }, [posts])
 
+  const display = (() => {
+    const sortOptions = () => {
+      return (
+        <div className={styles.sortOptions}>
+          <ul>
+            <li onClick={(e) => sortPosts(e)} className={`selected-sort ${styles.selectedSort}`}>Top</li>
+            <li onClick={(e) => sortPosts(e)}>New</li>
+          </ul>
+        </div>
+      );
+    }
+    const postPreview = () => {
+      const existingPosts = posts.filter((post) => !Object.values(post)[0].deleteStatus.deleted);
+      return existingPosts.map((post) => {
+        const postDetails = Object.values(post)[0];
+        const path = `/r/${postDetails.subName}/${postDetails.uid}/${postDetails.title.split(' ').join('_').toLowerCase()}`;
+  
+        return (
+          <Link to={path} key={postDetails.uid} className='default-link'>
+            <PostPreview key={postDetails.uid} loggedIn={loggedIn} currentUser={currentUser} post={postDetails} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage} />
+          </Link>
+        )
+      });
+    }
+
+    return { sortOptions, postPreview }
+  })();
+  
   const sortPosts = (e) => {
     const postsCopy = [...posts];
     document.querySelector('.selected-sort').classList.remove('selected-sort', styles.selectedSort);
@@ -37,37 +65,19 @@ function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePos
 
     setPosts(postsCopy);
   }
-  const getPostPreview = () => {
-    const existingPosts = posts.filter((post) => !Object.values(post)[0].deleteStatus.deleted);
-    return existingPosts.map((post) => {
-      const postDetails = Object.values(post)[0];
-      const path = `/r/${postDetails.subName}/${postDetails.uid}/${postDetails.title.split(' ').join('_').toLowerCase()}`;
-
-      return (
-        <Link to={path} key={postDetails.uid} className='default-link'>
-          <PostPreview key={postDetails.uid} loggedIn={loggedIn} currentUser={currentUser} post={postDetails} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage} />
-        </Link>
-      )
-    });
-  }
 
   return (
     <div>
       <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} currentSub={'Home'} />
       <div className={styles.wrapper}>
         <div className={styles.postsSection}>
-          <div className={styles.sortOptions}>
-            <ul>
-              <li onClick={(e) => sortPosts(e)} className={`selected-sort ${styles.selectedSort}`}>Top</li>
-              <li onClick={(e) => sortPosts(e)}>New</li>
-            </ul>
-          </div>
+          { display.sortOptions() }
 
           <div>
             {
               loading ?
               <p>Loading...</p> :
-              getPostPreview()
+              display.postPreview()
             }
           </div>
         </div>
