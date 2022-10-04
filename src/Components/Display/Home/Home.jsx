@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
 
 import Navbar from "../Navbar/Navbar";
 import PostPreview from "../PostPreview/PostPreview";
@@ -35,12 +34,11 @@ function Home({ loggedIn, signInOut, currentUser, subList, topPosts, favoritePos
       const existingPosts = posts.filter((post) => !Object.values(post)[0].deleteStatus.deleted);
       return existingPosts.map((post) => {
         const postDetails = Object.values(post)[0];
-        const path = `/r/${postDetails.subName}/${postDetails.uid}/${postDetails.title.split(' ').join('_').toLowerCase()}`;
   
         return (
-          <Link to={path} key={postDetails.uid} className='default-link'>
-            <PostPreview key={postDetails.uid} loggedIn={loggedIn} currentUser={currentUser} post={postDetails} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage} />
-          </Link>
+          <PostPreview key={postDetails.uid} loggedIn={loggedIn} currentUser={currentUser} post={postDetails}
+            favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage}
+          />
         )
       });
     }

@@ -29,12 +29,11 @@ function All({ loggedIn, signInOut, currentUser, subList, favoritePost, unfavori
     const postPreview = () => {
       const existingPosts = posts.filter((post) => !post.deleteStatus.deleted);
       return existingPosts.map((post) => {
-        const path = `/r/${post.subName}/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`
 
         return (
-          <Link to={path} key={post.uid} className='default-link'>
-            <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage} />
-          </Link>
+          <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={favoritePost}
+            unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage}
+          />
         );
       });
     }

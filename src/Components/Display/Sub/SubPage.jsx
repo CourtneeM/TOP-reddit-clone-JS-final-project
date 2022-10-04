@@ -88,13 +88,12 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, followSu
     const getPostPreview = () => {
       const existingPosts = Object.values(posts).filter((post) => !post.deleteStatus.deleted);
       return existingPosts.map((post) => {
-        const path = `${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`;
   
         return (
-          <Link to={path} key={post.uid} className='default-link'>
-            <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={favoritePost} unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage} />
-          </Link>
-        )
+          <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={favoritePost}
+            unfavoritePost={unfavoritePost} adjustPostVotes={adjustPostVotes} storage={storage}
+          />
+        );
       });
     }
 

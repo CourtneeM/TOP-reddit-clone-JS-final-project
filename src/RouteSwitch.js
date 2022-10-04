@@ -926,7 +926,11 @@ function RouteSwitch() {
             currentUser={currentUser}
             userList={userList}
             subList={subList}
+            favoritePost={favoritePost}
+            unfavoritePost={unfavoritePost}
             adjustPostVotes={adjustPostVotes}
+            favoriteComment={favoriteComment}
+            unfavoriteComment={unfavoriteComment}
             adjustCommentVotes={adjustCommentVotes}
             editUser={editUser}
             uploadImage={uploadImage}

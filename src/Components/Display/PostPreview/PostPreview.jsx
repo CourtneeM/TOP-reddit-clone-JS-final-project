@@ -30,35 +30,7 @@ function PostPreview({ loggedIn, currentUser, post, favoritePost, unfavoritePost
     }
   }, [storage]);
 
-  const display = (() => {
-    const header = () => {
-      return (
-        <header>
-          <p>Posted by
-            <Link to={`/u/${post.owner.uid}/${post.owner.name}`} className='default-link'>
-              u/{post.owner.name}
-            </Link>
-            </p>
-          <p>{`${post.creationDateTime.date.month}/${post.creationDateTime.date.day}/${post.creationDateTime.date.year}`}</p>
-        </header>
-      );
-    }
-    const body = () => {
-      return (
-        <body>
-          <h4>{post.title}</h4>
-          { post.type === 'images/videos' ?
-            <img src={postContent} alt="" /> :
-            <p>{postContent}</p>
-          }
-        </body>
-      );
-    }
-
-    return { header, body } 
-  })();
-
-  const postActions = (() => {
+  const actions = (() => {
     const adjustPostVotesHandler = (e) => {
       const currentUserCopy = {...currentUser};
       
@@ -153,36 +125,69 @@ function PostPreview({ loggedIn, currentUser, post, favoritePost, unfavoritePost
     }
     const getNumComments = () => Object.keys(post.comments).length;
 
-    const display = () => {
+    return { adjustPostVotesHandler, sharePostHandler, getNumComments }
+  })();
+  const display = (() => {
+    const path = `/r/${post.subName}/${post.uid}/${post.title.split(' ').join('_').toLowerCase()}`;
+
+    const header = () => {
+      return (
+        <header>
+          <p>Posted by
+            <Link to={`/u/${post.owner.uid}/${post.owner.name}`} className='default-link'>
+              u/{post.owner.name}
+            </Link>
+            </p>
+          <p>{`${post.creationDateTime.date.month}/${post.creationDateTime.date.day}/${post.creationDateTime.date.year}`}</p>
+        </header>
+      );
+    }
+    const body = () => {
+      return (
+        <body>
+          <Link to={path} key={post.uid} className='default-link'>
+            <h4>{post.title}</h4>
+            { post.type === 'images/videos' ?
+              <img src={postContent} alt="" /> :
+              <p>{postContent}</p>
+            }
+          </Link>
+        </body>
+      );
+    }
+    const postActions = () => {
       return (
         <>
           <div className={styles.options}>
-            <p>{getNumComments() === 1 ? getNumComments() + ' Comment' : getNumComments() + ' Comments'}</p>
+            <Link to={path} key={post.uid} className='default-link'>
+              <p>{actions.getNumComments() === 1 ? actions.getNumComments() + ' Comment' : actions.getNumComments() + ' Comments'}</p>
+            </Link>
+
             { loggedIn ?
               currentUser.favorite.posts[post.subName] && currentUser.favorite.posts[post.subName].includes(post.uid) ?
               <p onClick={() => unfavoritePost(post.subName, post.uid)}>Unfavorite</p> :
               <p onClick={() => favoritePost(post.subName, post.uid)}>Favorite</p> :
               null
             }
-            <p className='share-btn' onClick={sharePostHandler}>Share</p>
+            <p className='share-btn' onClick={actions.sharePostHandler}>Share</p>
           </div>
           <div className={styles.voteStatus}>
-            { loggedIn && <p className="upvote-icon" onClick={(e) => adjustPostVotesHandler(e)}>^</p> }
+            { loggedIn && <p className="upvote-icon" onClick={(e) => actions.adjustPostVotesHandler(e)}>^</p> }
             <p>{post.votes}</p>
-            { loggedIn && <p className="downvote-icon" onClick={(e) => adjustPostVotesHandler(e)}>v</p> }
+            { loggedIn && <p className="downvote-icon" onClick={(e) => actions.adjustPostVotesHandler(e)}>v</p> }
           </div>
         </>
       );
     }
 
-    return { display }
+    return { header, body, postActions } 
   })();
 
   return (
     <div id={`post-${post.uid}`} className={styles.wrapper}>
       { display.header() }
       { display.body() }
-      { postActions.display() }
+      { display.postActions() }
     </div>
   );
 };
