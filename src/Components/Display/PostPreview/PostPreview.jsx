@@ -8,12 +8,12 @@ import { PostContext } from '../../Contexts/PostContext';
 
 import styles from './PostPreview.module.css';
 
-function PostPreview({ post, storage }) {
+function PostPreview({ post }) {
   const [postContent, setPostContent] = useState('');
 
   const { loggedIn } = useContext(LogInOutContext);
   const { currentUser } = useContext(UserContext);
-  const { adjustPostVotes, favoritePost, unfavoritePost } = useContext(PostContext);
+  const { adjustPostVotes, favoritePost, unfavoritePost, storage } = useContext(PostContext);
 
   useEffect(() => {
     if (post.type === 'images/videos' && storage) {

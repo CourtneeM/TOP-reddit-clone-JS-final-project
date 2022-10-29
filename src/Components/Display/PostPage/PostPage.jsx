@@ -6,12 +6,14 @@ import { LogInOutContext } from '../../Contexts/LogInOutContext';
 import { UserContext } from '../../Contexts/UserContext';
 import { SubContext } from '../../Contexts/SubContext';
 import { PostContext } from '../../Contexts/PostContext';
+import { CommentContext } from '../../Contexts/CommentContext';
+
 import Navbar from '../Navbar/Navbar';
 import Comment from '../Comment/Comment';
 
 import styles from './PostPage.module.css';
 
-function PostPage({ commentActions, uploadImage, storage }) {
+function PostPage() {
   const params = useParams();
   const navigate = useNavigate();
 
@@ -27,7 +29,8 @@ function PostPage({ commentActions, uploadImage, storage }) {
   const { loggedIn } = useContext(LogInOutContext);
   const { currentUser } = useContext(UserContext);
   const { subList } = useContext(SubContext);
-  const { editPost, deletePost, adjustPostVotes, favoritePost, unfavoritePost } = useContext(PostContext);
+  const { editPost, deletePost, adjustPostVotes, favoritePost, unfavoritePost, uploadImage, storage } = useContext(PostContext);
+  const { addComment } = useContext(CommentContext);
 
   useEffect(() => {
     if (Object.values(subList).length === 0) return;
@@ -166,11 +169,11 @@ function PostPage({ commentActions, uploadImage, storage }) {
 
       if (commentInput === '') return display.inputError('comment');
 
-      commentActions.addComment(commentInput, post.uid, subName);
+      addComment(commentInput, post.uid, subName);
       setCommentInput('');
     }
     const commentReplyHandler = (replyText, parentComment) => {
-      commentActions.addComment(replyText, post.uid, subName, parentComment);
+      addComment(replyText, post.uid, subName, parentComment);
     }
 
     return { adjustPostVotesHandler, sortComments, addCommentHandler, commentReplyHandler }
@@ -438,13 +441,10 @@ function PostPage({ commentActions, uploadImage, storage }) {
         return Object.values(comments).map((comment) => {
           return (
             !comment.parentUid ?
-            <Comment
-              key={comment.uid}
+            <Comment key={comment.uid}
               comments={post.comments}
               comment={comment}
               commentReply={actions.commentReplyHandler}
-              commentActions={commentActions}
-              storage={storage}
             /> :
             null
           )

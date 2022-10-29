@@ -8,7 +8,7 @@ import Navbar from "../Navbar/Navbar";
 
 import styles from './All.module.css';
 
-function All({ storage }) {
+function All() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -36,7 +36,7 @@ function All({ storage }) {
 
         return (
           <PostProvider>
-            <PostPreview post={post} storage={storage} />
+            <PostPreview key={post.uid} post={post} />
           </PostProvider>
         );
       });

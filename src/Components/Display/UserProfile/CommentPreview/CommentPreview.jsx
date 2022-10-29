@@ -5,15 +5,17 @@ import { getDownloadURL, ref } from "firebase/storage";
 import { LogInOutContext } from "../../../Contexts/LogInOutContext";
 import { UserContext } from "../../../Contexts/UserContext";
 import { SubContext } from "../../../Contexts/SubContext";
+import { CommentContext } from "../../../Contexts/CommentContext";
 
 import styles from './CommentPreview.module.css';
 
-function CommentPreview({ comments, comment, commentActions, storage }) {
+function CommentPreview({ comments, comment }) {
   const [profileImg, setProfileImg] = useState('');
 
   const { loggedIn } = useContext(LogInOutContext);
   const { userList, currentUser } = useContext(UserContext);
-  const { subList } = useContext(SubContext); 
+  const { subList, storage } = useContext(SubContext);
+  const { adjustCommentVotes, favoriteComment, unfavoriteComment } = useContext(CommentContext);
 
   useEffect(() => {
     const imageRef = ref(storage, userList[comment.owner.uid].profileImage);
@@ -55,7 +57,7 @@ function CommentPreview({ comments, comment, commentActions, storage }) {
             if (commentEl.upvotes.includes(currentUser.uid)) {
               const index = commentEl.upvotes.indexOf(currentUser.uid);
               commentEl.upvotes.splice(index, 1);
-              commentActions.adjustCommentVotes(-1, commentEl, currentUserCopy);
+              adjustCommentVotes(-1, commentEl, currentUserCopy);
             }
           });
         }
@@ -67,7 +69,7 @@ function CommentPreview({ comments, comment, commentActions, storage }) {
 
           removeEmptySubOrPost('upvotes');
 
-          commentActions.adjustCommentVotes(-1, comment, currentUserCopy);
+          adjustCommentVotes(-1, comment, currentUserCopy);
         }
         const removeDownvote = () => {
           const userUidIndex = comment.downvotes.indexOf(currentUser.uid);
@@ -78,7 +80,7 @@ function CommentPreview({ comments, comment, commentActions, storage }) {
 
           removeEmptySubOrPost('downvotes');
           
-          commentActions.adjustCommentVotes(1, comment, currentUserCopy);
+          adjustCommentVotes(1, comment, currentUserCopy);
         }
         
         initialSetup();
@@ -90,7 +92,7 @@ function CommentPreview({ comments, comment, commentActions, storage }) {
         comment.upvotes.push(currentUser.uid);
         currentUserCopy.votes.upvotes.comments[comment.subName][comment.postUid] = comment.uid;
 
-        commentActions.adjustCommentVotes(1, comment, currentUserCopy);
+        adjustCommentVotes(1, comment, currentUserCopy);
       }
       const downvoteHandler = () => {
         const initialSetup = () => {
@@ -111,7 +113,7 @@ function CommentPreview({ comments, comment, commentActions, storage }) {
 
           removeEmptySubOrPost('downvotes');
 
-          commentActions.adjustCommentVotes(1, comment, currentUserCopy);
+          adjustCommentVotes(1, comment, currentUserCopy);
         }
         const removeUpvote = () => {
           const userUidIndex = comment.upvotes.indexOf(currentUser.uid);
@@ -121,7 +123,7 @@ function CommentPreview({ comments, comment, commentActions, storage }) {
 
           removeEmptySubOrPost('upvotes');
           
-          commentActions.adjustCommentVotes(-1, comment, currentUserCopy);
+          adjustCommentVotes(-1, comment, currentUserCopy);
         }
 
         initialSetup();
@@ -131,7 +133,7 @@ function CommentPreview({ comments, comment, commentActions, storage }) {
         comment.downvotes.push(currentUser.uid);
         currentUserCopy.votes.downvotes.comments[comment.subName][comment.postUid].push(comment.uid);
 
-        commentActions.adjustCommentVotes(-1, comment, currentUserCopy);
+        adjustCommentVotes(-1, comment, currentUserCopy);
       }
 
       e.target.className === 'upvote-icon' ? upvoteHandler() : downvoteHandler();
@@ -167,8 +169,8 @@ function CommentPreview({ comments, comment, commentActions, storage }) {
           currentUser.favorite.comments[comment.subName] &&
           currentUser.favorite.comments[comment.subName][comment.postUid] &&
           currentUser.favorite.comments[comment.subName][comment.postUid].includes(comment.uid) ?
-          <p onClick={() => commentActions.unfavoriteComment(comment.subName, comment.postUid, comment.uid)}>Unfavorite</p> :
-          <p onClick={() => commentActions.favoriteComment(comment.subName, comment.postUid, comment.uid)}>Favorite</p> :
+          <p onClick={() => unfavoriteComment(comment.subName, comment.postUid, comment.uid)}>Unfavorite</p> :
+          <p onClick={() => favoriteComment(comment.subName, comment.postUid, comment.uid)}>Favorite</p> :
           null
         );
       };
@@ -228,8 +230,6 @@ function CommentPreview({ comments, comment, commentActions, storage }) {
               key={Object.values(nextComment).uid}
               comments={comments}
               comment={nextComment}
-              commentActions={commentActions}
-              storage={storage}
               /> :
               null
             })

@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { UserContext } from "./UserContext";
 
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, setDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import { getFirestore, collection, doc, getDocs, setDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { getStorage, ref, deleteObject, listAll } from "firebase/storage";
 import { getFirebaseConfig } from '../../firebase-config';
 
@@ -19,6 +19,43 @@ const SubProvider = ({ children }) => {
   const [topPosts, setTopPosts] = useState([]);
 
   const { userList, setUserList, currentUser } = useContext(UserContext);
+
+  useEffect(() => {
+    const getSubList = async () => {
+      const newSubList = {};
+      const querySnapshot = await getDocs(collection(db, 'subs'));
+      querySnapshot.forEach((doc) => {
+        const {name, owner, subTitle, about, moderators, followers, creationDateTime, posts} = doc.data();
+        const existingSub = new Sub(name, owner, subTitle, about, moderators, followers, creationDateTime, posts);
+        
+        const existingPosts = existingSub.posts;
+        delete existingSub.posts;
+        existingSub.posts = {};
+        Object.keys(existingPosts).forEach((postUid) => {
+          const { uid, title, owner, type, content, subName, creationDateTime, favoritedBy, votes, upvotes, downvotes, editStatus, deleteStatus, comments } = existingPosts[postUid];
+          existingSub.addPost(uid, title, owner, type, content, subName, creationDateTime, favoritedBy, votes, upvotes, downvotes, editStatus, deleteStatus, comments);
+
+          const post = existingSub.posts[postUid];
+          const existingComments = post.comments;
+          delete post.comments;
+          post.comments = {};
+
+          Object.keys(existingComments).forEach((commentUid) => {
+            const { uid, postUid, subName, owner, text, parentUid, creationDateTime, favoritedBy, votes, upvotes, downvotes, editStatus, deleteStatus, children } = existingComments[commentUid];
+            post.addComment(uid, postUid, subName, owner, text, parentUid, creationDateTime, favoritedBy, votes, upvotes, downvotes, editStatus, deleteStatus, children);
+          });
+
+          existingSub.posts[postUid] = post;
+        });
+
+        newSubList[existingSub.name] = existingSub;
+      });
+
+      setSubList(newSubList);
+    }
+
+    getSubList();
+  }, [])
 
   useEffect(() => {
     setTopPosts([].concat.apply([], Object.keys(subList).map((key) => subList[key].getTopPosts())));
@@ -231,7 +268,7 @@ const SubProvider = ({ children }) => {
   }
   
   return (
-    <SubContext.Provider value={{ subList, setSubList, topPosts, createSub, editSub, deleteSub, followSub, unfollowSub }}>
+    <SubContext.Provider value={{ subList, setSubList, topPosts, createSub, editSub, deleteSub, followSub, unfollowSub, storage }}>
       {children}
     </SubContext.Provider>
   );

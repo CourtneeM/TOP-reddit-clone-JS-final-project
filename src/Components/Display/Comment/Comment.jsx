@@ -7,8 +7,9 @@ import { UserContext } from "../../Contexts/UserContext";
 import { SubContext } from "../../Contexts/SubContext";
 
 import styles from './Comment.module.css';
+import { CommentContext } from "../../Contexts/CommentContext";
 
-function Comment({ comments, comment, commentReply, commentActions, storage }) {
+function Comment({ comments, comment, commentReply }) {
   const [replyText, setReplyText] = useState('');
   const [editMode, setEditMode] = useState(false);
   const [commentText, setCommentText] = useState('');
@@ -16,7 +17,8 @@ function Comment({ comments, comment, commentReply, commentActions, storage }) {
 
   const { loggedIn } = useContext(LogInOutContext);
   const { userList, currentUser } = useContext(UserContext);
-  const { subList } = useContext(SubContext);
+  const { subList, storage } = useContext(SubContext);
+  const { editComment, deleteComment, adjustCommentVotes, favoriteComment, unfavoriteComment } = useContext(CommentContext);
 
   useEffect(() => {
     setCommentText(comment.text);
@@ -61,7 +63,7 @@ function Comment({ comments, comment, commentReply, commentActions, storage }) {
             if (commentEl.upvotes.includes(currentUser.uid)) {
               const index = commentEl.upvotes.indexOf(currentUser.uid);
               commentEl.upvotes.splice(index, 1);
-              commentActions.adjustCommentVotes(-1, commentEl, currentUserCopy);
+              adjustCommentVotes(-1, commentEl, currentUserCopy);
             }
           });
         }
@@ -73,7 +75,7 @@ function Comment({ comments, comment, commentReply, commentActions, storage }) {
 
           removeEmptySubOrPost('upvotes');
 
-          commentActions.adjustCommentVotes(-1, comment, currentUserCopy);
+          adjustCommentVotes(-1, comment, currentUserCopy);
         }
         const removeDownvote = () => {
           const userUidIndex = comment.downvotes.indexOf(currentUser.uid);
@@ -84,7 +86,7 @@ function Comment({ comments, comment, commentReply, commentActions, storage }) {
 
           removeEmptySubOrPost('downvotes');
           
-          commentActions.adjustCommentVotes(1, comment, currentUserCopy);
+          adjustCommentVotes(1, comment, currentUserCopy);
         }
         
         initialSetup();
@@ -96,7 +98,7 @@ function Comment({ comments, comment, commentReply, commentActions, storage }) {
         comment.upvotes.push(currentUser.uid);
         currentUserCopy.votes.upvotes.comments[comment.subName][comment.postUid] = comment.uid;
 
-        commentActions.adjustCommentVotes(1, comment, currentUserCopy);
+        adjustCommentVotes(1, comment, currentUserCopy);
       }
       const downvoteHandler = () => {
         const initialSetup = () => {
@@ -117,7 +119,7 @@ function Comment({ comments, comment, commentReply, commentActions, storage }) {
 
           removeEmptySubOrPost('downvotes');
 
-          commentActions.adjustCommentVotes(1, comment, currentUserCopy);
+          adjustCommentVotes(1, comment, currentUserCopy);
         }
         const removeUpvote = () => {
           const userUidIndex = comment.upvotes.indexOf(currentUser.uid);
@@ -127,7 +129,7 @@ function Comment({ comments, comment, commentReply, commentActions, storage }) {
 
           removeEmptySubOrPost('upvotes');
           
-          commentActions.adjustCommentVotes(-1, comment, currentUserCopy);
+          adjustCommentVotes(-1, comment, currentUserCopy);
         }
 
         initialSetup();
@@ -137,7 +139,7 @@ function Comment({ comments, comment, commentReply, commentActions, storage }) {
         comment.downvotes.push(currentUser.uid);
         currentUserCopy.votes.downvotes.comments[comment.subName][comment.postUid].push(comment.uid);
 
-        commentActions.adjustCommentVotes(-1, comment, currentUserCopy);
+        adjustCommentVotes(-1, comment, currentUserCopy);
       }
 
       e.target.className === 'upvote-icon' ? upvoteHandler() : downvoteHandler();
@@ -149,7 +151,7 @@ function Comment({ comments, comment, commentReply, commentActions, storage }) {
 
       const editedComment = {...comment};
       editedComment.text = commentText;
-      if (comment.owner.uid === currentUser.uid) commentActions.editComment(editedComment);
+      if (comment.owner.uid === currentUser.uid) editComment(editedComment);
     }
     const cancelEditCommentHandler = () => {
       setEditMode(false);
@@ -158,7 +160,7 @@ function Comment({ comments, comment, commentReply, commentActions, storage }) {
     const deleteCommentHandler = () => {
       // display popup confirmation
       if ((comment.owner.uid === currentUser.uid) || (loggedIn && subList[comment.subName].moderators.includes(currentUser.uid))) {
-        commentActions.deleteComment(comment);
+        deleteComment(comment);
       }
     }
     const commentReplyHandler = (e) => {
@@ -208,8 +210,8 @@ function Comment({ comments, comment, commentReply, commentActions, storage }) {
           currentUser.favorite.comments[comment.subName] &&
           currentUser.favorite.comments[comment.subName][comment.postUid] &&
           currentUser.favorite.comments[comment.subName][comment.postUid].includes(comment.uid) ?
-          <p onClick={() => commentActions.unfavoriteComment(comment.subName, comment.postUid, comment.uid)}>Unfavorite</p> :
-          <p onClick={() => commentActions.favoriteComment(comment.subName, comment.postUid, comment.uid)}>Favorite</p> :
+          <p onClick={() => unfavoriteComment(comment.subName, comment.postUid, comment.uid)}>Unfavorite</p> :
+          <p onClick={() => favoriteComment(comment.subName, comment.postUid, comment.uid)}>Favorite</p> :
           null
         );
       };
@@ -341,8 +343,6 @@ function Comment({ comments, comment, commentReply, commentActions, storage }) {
               comments={comments}
               comment={nextComment}
               commentReply={commentReply}
-              commentActions={commentActions}
-              storage={storage}
               /> :
               null
             })

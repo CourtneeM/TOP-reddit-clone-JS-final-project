@@ -10,14 +10,14 @@ import Navbar from "../Navbar/Navbar";
 import uniqid from 'uniqid';
 import styles from './CreatePostPage.module.css';
 
-function CreatePostPage({ uploadImage, storage }) {
+function CreatePostPage() {
   const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
   const [postType, setPostType] = useState('text');
 
   const { loggedIn } = useContext(LogInOutContext);
   const { currentUser } = useContext(UserContext);
-  const { submitPost } = useContext(PostContext);
+  const { submitPost, uploadImage, storage } = useContext(PostContext);
 
   const params = useParams();
   const navigate = useNavigate();

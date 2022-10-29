@@ -12,7 +12,7 @@ import Navbar from "../Navbar/Navbar";
 
 import styles from './SubPage.module.css';
 
-function SubPage({ storage }) {
+function SubPage() {
   const params = useParams();
 
   const [sub, setSub] = useState({});
@@ -98,7 +98,7 @@ function SubPage({ storage }) {
   
         return (
           <PostProvider>
-            <PostPreview post={post} storage={storage} />
+            <PostPreview key={post.uid} post={post} />
           </PostProvider>
         );
       });

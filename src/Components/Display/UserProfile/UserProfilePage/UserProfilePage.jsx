@@ -13,15 +13,16 @@ import PostPreview from '../../PostPreview/PostPreview';
 import CommentPreview from '../CommentPreview/CommentPreview';
 
 import styles from './UserProfilePage.module.css';
+import { CommentProvider } from '../../../Contexts/CommentContext';
 
-function UserProfile({ commentActions, uploadImage, storage }) {
+function UserProfile() {
   const [currentSelectedData, setCurrentSelectedData] = useState({});
   const [profileImg, setProfileImg] = useState('');
   const [newProfileImg, setNewProfileImg] = useState({});
   const [loading, setLoading] = useState(true);
 
-  const { userList, currentUser, editUser } = useContext(UserContext);
-  const { subList } = useContext(SubContext);
+  const { userList, currentUser, editUser, uploadImage } = useContext(UserContext);
+  const { subList, storage } = useContext(SubContext);
 
   const params = useParams();
 
@@ -384,18 +385,19 @@ function UserProfile({ commentActions, uploadImage, storage }) {
     const selectedViewPreview = (type, el) => {
       return type === 'subs' ?
         <Link to={`/r/${el.name}`} key={el.uid} className='default-link'>
-          <SubPreview sub={el} />
+          <SubPreview key={el.uid} sub={el} />
         </Link> :
       type === 'posts' ?
         <PostProvider>
-          <PostPreview currentUser={currentUser} post={el} storage={storage} />
+          <PostPreview key={el.uid} currentUser={currentUser} post={el} />
         </PostProvider> :
-        <CommentPreview
-          comments={Object.values(subList[el.subName].posts[el.postUid].comments)}
-          comment={el}
-          commentActions={commentActions}
-          storage={storage}
-        />
+        <CommentProvider>
+          <CommentPreview
+            key={el.uid}
+            comments={Object.values(subList[el.subName].posts[el.postUid].comments)}
+            comment={el}
+          />
+        </CommentProvider>
     }
     const changeSelectedView = (e) => {
       if (e.target.textContent === 'Overview') actions.getOverview();

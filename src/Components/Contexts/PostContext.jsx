@@ -1,11 +1,11 @@
 import { createContext, useContext } from "react";
 
-import { SubContext } from "./SubContext";
 import { UserContext } from "./UserContext";
+import { SubContext } from "./SubContext";
 
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, updateDoc } from "firebase/firestore";
-import { getStorage, ref, deleteObject } from "firebase/storage";
+import { getStorage, ref, deleteObject, uploadBytes } from "firebase/storage";
 import { getFirebaseConfig } from '../../firebase-config';
 
 const app = initializeApp(getFirebaseConfig());
@@ -268,8 +268,14 @@ const PostProvider = ({ children }) => {
     editInFirestore();
   }
 
+  const uploadImage = async (storageRef, content) => {
+    await uploadBytes(storageRef, content)
+      .then((snapshot) => console.log('Uploaded image'))
+      .catch((err) => console.log('error uploading image', err));
+  }
+
   return (
-    <PostContext.Provider value={{ submitPost, editPost, deletePost, adjustPostVotes, favoritePost, unfavoritePost }}>
+    <PostContext.Provider value={{ submitPost, editPost, deletePost, adjustPostVotes, favoritePost, unfavoritePost, uploadImage, storage }}>
       {children}
     </PostContext.Provider>
   );

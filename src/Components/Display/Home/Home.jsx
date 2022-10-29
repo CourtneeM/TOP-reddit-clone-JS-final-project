@@ -7,7 +7,7 @@ import PostPreview from "../PostPreview/PostPreview";
 
 import styles from './Home.module.css';
 
-function Home({ storage }) {
+function Home() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -20,7 +20,6 @@ function Home({ storage }) {
     }
   }, [topPosts]);
   useEffect(() => {
-    console.log(posts);
     setLoading(false);
   }, [posts])
 
@@ -42,7 +41,7 @@ function Home({ storage }) {
   
         return (
           <PostProvider>
-            <PostPreview key={postDetails.uid} post={postDetails} storage={storage} />
+            <PostPreview key={postDetails.uid} post={postDetails} />
           </PostProvider>
         )
       });

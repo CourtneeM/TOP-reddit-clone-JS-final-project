@@ -11,12 +11,12 @@ import { SubProvider } from './Components/Contexts/SubContext';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <LogInOutProvider>
-      <UserProvider>
+    <UserProvider>
+      <LogInOutProvider>
         <SubProvider>
           <RouteSwitch />
         </SubProvider>
-      </UserProvider>
-    </LogInOutProvider>
+      </LogInOutProvider>
+    </UserProvider>
   </React.StrictMode>
 );
