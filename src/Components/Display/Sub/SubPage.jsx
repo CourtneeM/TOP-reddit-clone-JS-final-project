@@ -2,14 +2,17 @@ import { useContext, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { LogInOutContext } from '../../Contexts/LogInOutContext';
+import { UserContext } from '../../Contexts/UserContext';
+import { SubContext } from '../../Contexts/SubContext';
+import { PostProvider } from '../../Contexts/PostContext';
+
 import PostPreview from "../PostPreview/PostPreview";
 import AboutSection from "../About/AboutSection";
 import Navbar from "../Navbar/Navbar";
 
 import styles from './SubPage.module.css';
-import { UserContext } from '../../Contexts/UserContext';
 
-function SubPage({ subList, subActions, postActions, storage }) {
+function SubPage({ storage }) {
   const params = useParams();
 
   const [sub, setSub] = useState({});
@@ -19,6 +22,7 @@ function SubPage({ subList, subActions, postActions, storage }) {
 
   const { loggedIn } = useContext(LogInOutContext);
   const { currentUser } = useContext(UserContext);
+  const { subList, followSub, unfollowSub } = useContext(SubContext);
 
   useEffect(() => {
     if (Object.values(subList).length === 0) return;
@@ -51,8 +55,8 @@ function SubPage({ subList, subActions, postActions, storage }) {
           <div className={styles.followBtns}>
             {
               currentUser.followedSubs.includes(sub.name) ?
-              <button onClick={() => subActions.unfollowSub(sub.name)}>Unfollow</button> :
-              <button onClick={() => subActions.followSub(sub.name)}>Follow</button>
+              <button onClick={() => unfollowSub(sub.name)}>Unfollow</button> :
+              <button onClick={() => followSub(sub.name)}>Follow</button>
             }
           </div>
           }
@@ -93,9 +97,9 @@ function SubPage({ subList, subActions, postActions, storage }) {
       return existingPosts.map((post) => {
   
         return (
-          <PostPreview post={post} favoritePost={postActions.favoritePost}
-            unfavoritePost={postActions.unfavoritePost} adjustPostVotes={postActions.adjustPostVotes} storage={storage}
-          />
+          <PostProvider>
+            <PostPreview post={post} storage={storage} />
+          </PostProvider>
         );
       });
     }
@@ -122,7 +126,7 @@ function SubPage({ subList, subActions, postActions, storage }) {
 
   return (
     <div>
-      <Navbar subList={subList} currentSub={sub.name} />
+      <Navbar currentSub={sub.name} />
 
       <div className={styles.wrapper}>
         <header>

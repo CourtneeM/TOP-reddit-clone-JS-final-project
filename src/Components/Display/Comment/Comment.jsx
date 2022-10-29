@@ -4,10 +4,11 @@ import { getDownloadURL, ref } from "firebase/storage";
 
 import { LogInOutContext } from "../../Contexts/LogInOutContext";
 import { UserContext } from "../../Contexts/UserContext";
+import { SubContext } from "../../Contexts/SubContext";
 
 import styles from './Comment.module.css';
 
-function Comment({ subList, comments, comment, commentReply, commentActions, storage }) {
+function Comment({ comments, comment, commentReply, commentActions, storage }) {
   const [replyText, setReplyText] = useState('');
   const [editMode, setEditMode] = useState(false);
   const [commentText, setCommentText] = useState('');
@@ -15,6 +16,7 @@ function Comment({ subList, comments, comment, commentReply, commentActions, sto
 
   const { loggedIn } = useContext(LogInOutContext);
   const { userList, currentUser } = useContext(UserContext);
+  const { subList } = useContext(SubContext);
 
   useEffect(() => {
     setCommentText(comment.text);
@@ -336,7 +338,6 @@ function Comment({ subList, comments, comment, commentReply, commentActions, sto
               return nextComment.uid === child ?
               <Comment
               key={Object.values(nextComment).uid}
-              subList={subList}
               comments={comments}
               comment={nextComment}
               commentReply={commentReply}

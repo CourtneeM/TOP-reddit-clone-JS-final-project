@@ -4,18 +4,20 @@ import { getDownloadURL, ref, updateMetadata } from "firebase/storage";
 
 import { LogInOutContext } from "../../Contexts/LogInOutContext";
 import { UserContext } from "../../Contexts/UserContext";
+import { PostContext } from "../../Contexts/PostContext";
 import Navbar from "../Navbar/Navbar";
 
 import uniqid from 'uniqid';
 import styles from './CreatePostPage.module.css';
 
-function CreatePostPage({ subList, postActions, uploadImage, storage }) {
+function CreatePostPage({ uploadImage, storage }) {
   const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
   const [postType, setPostType] = useState('text');
 
   const { loggedIn } = useContext(LogInOutContext);
   const { currentUser } = useContext(UserContext);
+  const { submitPost } = useContext(PostContext);
 
   const params = useParams();
   const navigate = useNavigate();
@@ -51,7 +53,7 @@ function CreatePostPage({ subList, postActions, uploadImage, storage }) {
       
       getDownloadURL(storageRef).then((url) => {
         updateMetadata(storageRef, { customMetadata: { owner: currentUser.uid, subName: params.subName } });
-        postActions.submitPost(params.subName, postUid, postTitle, storageRef._location.path_, postType);
+        submitPost(params.subName, postUid, postTitle, storageRef._location.path_, postType);
 
         setPostTitle('');
         setPostContent('');
@@ -69,7 +71,7 @@ function CreatePostPage({ subList, postActions, uploadImage, storage }) {
         }
       });
     } else {
-      postActions.submitPost(params.subName, postUid, postTitle, postContent, postType);
+      submitPost(params.subName, postUid, postTitle, postContent, postType);
       
       setPostTitle('');
       setPostContent('');
@@ -135,7 +137,7 @@ function CreatePostPage({ subList, postActions, uploadImage, storage }) {
 
   return (
     <div>
-      <Navbar subList={subList} />
+      <Navbar />
 
       <div className={styles.wrapper}>
         { loggedIn ?

@@ -1,13 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
+
+import { SubContext } from '../../Contexts/SubContext';
+import { PostProvider } from '../../Contexts/PostContext';
 
 import PostPreview from "../PostPreview/PostPreview";
 import Navbar from "../Navbar/Navbar";
 
 import styles from './All.module.css';
 
-function All({ subList, postActions, storage}) {
+function All({ storage }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const { subList } = useContext(SubContext);
   
   useEffect(() => {
     setPosts([].concat.apply([], Object.values(subList).map((sub) => Object.values(sub.posts))));
@@ -30,9 +35,9 @@ function All({ subList, postActions, storage}) {
       return existingPosts.map((post) => {
 
         return (
-          <PostPreview post={post} favoritePost={postActions.favoritePost}
-            unfavoritePost={postActions.unfavoritePost} adjustPostVotes={postActions.adjustPostVotes} storage={storage}
-          />
+          <PostProvider>
+            <PostPreview post={post} storage={storage} />
+          </PostProvider>
         );
       });
     }
@@ -58,7 +63,7 @@ function All({ subList, postActions, storage}) {
 
   return (
     <div>
-      <Navbar subList={subList} currentSub={'All'} />
+      <Navbar currentSub={'All'} />
       <div className={styles.wrapper}>
         
         <div className={styles.postsSection}>

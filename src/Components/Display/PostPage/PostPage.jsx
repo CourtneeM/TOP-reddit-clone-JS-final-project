@@ -4,12 +4,14 @@ import { deleteObject, getDownloadURL, ref, updateMetadata } from 'firebase/stor
 
 import { LogInOutContext } from '../../Contexts/LogInOutContext';
 import { UserContext } from '../../Contexts/UserContext';
+import { SubContext } from '../../Contexts/SubContext';
+import { PostContext } from '../../Contexts/PostContext';
 import Navbar from '../Navbar/Navbar';
 import Comment from '../Comment/Comment';
 
 import styles from './PostPage.module.css';
 
-function PostPage({ subList, postActions, commentActions, storage }) {
+function PostPage({ commentActions, uploadImage, storage }) {
   const params = useParams();
   const navigate = useNavigate();
 
@@ -24,6 +26,8 @@ function PostPage({ subList, postActions, commentActions, storage }) {
 
   const { loggedIn } = useContext(LogInOutContext);
   const { currentUser } = useContext(UserContext);
+  const { subList } = useContext(SubContext);
+  const { editPost, deletePost, adjustPostVotes, favoritePost, unfavoritePost } = useContext(PostContext);
 
   useEffect(() => {
     if (Object.values(subList).length === 0) return;
@@ -73,7 +77,7 @@ function PostPage({ subList, postActions, commentActions, storage }) {
 
           removeEmptySubOrPost('upvotes');
 
-          postActions.adjustPostVotes(-1, post, currentUserCopy);
+          adjustPostVotes(-1, post, currentUserCopy);
         }
         const removeDownvote = () => {
           const userUidIndex = post.downvotes.indexOf(currentUser.uid);
@@ -84,7 +88,7 @@ function PostPage({ subList, postActions, commentActions, storage }) {
 
           removeEmptySubOrPost('downvotes');
           
-          postActions.adjustPostVotes(1, post, currentUserCopy);
+          adjustPostVotes(1, post, currentUserCopy);
         }
         
         initialSetup('upvotes');
@@ -95,7 +99,7 @@ function PostPage({ subList, postActions, commentActions, storage }) {
         post.upvotes.push(currentUser.uid);
         currentUserCopy.votes.upvotes.posts[post.subName].push(post.uid);
 
-        postActions.adjustPostVotes(1, post, currentUserCopy);
+        adjustPostVotes(1, post, currentUserCopy);
       }
       const downvoteHandler = () => {
         const removeDownvote = () => {
@@ -107,7 +111,7 @@ function PostPage({ subList, postActions, commentActions, storage }) {
 
           removeEmptySubOrPost('downvotes');
 
-          postActions.adjustPostVotes(1, post, currentUserCopy);
+          adjustPostVotes(1, post, currentUserCopy);
         }
         const removeUpvote = () => {
           const userUidIndex = post.upvotes.indexOf(currentUser.uid);
@@ -118,7 +122,7 @@ function PostPage({ subList, postActions, commentActions, storage }) {
 
           removeEmptySubOrPost('upvotes');
           
-          postActions.adjustPostVotes(-1, post, currentUserCopy);
+          adjustPostVotes(-1, post, currentUserCopy);
         }
 
         initialSetup('downvotes');
@@ -129,7 +133,7 @@ function PostPage({ subList, postActions, commentActions, storage }) {
         post.downvotes.push(currentUser.uid);
         currentUserCopy.votes.downvotes.posts[post.subName].push(post.uid);
 
-        postActions.adjustPostVotes(-1, post, currentUserCopy);
+        adjustPostVotes(-1, post, currentUserCopy);
       }
 
       e.target.className === "upvote-icon" ? upvoteHandler() : downvoteHandler();
@@ -300,14 +304,14 @@ function PostPage({ subList, postActions, commentActions, storage }) {
         
             if (post.type === 'images/videos') {
               const storageRef = ref(storage, `images/posts/${subName}/${editedPostContent.name}-${post.uid}`);
-              await postActions.uploadImage(storageRef, editedPostContent);
+              await uploadImage(storageRef, editedPostContent);
               
               getDownloadURL(storageRef).then((url) => {
                 editedPost.content = `images/posts/${subName}/${editedPostContent.name}-${post.uid}`;
                 setPost(editedPost);
                 setPostContent(editedPost.content);
                 
-                postActions.editPost(editedPost);
+                editPost(editedPost);
         
                 updateMetadata(storageRef, { customMetadata: { owner: currentUser.uid, subName: subName } });
                 deleteImageFromStorage();
@@ -325,7 +329,7 @@ function PostPage({ subList, postActions, commentActions, storage }) {
               setPost(editedPost);
               setPostContent(editedPost.content);
         
-              postActions.editPost(editedPost);
+              editPost(editedPost);
             }
         
             setEditMode(false);
@@ -375,8 +379,8 @@ function PostPage({ subList, postActions, commentActions, storage }) {
             return (
               loggedIn ?
               currentUser.favorite.posts[subName] && currentUser.favorite.posts[subName].includes(post.uid) ?
-              <p onClick={() => postActions.unfavoritePost(subName, post.uid)}>Unfavorite</p> :
-              <p onClick={() => postActions.favoritePost(subName, post.uid)}>Favorite</p> :
+              <p onClick={() => unfavoritePost(subName, post.uid)}>Unfavorite</p> :
+              <p onClick={() => favoritePost(subName, post.uid)}>Favorite</p> :
               null
             );
           };
@@ -390,7 +394,7 @@ function PostPage({ subList, postActions, commentActions, storage }) {
             const deletePostHandler = () => {
               // display popup confirmation
               if ((post.owner.uid === currentUser.uid) || (subList[post.subName].moderators.includes(currentUser.uid))) {
-                postActions.deletePost(subName, post.uid);
+                deletePost(subName, post.uid);
               }
               navigate(`/r/${subName}`);
             }
@@ -436,7 +440,6 @@ function PostPage({ subList, postActions, commentActions, storage }) {
             !comment.parentUid ?
             <Comment
               key={comment.uid}
-              subList={subList}
               comments={post.comments}
               comment={comment}
               commentReply={actions.commentReplyHandler}
@@ -497,7 +500,7 @@ function PostPage({ subList, postActions, commentActions, storage }) {
 
   return (
     <div>
-      <Navbar subList={subList} />
+      <Navbar />
 
       <div id={`post-${post.uid}`} className={styles.wrapper}>
         {

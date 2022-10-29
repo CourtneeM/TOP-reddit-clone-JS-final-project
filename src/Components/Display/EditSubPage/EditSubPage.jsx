@@ -3,11 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 import { LogInOutContext } from "../../Contexts/LogInOutContext";
 import { UserContext } from "../../Contexts/UserContext";
+import { SubContext } from "../../Contexts/SubContext";
 import Navbar from "../Navbar/Navbar";
 
 import styles from './EditSubPage.module.css';
 
-function EditSubPage({ subList, editSub, deleteSub }) {
+function EditSubPage() {
   const [sub, setSub] = useState({});
   const [subTitle, setSubTitle] = useState('');
   const [subAbout, setSubAbout] = useState('');
@@ -17,6 +18,7 @@ function EditSubPage({ subList, editSub, deleteSub }) {
 
   const { loggedIn } = useContext(LogInOutContext);
   const { userList, currentUser } = useContext(UserContext);
+  const { subList, editSub, deleteSub } = useContext(SubContext);
 
   const params = useParams();
   const navigate = useNavigate();
@@ -75,7 +77,7 @@ function EditSubPage({ subList, editSub, deleteSub }) {
 
   return (
     <div>
-      <Navbar subList={subList} />
+      <Navbar />
 
       <div className={styles.wrapper}>
         { loggedIn ?

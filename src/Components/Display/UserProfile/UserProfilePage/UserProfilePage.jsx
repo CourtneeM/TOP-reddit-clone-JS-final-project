@@ -4,6 +4,9 @@ import { HashLink as Link } from 'react-router-hash-link';
 import { deleteObject, getDownloadURL, ref, updateMetadata } from 'firebase/storage';
 
 import { UserContext } from '../../../Contexts/UserContext';
+import { SubContext } from '../../../Contexts/SubContext';
+import { PostProvider } from '../../../Contexts/PostContext';
+
 import Navbar from '../../Navbar/Navbar';
 import SubPreview from '../SubPreview/SubPreview';
 import PostPreview from '../../PostPreview/PostPreview';
@@ -11,13 +14,14 @@ import CommentPreview from '../CommentPreview/CommentPreview';
 
 import styles from './UserProfilePage.module.css';
 
-function UserProfile({ subList, postActions, commentActions, editUser, uploadImage, storage }) {
+function UserProfile({ commentActions, uploadImage, storage }) {
   const [currentSelectedData, setCurrentSelectedData] = useState({});
   const [profileImg, setProfileImg] = useState('');
   const [newProfileImg, setNewProfileImg] = useState({});
   const [loading, setLoading] = useState(true);
 
-  const { userList, currentUser } = useContext(UserContext);
+  const { userList, currentUser, editUser } = useContext(UserContext);
+  const { subList } = useContext(SubContext);
 
   const params = useParams();
 
@@ -383,9 +387,10 @@ function UserProfile({ subList, postActions, commentActions, editUser, uploadIma
           <SubPreview sub={el} />
         </Link> :
       type === 'posts' ?
-        <PostPreview currentUser={currentUser} post={el} postActions={postActions} storage={storage} /> :
+        <PostProvider>
+          <PostPreview currentUser={currentUser} post={el} storage={storage} />
+        </PostProvider> :
         <CommentPreview
-          subList={subList}
           comments={Object.values(subList[el.subName].posts[el.postUid].comments)}
           comment={el}
           commentActions={commentActions}
@@ -433,7 +438,7 @@ function UserProfile({ subList, postActions, commentActions, editUser, uploadIma
 
   return (
     <div>
-      <Navbar subList={subList} />
+      <Navbar />
 
       <div className={styles.wrapper}>
         {

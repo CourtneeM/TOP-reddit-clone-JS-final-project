@@ -4,14 +4,16 @@ import { Link } from 'react-router-dom';
 
 import { LogInOutContext } from '../../Contexts/LogInOutContext';
 import { UserContext } from '../../Contexts/UserContext';
+import { SubContext } from '../../Contexts/SubContext';
 
 import styles from './Navbar.module.css';
 
-function Navbar({ subList, currentSub }) {
+function Navbar({ currentSub }) {
   const [loading, setLoading] = useState(true);
 
   const { loggedIn, signUserIn, signUserOut } = useContext(LogInOutContext);
   const { currentUser } = useContext(UserContext);
+  const { subList } = useContext(SubContext);
 
   useEffect(() => {
     if (currentUser && Object.values(currentUser).length > 0) {

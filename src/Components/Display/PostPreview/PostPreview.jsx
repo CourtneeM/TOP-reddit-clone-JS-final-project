@@ -3,15 +3,17 @@ import { Link } from 'react-router-dom';
 import { ref, getDownloadURL } from 'firebase/storage';
 
 import { LogInOutContext } from '../../Contexts/LogInOutContext';
+import { UserContext } from '../../Contexts/UserContext';
+import { PostContext } from '../../Contexts/PostContext';
 
 import styles from './PostPreview.module.css';
-import { UserContext } from '../../Contexts/UserContext';
 
-function PostPreview({ post, postActions, storage }) {
+function PostPreview({ post, storage }) {
   const [postContent, setPostContent] = useState('');
 
   const { loggedIn } = useContext(LogInOutContext);
   const { currentUser } = useContext(UserContext);
+  const { adjustPostVotes, favoritePost, unfavoritePost } = useContext(PostContext);
 
   useEffect(() => {
     if (post.type === 'images/videos' && storage) {
@@ -61,7 +63,7 @@ function PostPreview({ post, postActions, storage }) {
   
           removeEmptySubOrPost('upvotes');
   
-          postActions.adjustPostVotes(-1, post, currentUserCopy);
+          adjustPostVotes(-1, post, currentUserCopy);
         }
         const removeDownvote = () => {
           const userUidIndex = post.downvotes.indexOf(currentUser.uid);
@@ -72,7 +74,7 @@ function PostPreview({ post, postActions, storage }) {
   
           removeEmptySubOrPost('downvotes');
           
-          postActions.adjustPostVotes(1, post, currentUserCopy);
+          adjustPostVotes(1, post, currentUserCopy);
         }
         
         initialSetup('upvotes');
@@ -83,7 +85,7 @@ function PostPreview({ post, postActions, storage }) {
         post.upvotes.push(currentUser.uid);
         currentUserCopy.votes.upvotes.posts[post.subName].push(post.uid);
   
-        postActions.adjustPostVotes(1, post, currentUserCopy);
+        adjustPostVotes(1, post, currentUserCopy);
       }
       const downvoteHandler = () => {
         const removeDownvote = () => {
@@ -95,7 +97,7 @@ function PostPreview({ post, postActions, storage }) {
   
           removeEmptySubOrPost('downvotes');
   
-          postActions.adjustPostVotes(1, post, currentUserCopy);
+          adjustPostVotes(1, post, currentUserCopy);
         }
         const removeUpvote = () => {
           const userUidIndex = post.upvotes.indexOf(currentUser.uid);
@@ -106,7 +108,7 @@ function PostPreview({ post, postActions, storage }) {
   
           removeEmptySubOrPost('upvotes');
           
-          postActions.adjustPostVotes(-1, post, currentUserCopy);
+          adjustPostVotes(-1, post, currentUserCopy);
         }
   
         initialSetup('downvotes');
@@ -117,7 +119,7 @@ function PostPreview({ post, postActions, storage }) {
         post.downvotes.push(currentUser.uid);
         currentUserCopy.votes.downvotes.posts[post.subName].push(post.uid);
   
-        postActions.adjustPostVotes(-1, post, currentUserCopy);
+        adjustPostVotes(-1, post, currentUserCopy);
       }
   
       e.target.className === "upvote-icon" ? upvoteHandler() : downvoteHandler();
@@ -171,8 +173,8 @@ function PostPreview({ post, postActions, storage }) {
 
             { loggedIn ?
               currentUser.favorite.posts[post.subName] && currentUser.favorite.posts[post.subName].includes(post.uid) ?
-              <p onClick={() => postActions.unfavoritePost(post.subName, post.uid)}>Unfavorite</p> :
-              <p onClick={() => postActions.favoritePost(post.subName, post.uid)}>Favorite</p> :
+              <p onClick={() => unfavoritePost(post.subName, post.uid)}>Unfavorite</p> :
+              <p onClick={() => favoritePost(post.subName, post.uid)}>Favorite</p> :
               null
             }
             <p className='share-btn' onClick={actions.sharePostHandler}>Share</p>

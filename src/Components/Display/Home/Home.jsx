@@ -1,13 +1,17 @@
-import { useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
+import { PostProvider } from "../../Contexts/PostContext";
 
+import { SubContext } from "../../Contexts/SubContext";
 import Navbar from "../Navbar/Navbar";
 import PostPreview from "../PostPreview/PostPreview";
 
 import styles from './Home.module.css';
 
-function Home({ subList, topPosts, postActions, storage }) {
+function Home({ storage }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const { topPosts } = useContext(SubContext);
 
   useEffect(() => {
     if (Object.values(topPosts).length !== 0) {
@@ -37,9 +41,9 @@ function Home({ subList, topPosts, postActions, storage }) {
         const postDetails = Object.values(post)[0];
   
         return (
-          <PostPreview key={postDetails.uid} post={postDetails}
-            favoritePost={postActions.favoritePost} unfavoritePost={postActions.unfavoritePost} adjustPostVotes={postActions.adjustPostVotes} storage={storage}
-          />
+          <PostProvider>
+            <PostPreview key={postDetails.uid} post={postDetails} storage={storage} />
+          </PostProvider>
         )
       });
     }
@@ -67,7 +71,7 @@ function Home({ subList, topPosts, postActions, storage }) {
 
   return (
     <div>
-      <Navbar subList={subList} currentSub={'Home'} />
+      <Navbar currentSub={'Home'} />
       <div className={styles.wrapper}>
         <div className={styles.postsSection}>
           { display.sortOptions() }
