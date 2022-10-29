@@ -1,14 +1,17 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
+import { LogInOutContext } from "../../Contexts/LogInOutContext";
 import Navbar from "../Navbar/Navbar";
 
 import styles from './CreateSubPage.module.css';
 
-function CreateSubPage({ loggedIn, signInOut, currentUser, subList, createSub }) {
+function CreateSubPage({ subList, createSub }) {
   const [subName, setSubName] = useState('');
   const [subtitle, setSubtitle] = useState('');
   const [subAbout, setSubAbout] = useState('');
+
+  const { loggedIn } = useContext(LogInOutContext);
 
   const navigate = useNavigate();
 
@@ -43,7 +46,7 @@ function CreateSubPage({ loggedIn, signInOut, currentUser, subList, createSub })
 
   return (
     <div>
-      <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} />
+      <Navbar subList={subList} />
 
       <div className={styles.wrapper}>
         { loggedIn ?

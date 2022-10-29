@@ -1,14 +1,20 @@
-import { getDownloadURL, ref } from "firebase/storage";
-import { useEffect, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { getDownloadURL, ref } from "firebase/storage";
+
+import { LogInOutContext } from "../../Contexts/LogInOutContext";
+import { UserContext } from "../../Contexts/UserContext";
 
 import styles from './Comment.module.css';
 
-function Comment({ loggedIn, currentUser, userList, subList, comments, comment, commentReply, commentActions, storage }) {
+function Comment({ subList, comments, comment, commentReply, commentActions, storage }) {
   const [replyText, setReplyText] = useState('');
   const [editMode, setEditMode] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [profileImg, setProfileImg] = useState('');
+
+  const { loggedIn } = useContext(LogInOutContext);
+  const { userList, currentUser } = useContext(UserContext);
 
   useEffect(() => {
     setCommentText(comment.text);
@@ -330,9 +336,6 @@ function Comment({ loggedIn, currentUser, userList, subList, comments, comment, 
               return nextComment.uid === child ?
               <Comment
               key={Object.values(nextComment).uid}
-              loggedIn={loggedIn}
-              currentUser={currentUser}
-              userList={userList}
               subList={subList}
               comments={comments}
               comment={nextComment}

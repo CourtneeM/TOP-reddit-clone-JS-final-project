@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { HashLink as Link } from 'react-router-hash-link';
 import { deleteObject, getDownloadURL, ref, updateMetadata } from 'firebase/storage';
 
+import { UserContext } from '../../../Contexts/UserContext';
 import Navbar from '../../Navbar/Navbar';
 import SubPreview from '../SubPreview/SubPreview';
 import PostPreview from '../../PostPreview/PostPreview';
@@ -10,11 +11,13 @@ import CommentPreview from '../CommentPreview/CommentPreview';
 
 import styles from './UserProfilePage.module.css';
 
-function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, postActions, commentActions, editUser, uploadImage, storage }) {
+function UserProfile({ subList, postActions, commentActions, editUser, uploadImage, storage }) {
   const [currentSelectedData, setCurrentSelectedData] = useState({});
   const [profileImg, setProfileImg] = useState('');
   const [newProfileImg, setNewProfileImg] = useState({});
   const [loading, setLoading] = useState(true);
+
+  const { userList, currentUser } = useContext(UserContext);
 
   const params = useParams();
 
@@ -380,11 +383,8 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, post
           <SubPreview sub={el} />
         </Link> :
       type === 'posts' ?
-        <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={el} postActions={postActions} storage={storage} /> :
+        <PostPreview currentUser={currentUser} post={el} postActions={postActions} storage={storage} /> :
         <CommentPreview
-          loggedIn={loggedIn}
-          currentUser={currentUser}
-          userList={userList}
           subList={subList}
           comments={Object.values(subList[el.subName].posts[el.postUid].comments)}
           comment={el}
@@ -433,7 +433,7 @@ function UserProfile({ loggedIn, signInOut, currentUser, userList, subList, post
 
   return (
     <div>
-      <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} />
+      <Navbar subList={subList} />
 
       <div className={styles.wrapper}>
         {

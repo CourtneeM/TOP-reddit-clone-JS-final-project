@@ -1,12 +1,11 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 import PostPreview from "../PostPreview/PostPreview";
 import Navbar from "../Navbar/Navbar";
 
 import styles from './All.module.css';
 
-function All({ loggedIn, signInOut, currentUser, subList, postActions, storage}) {
+function All({ subList, postActions, storage}) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -31,7 +30,7 @@ function All({ loggedIn, signInOut, currentUser, subList, postActions, storage})
       return existingPosts.map((post) => {
 
         return (
-          <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={postActions.favoritePost}
+          <PostPreview post={post} favoritePost={postActions.favoritePost}
             unfavoritePost={postActions.unfavoritePost} adjustPostVotes={postActions.adjustPostVotes} storage={storage}
           />
         );
@@ -59,7 +58,7 @@ function All({ loggedIn, signInOut, currentUser, subList, postActions, storage})
 
   return (
     <div>
-      <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} currentSub={'All'} />
+      <Navbar subList={subList} currentSub={'All'} />
       <div className={styles.wrapper}>
         
         <div className={styles.postsSection}>

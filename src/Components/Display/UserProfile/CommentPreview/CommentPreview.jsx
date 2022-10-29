@@ -1,11 +1,16 @@
-import { getDownloadURL, ref } from "firebase/storage";
-import { useEffect, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { HashLink as Link } from "react-router-hash-link";
+import { getDownloadURL, ref } from "firebase/storage";
 
+import { LogInOutContext } from "../../../Contexts/LogInOutContext";
 import styles from './CommentPreview.module.css';
+import { UserContext } from "../../../Contexts/UserContext";
 
-function CommentPreview({ loggedIn, currentUser, userList, subList, comments, comment, commentActions, storage }) {
+function CommentPreview({ subList, comments, comment, commentActions, storage }) {
   const [profileImg, setProfileImg] = useState('');
+
+  const { loggedIn } = useContext(LogInOutContext);
+  const { userList, currentUser } = useContext(UserContext);
 
   useEffect(() => {
     const imageRef = ref(storage, userList[comment.owner.uid].profileImage);
@@ -218,9 +223,6 @@ function CommentPreview({ loggedIn, currentUser, userList, subList, comments, co
               return nextComment.uid === child ?
               <CommentPreview
               key={Object.values(nextComment).uid}
-              loggedIn={loggedIn}
-              currentUser={currentUser}
-              userList={userList}
               subList={subList}
               comments={comments}
               comment={nextComment}

@@ -1,10 +1,17 @@
+import { useContext } from 'react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { LogInOutContext } from '../../Contexts/LogInOutContext';
+import { UserContext } from '../../Contexts/UserContext';
+
 import styles from './Navbar.module.css';
 
-function Navbar({ loggedIn, signInOut, currentUser, subList, currentSub }) {
+function Navbar({ subList, currentSub }) {
   const [loading, setLoading] = useState(true);
+
+  const { loggedIn, signUserIn, signUserOut } = useContext(LogInOutContext);
+  const { currentUser } = useContext(UserContext);
 
   useEffect(() => {
     if (currentUser && Object.values(currentUser).length > 0) {
@@ -32,7 +39,7 @@ function Navbar({ loggedIn, signInOut, currentUser, subList, currentSub }) {
           <Link to={`/u/${currentUser.uid}/${currentUser.name}`} className='default-link'>
             <p className={styles.userName}>u/{currentUser.name}</p>
           </Link>
-          <button className={styles.signInOutBtn} onClick={signInOut.signUserOut}>Sign Out</button>
+          <button className={styles.signInOutBtn} onClick={signUserOut}>Sign Out</button>
         </div>
       );
     }
@@ -61,7 +68,7 @@ function Navbar({ loggedIn, signInOut, currentUser, subList, currentSub }) {
           loading ?
           <p>Loading...</p> :
           display.loggedInUser() :
-        <button className={styles.signInOutBtn} onClick={signInOut.signUserIn}>Sign In</button>
+        <button className={styles.signInOutBtn} onClick={signUserIn}>Sign In</button>
       }
     </div>
   );

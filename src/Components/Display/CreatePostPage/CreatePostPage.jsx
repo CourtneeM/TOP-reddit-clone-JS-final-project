@@ -1,16 +1,21 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
 import { getDownloadURL, ref, updateMetadata } from "firebase/storage";
 
+import { LogInOutContext } from "../../Contexts/LogInOutContext";
+import { UserContext } from "../../Contexts/UserContext";
 import Navbar from "../Navbar/Navbar";
 
 import uniqid from 'uniqid';
 import styles from './CreatePostPage.module.css';
 
-function CreatePostPage({ loggedIn, signInOut, currentUser, subList, postActions, uploadImage, storage }) {
+function CreatePostPage({ subList, postActions, uploadImage, storage }) {
   const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
   const [postType, setPostType] = useState('text');
+
+  const { loggedIn } = useContext(LogInOutContext);
+  const { currentUser } = useContext(UserContext);
 
   const params = useParams();
   const navigate = useNavigate();
@@ -130,7 +135,7 @@ function CreatePostPage({ loggedIn, signInOut, currentUser, subList, postActions
 
   return (
     <div>
-      <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} />
+      <Navbar subList={subList} />
 
       <div className={styles.wrapper}>
         { loggedIn ?

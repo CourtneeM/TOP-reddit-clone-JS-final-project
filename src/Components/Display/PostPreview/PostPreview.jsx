@@ -1,11 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ref, getDownloadURL } from 'firebase/storage';
 
-import styles from './PostPreview.module.css';
+import { LogInOutContext } from '../../Contexts/LogInOutContext';
 
-function PostPreview({ loggedIn, currentUser, post, postActions, storage }) {
+import styles from './PostPreview.module.css';
+import { UserContext } from '../../Contexts/UserContext';
+
+function PostPreview({ post, postActions, storage }) {
   const [postContent, setPostContent] = useState('');
+
+  const { loggedIn } = useContext(LogInOutContext);
+  const { currentUser } = useContext(UserContext);
 
   useEffect(() => {
     if (post.type === 'images/videos' && storage) {

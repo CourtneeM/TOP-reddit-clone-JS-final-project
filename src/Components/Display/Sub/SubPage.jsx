@@ -1,19 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
+import { LogInOutContext } from '../../Contexts/LogInOutContext';
 import PostPreview from "../PostPreview/PostPreview";
 import AboutSection from "../About/AboutSection";
 import Navbar from "../Navbar/Navbar";
 
 import styles from './SubPage.module.css';
+import { UserContext } from '../../Contexts/UserContext';
 
-function SubPage({ loggedIn, signInOut, currentUser, userList, subList, subActions, postActions, storage }) {
+function SubPage({ subList, subActions, postActions, storage }) {
   const params = useParams();
 
   const [sub, setSub] = useState({});
   const [posts, setPosts] = useState([]);
   const [loadingSubInfo, setLoadingSubInfo] = useState(true);
   const [loadingPosts, setLoadingPosts] = useState(true);
+
+  const { loggedIn } = useContext(LogInOutContext);
+  const { currentUser } = useContext(UserContext);
 
   useEffect(() => {
     if (Object.values(subList).length === 0) return;
@@ -88,7 +93,7 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, subActio
       return existingPosts.map((post) => {
   
         return (
-          <PostPreview loggedIn={loggedIn} currentUser={currentUser} post={post} favoritePost={postActions.favoritePost}
+          <PostPreview post={post} favoritePost={postActions.favoritePost}
             unfavoritePost={postActions.unfavoritePost} adjustPostVotes={postActions.adjustPostVotes} storage={storage}
           />
         );
@@ -109,7 +114,7 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, subActio
         {
           loadingSubInfo ?
           <p>Loading...</p> :  
-          <AboutSection loggedIn={loggedIn} currentUser={currentUser} userList={userList} sub={sub} /> 
+          <AboutSection sub={sub} /> 
         }
       </div>
     );
@@ -117,7 +122,7 @@ function SubPage({ loggedIn, signInOut, currentUser, userList, subList, subActio
 
   return (
     <div>
-      <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} currentSub={sub.name} />
+      <Navbar subList={subList} currentSub={sub.name} />
 
       <div className={styles.wrapper}>
         <header>

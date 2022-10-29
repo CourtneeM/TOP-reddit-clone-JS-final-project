@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, doc, getDocs, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { getStorage, ref, deleteObject, uploadBytes, listAll } from 'firebase/storage';
 import { getFirebaseConfig } from './firebase-config';
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-import User from './Components/Creation/User';
 import Sub from './Components/Creation/Sub';
 
 import Home from "./Components/Display/Home/Home";
@@ -19,20 +18,24 @@ import PostPage from './Components/Display/PostPage/PostPage';
 import CreatePostPage from "./Components/Display/CreatePostPage/CreatePostPage";
 import UserProfile from './Components/Display/UserProfile/UserProfilePage/UserProfilePage';
 
+import { LogInOutContext } from "./Components/Contexts/LogInOutContext";
+import { UserContext } from "./Components/Contexts/UserContext";
+
 import uniqid from 'uniqid';
 
 const app = initializeApp(getFirebaseConfig());
 const db = getFirestore(app);
 const storage = getStorage(app);
 const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
 
 function RouteSwitch() {
-  const [userList, setUserList] = useState({});
-  const [currentUser, setCurrentUser] = useState({});
+  // const [userList, setUserList] = useState({});
+  // const [currentUser, setCurrentUser] = useState({});
   const [subList, setSubList] = useState({});
   const [topPosts, setTopPosts] = useState([]);
-  const [loggedIn, setLoggedIn] = useState(false);
+
+  const { loggedIn, setLoggedIn } = useContext(LogInOutContext);
+  const { userList, setUserList, currentUser, setCurrentUser } = useContext(UserContext);
 
   useEffect(() => {
     const getExistingData = () => {
@@ -95,63 +98,15 @@ function RouteSwitch() {
     }
   }, [userList, loggedIn])
 
-  onAuthStateChanged(auth, (user) => {
-    if (user && !loggedIn) {
-      setLoggedIn(true);
-      setCurrentUser(userList[user.uid]);
-    } else if (!user && loggedIn) {
-      setLoggedIn(false);
-      setCurrentUser(null);
-    }
-  });
-
-  const signInOut = (() => {
-    const signUserIn = () => {
-      setPersistence(auth, browserSessionPersistence)
-      .then(() => {
-        return signInWithPopup(auth, provider)
-          .then((res) => {
-            const credential = GoogleAuthProvider.credentialFromResult(res);
-            const token = credential.accessToken;
-            const user = res.user;
-            
-            if (!userList[user.uid]) {
-              const addUserToFirestore = async (newUser) => {
-                await setDoc(doc(db, 'users', newUser.uid), {...newUser});
-              }
-              const userListCopy = {...userList};
-              const profileImage = 'images/profiles/default-profile-image.png';
-              userListCopy[user.uid] = new User(user.uid, user.displayName, user.email, profileImage)
-
-              setUserList(userListCopy);
-              setCurrentUser(userListCopy[user.uid]);
-              addUserToFirestore(userListCopy[user.uid]);
-            }
-          })
-          .catch((err) => {
-            console.log('error signing in', err.message);
-          })
-      })
-      .catch((err) => {
-        console.log('sign in persistence error', err)
-      })
-
-    }
-
-    const signUserOut = () => {
-      signOut(auth)
-      .then(() => {
-        setLoggedIn(false);
-        setCurrentUser(null);
-        console.log('sign out successful');
-      })
-      .catch((err) => {
-        console.log('error signing out', err);
-      });
-    }
-
-    return { signUserIn, signUserOut }
-  })();
+  // onAuthStateChanged(auth, (user) => {
+  //   if (user && !loggedIn) {
+  //     setLoggedIn(true);
+  //     setCurrentUser(userList[user.uid]);
+  //   } else if (!user && loggedIn) {
+  //     setLoggedIn(false);
+  //     setCurrentUser(null);
+  //   }
+  // });
 
   const subActions = (() => {
     const createSub = (subName, subtitle=null, subAbout=null) => {
@@ -887,47 +842,39 @@ function RouteSwitch() {
     <BrowserRouter>
       <Routes>
         <Route path="/"
-          element={<Home loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser}
-            subList={subList} topPosts={topPosts} postActions={postActions} storage={storage}
+          element={<Home subList={subList} topPosts={topPosts} postActions={postActions} storage={storage}
           />} 
         />
         <Route path="/r/all"
-          element={<All loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser}
-            subList={subList} postActions={postActions} storage={storage}
+          element={<All subList={subList} postActions={postActions} storage={storage}
           />}
         />
         <Route path="/r/new_sub"
-          element={<CreateSubPage loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser}
-            subList={subList} createSub={subActions.createSub}
+          element={<CreateSubPage subList={subList} createSub={subActions.createSub}
           />}
         />
         {
           <Route path={`/r/:subName`}>
             <Route index
-              element={<SubPage loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser}
-                userList={userList} subList={subList} subActions={subActions} postActions={postActions} storage={storage}
+              element={<SubPage subList={subList} subActions={subActions} postActions={postActions} storage={storage}
               />}
             />
             <Route key={uniqid()} path="edit_sub"
-              element={<EditSubPage loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser}
-                userList={userList} subList={subList} editSub={subActions.editSub} deleteSub={subActions.deleteSub}
+              element={<EditSubPage subList={subList} editSub={subActions.editSub} deleteSub={subActions.deleteSub}
               />}
             />
             <Route key={uniqid()} path="new_post"
-              element={<CreatePostPage loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser}
-                subList={subList} postActions={postActions} uploadImage={uploadImage} storage={storage}
+              element={<CreatePostPage subList={subList} postActions={postActions} uploadImage={uploadImage} storage={storage}
               />}
             />
             <Route key={uniqid()} path=":postUid/:postTitle"
-              element={<PostPage loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} userList={userList}
-                subList={subList} postActions={postActions} commentActions={commentActions} storage={storage}
+              element={<PostPage subList={subList} postActions={postActions} commentActions={commentActions} storage={storage}
               />}
             />
           </Route>
         }
         <Route path='/u/:userUid/:userName'
-          element={<UserProfile loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} userList={userList}
-            subList={subList} postActions={postActions} commentActions={commentActions} editUser={editUser}
+          element={<UserProfile subList={subList} postActions={postActions} commentActions={commentActions} editUser={editUser}
             uploadImage={uploadImage} storage={storage}
           />}
         />

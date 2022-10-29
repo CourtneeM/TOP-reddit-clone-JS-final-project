@@ -1,13 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { deleteObject, getDownloadURL, ref, updateMetadata } from 'firebase/storage';
 
+import { LogInOutContext } from '../../Contexts/LogInOutContext';
+import { UserContext } from '../../Contexts/UserContext';
 import Navbar from '../Navbar/Navbar';
 import Comment from '../Comment/Comment';
 
 import styles from './PostPage.module.css';
 
-function PostPage({ loggedIn, signInOut, currentUser, userList, subList, postActions, commentActions, storage }) {
+function PostPage({ subList, postActions, commentActions, storage }) {
   const params = useParams();
   const navigate = useNavigate();
 
@@ -19,6 +21,9 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, postAct
   const [postContent, setPostContent] = useState('');
   const [editedPostContent, setEditedPostContent] = useState('');
   const [loading, setLoading] = useState(true);
+
+  const { loggedIn } = useContext(LogInOutContext);
+  const { currentUser } = useContext(UserContext);
 
   useEffect(() => {
     if (Object.values(subList).length === 0) return;
@@ -431,9 +436,6 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, postAct
             !comment.parentUid ?
             <Comment
               key={comment.uid}
-              loggedIn={loggedIn}
-              currentUser={currentUser}
-              userList={userList}
               subList={subList}
               comments={post.comments}
               comment={comment}
@@ -495,7 +497,7 @@ function PostPage({ loggedIn, signInOut, currentUser, userList, subList, postAct
 
   return (
     <div>
-      <Navbar loggedIn={loggedIn} signInOut={signInOut}currentUser={currentUser} subList={subList} />
+      <Navbar subList={subList} />
 
       <div id={`post-${post.uid}`} className={styles.wrapper}>
         {

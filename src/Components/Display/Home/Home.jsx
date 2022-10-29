@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
 import Navbar from "../Navbar/Navbar";
 import PostPreview from "../PostPreview/PostPreview";
 
 import styles from './Home.module.css';
 
-function Home({ loggedIn, signInOut, currentUser, subList, topPosts, postActions, storage }) {
+function Home({ subList, topPosts, postActions, storage }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     if (Object.values(topPosts).length !== 0) {
       setPosts(topPosts);
@@ -16,6 +16,7 @@ function Home({ loggedIn, signInOut, currentUser, subList, topPosts, postActions
     }
   }, [topPosts]);
   useEffect(() => {
+    console.log(posts);
     setLoading(false);
   }, [posts])
 
@@ -36,7 +37,7 @@ function Home({ loggedIn, signInOut, currentUser, subList, topPosts, postActions
         const postDetails = Object.values(post)[0];
   
         return (
-          <PostPreview key={postDetails.uid} loggedIn={loggedIn} currentUser={currentUser} post={postDetails}
+          <PostPreview key={postDetails.uid} post={postDetails}
             favoritePost={postActions.favoritePost} unfavoritePost={postActions.unfavoritePost} adjustPostVotes={postActions.adjustPostVotes} storage={storage}
           />
         )
@@ -66,7 +67,7 @@ function Home({ loggedIn, signInOut, currentUser, subList, topPosts, postActions
 
   return (
     <div>
-      <Navbar loggedIn={loggedIn} signInOut={signInOut} currentUser={currentUser} subList={subList} currentSub={'Home'} />
+      <Navbar subList={subList} currentSub={'Home'} />
       <div className={styles.wrapper}>
         <div className={styles.postsSection}>
           { display.sortOptions() }

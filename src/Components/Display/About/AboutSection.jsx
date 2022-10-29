@@ -1,14 +1,19 @@
+import { useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { LogInOutContext } from '../../Contexts/LogInOutContext';
+import { UserContext } from '../../Contexts/UserContext';
 
 import styles from './AboutSection.module.css';
 
-function AboutSection({ loggedIn, currentUser, userList, sub }) {
+function AboutSection({ sub }) {
+  const { loggedIn } = useContext(LogInOutContext);
+  const { userList, currentUser } = useContext(UserContext);
+
   const navigate = useNavigate();
 
   const editSubHandler = () => {
     navigate(`/r/${sub.name}/edit_sub`);
   }
-  
 
   const display = (() => {
     const subDetails = () => {

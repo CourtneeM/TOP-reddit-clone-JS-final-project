@@ -45,12 +45,6 @@ class Sub {
 
     return sortedPostsArr.map((post) => ({ [post.uid]: post }));
   }
-
-  getNewestPosts() {
-    // const sortedPostsArr = Object.values(this.posts).sort((postA, postB) => postB.votes - postA.votes); sort by creationDate
-
-    // return sortedPostsArr.map((post) => ({ [post.uid]: post }));
-  }
 }
 
 export default Sub;
